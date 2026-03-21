@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecture Topics Dashboard</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React & ReactDOM via CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for compiling JSX in the browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+      /* Hide scrollbar for clean category tabs */
+      .hide-scrollbar::-webkit-scrollbar { display: none; }
+      .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+    
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useMemo } = React;
+
+        // --- SVG Icons (Replaces lucide-react dependencies) ---
+        const IconSearch = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>;
+        const IconFileText = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>;
+        const IconBookOpen = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>;
+        const IconPlus = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>;
+        const IconExternalLink = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>;
+        const IconMicroscope = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg>;
+        const IconBeaker = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M4.5 3h15"/><path d="M6 3v16a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V3"/><path d="M6 14h12"/></svg>;
+        const IconDroplet = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>;
+        const IconShieldAlert = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>;
+        const IconPill = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>;
+
+        const initialData = [
+          {
+            subject: "Anatomical Pathology",
+            icon: <IconMicroscope className="text-blue-500" size={24} />,
+            color: "bg-blue-50 border-blue-200 text-blue-800",
+            sections: [
+              {
+                instructor: "HOD, Dr. Amadi D.C.",
+                topics: [
+                  { id: 'ap1', title: "Intro to path", gdoc: "https://docs.google.com/document/d/1BbKXQBlcnq7FzrQFX_wbtG-DvKbB6ncPgyOjPRmHyiE/edit", nlm: "" },
+                  { id: 'ap2', title: "Cellular injury, cellular adaptation, and cell death", gdoc: "https://docs.google.com/document/d/1fIgfyYg9Z44BmrpNc3O6XNxjZFptIbXq6ysZc8fbHpo/edit", nlm: "" },
+                  { id: 'ap3', title: "Cell Death 2; Apoptosis", gdoc: "", nlm: "" },
+                  { id: 'ap4', title: "Wound Healing", gdoc: "https://docs.google.com/document/d/136H6lk4wmKARZ2uuDPhrCOy2cGpZ0EtpiEP3c9yQKMA/edit", nlm: "" },
+                  { id: 'ap5', title: "Genetic disorders", gdoc: "", nlm: "" },
+                  { id: 'ap6', title: "Genetic disorders 2", gdoc: "", nlm: "" },
+                  { id: 'ap7', title: "Environmental and Nutritional Diseases 1", gdoc: "https://docs.google.com/document/d/1qEzOad79ZKxjx4D7ij7rUn1eoWO30hER3ZCejQv5D8c/edit", nlm: "" },
+                  { id: 'ap8', title: "Hemodynamic Disorders, Thromboembolism, and Shock", gdoc: "", nlm: "" },
+                  { id: 'ap9', title: "Cardiovascular System 1", gdoc: "https://docs.google.com/document/d/1te6NVsmORH6pJj1w14rXodXFK44i21hrRUQyhXSFvnQ/edit", nlm: "" },
+                  { id: 'ap10', title: "Cardiovascular Pathology 2", gdoc: "https://docs.google.com/document/d/1L1XHGhjwPBbyWtILoJorcYRiMvqy-fueGfJ5CcFvNEQ/edit", nlm: "" },
+                  { id: 'ap11', title: "Hepatobiliary System 1", gdoc: "https://docs.google.com/document/d/1RAGvaKiRffmOf1Jl75UewAEBZM0pI81gSX4GAZGjlbg/edit", nlm: "" },
+                  { id: 'ap12', title: "Hepatobiliary System 2", gdoc: "https://docs.google.com/document/d/1FXtkwQ7hBdxOPPcq9PnY4TzxfqYfbF1u1TcbQgeGgYQ/edit", nlm: "" },
+                ]
+              },
+              {
+                instructor: "Dr. I. G. Nweke",
+                topics: [
+                  { id: 'ap13', title: "Acute Inflammation", gdoc: "https://docs.google.com/document/d/1guHgFE4HQKnRKRU_a_birPux947pdJan_H8JSt8edTg/edit", nlm: "" },
+                  { id: 'ap14', title: "Chemical mediators of inflammation", gdoc: "", nlm: "" },
+                  { id: 'ap15', title: "Chemical mediators of inflammation Contd", gdoc: "", nlm: "" },
+                  { id: 'ap16', title: "Chronic Inflammation", gdoc: "", nlm: "" },
+                  { id: 'ap17', title: "General Pathology of Infectious Diseases", gdoc: "", nlm: "" },
+                  { id: 'ap18', title: "General Pathology of Infectious Diseases - Pulmonary Tuberculosis", gdoc: "https://docs.google.com/document/d/1XB2Bot7GjZBggzO8OH-ouQsXpWaQYUBQh9ck7ohoRlE/edit", nlm: "" },
+                  { id: 'ap19', title: "Pathology of the Lungs - Introduction", gdoc: "", nlm: "" },
+                  { id: 'ap20', title: "Pathology of the Lungs Cont'd", gdoc: "", nlm: "" },
+                  { id: 'ap21', title: "Pulmonary Infections: Pneumonia", gdoc: "https://docs.google.com/document/d/1XxC0qM9B5UFsTqhLKRaev4Z9OYF3MPW8x_MiXFZIDac/edit", nlm: "" },
+                  { id: 'ap22', title: "GIT Pathology: Esophagus, Stomach", gdoc: "https://docs.google.com/document/d/1ufxwEsG1Q7EwUopJ5SHToQwXorhgGzflcUM-_UqeywM/edit", nlm: "" },
+                  { id: 'ap23', title: "GIT Pathology cont'd: Stomach cont'd (Chronic Gastritis, PUD, Neoplastic Disease)", gdoc: "", nlm: "" },
+                  { id: 'ap24', title: "GIT Pathology Cont'd", gdoc: "", nlm: "" },
+                ]
+              },
+              {
+                instructor: "Dr Nnadi Godfrey Ikechukwu",
+                topics: [
+                  { id: 'ap25', title: "Neoplasia - Neoplasm", gdoc: "https://docs.google.com/document/d/1gvEB3f4QSS9_HYwlAAAZFIdxuyB60CtlDpqSRqyfWNY/edit", nlm: "" },
+                  { id: 'ap26', title: "Hemodynamics", gdoc: "https://docs.google.com/document/d/1CbU7_lAcDYwqPV7k1YSaNlKMBvSQRggx1HP-d-xMMAY/edit", nlm: "" },
+                  { id: 'ap27', title: "Hemodynamics Cont'd: Hemostasis, Haemorrhage, Thrombosis", gdoc: "", nlm: "" },
+                  { id: 'ap28', title: "Antiphospholipid Syndromes", gdoc: "", nlm: "" },
+                  { id: 'ap29', title: "Breast Pathology", gdoc: "", nlm: "" },
+                  { id: 'ap30', title: "CNS I", gdoc: "https://docs.google.com/document/d/1xgZbll3_gceDbR2lzorOaPN89ShpeZXb2f8p4ftfQN8/edit", nlm: "" },
+                  { id: 'ap31', title: "CNS II - Principles of CNS Tumors", gdoc: "https://docs.google.com/document/d/1z-O79WJhLoWtJ6TRX9Aerl6eUCEL-R2YLz9gADgu2Yk/edit", nlm: "" },
+                ]
+              },
+              {
+                instructor: "Prof. Chiemeka Michael",
+                topics: [
+                  { id: 'ap32', title: "Amyloidosis", gdoc: "https://docs.google.com/document/d/1-q-8_Km2cZDQ5hCmibEPB2RogUbVdF-0xdfKJfP-lFM/edit", nlm: "" },
+                  { id: 'ap33', title: "Introduction to Hypersensitivity Reactions", gdoc: "https://docs.google.com/document/d/18hdqdX8DZy20zcODQB7EOgbuUq8xZo7Rt7wuguc_PMI/edit", nlm: "" },
+                  { id: 'ap34', title: "Diseases of Infancy and Childhood 1", gdoc: "https://docs.google.com/document/d/1sSElVYEoWmSfT--Hj65EUKTqPP1bEHoCmzP9Fj83v4A/edit", nlm: "" },
+                ]
+              },
+              {
+                instructor: "Presentation Topics",
+                topics: [
+                  { id: 'ap35', title: "Malaria - Group 7", gdoc: "https://docs.google.com/document/d/1MPnKnLdSkYIC85IcVE4OflY-STPpKgNqIqyMN2kW7z4/edit", nlm: "" },
+                  { id: 'ap36', title: "Schistosomiasis - Group 5", gdoc: "https://docs.google.com/document/d/131IkCIdYUvlgmfdoVRwc9ZQKiImgupOnAvNwdWNToYs/edit", nlm: "" },
+                  { id: 'ap37', title: "Tissue Processing - Group 11", gdoc: "https://docs.google.com/document/d/1oovnZ2OrYg6tWC_OkZ0RxZje0VwVk3KcyqJHufr3rVA/edit", nlm: "" },
+                  { id: 'ap38', title: "Special Techniques in Histopath - Group 6", gdoc: "https://docs.google.com/document/d/1DNPkIjND6R4ynq0ZGccViWFoV4tiEJzW4lvYWIp0lAk/edit", nlm: "" },
+                  { id: 'ap39', title: "Pathology of Shock - Group 3", gdoc: "https://docs.google.com/document/d/1o9GScPpbQKYk-1dB5Epb0J5ZJmNZcATRTiEe0Do7Lmc/edit", nlm: "" },
+                  { id: 'ap40', title: "Pathology of Syphilis - Group 8", gdoc: "https://docs.google.com/document/d/1ErciImobjimwU1fWuTb7M4nEceCuN6mgPbAUSsFqSFA/edit", nlm: "" },
+                  { id: 'ap41', title: "Pathology of Leprosy - Group 9", gdoc: "https://docs.google.com/document/d/1C7jgJj1lk19gJnIwYnmeRTigHgyGFCf13X04hMfM9IM/edit", nlm: "" },
+                  { id: 'ap42', title: "Pathology of Amoebiasis - Group 2", gdoc: "https://docs.google.com/document/d/1wpPKPxEdHnJ2tn2Gz1kpFkTQDCA1i4QGf7CKlO79PA4/edit", nlm: "" },
+                  { id: 'ap43', title: "Pathology of Tuberculosis - Group 10", gdoc: "https://docs.google.com/document/d/1zC06osFhtzb5aLKW7xlQN0ccHrq_pSTQJDdFL0NKEoo/edit", nlm: "" },
+                  { id: 'ap44', title: "Pathology of Hypertensive Cardiovascular Diseases - Group 1", gdoc: "https://docs.google.com/document/d/1Sep0_A1pDdTmV_t4lqbraKLiAqk2jGWfLwyYFDGRdO8/edit", nlm: "" },
+                  { id: 'ap45', title: "Pathology of Single Gene Disorders - Group 4", gdoc: "https://docs.google.com/document/d/16LLCVaS-VY2SYF4D3Whlh3SpJ7H6D51c-oT5ndVJhLY/edit", nlm: "" },
+                ]
+              }
+            ]
+          },
+          {
+            subject: "Chemical Pathology",
+            icon: <IconBeaker className="text-amber-500" size={24} />,
+            color: "bg-amber-50 border-amber-200 text-amber-800",
+            sections: [
+              {
+                instructor: "HOD Dr. Chibuzor A.",
+                topics: [
+                  { id: 'cp1', title: "Introduction to Chemical Pathology", gdoc: "", nlm: "" },
+                  { id: 'cp2', title: "Specimen Handling and Pre-analytical Variables", gdoc: "https://docs.google.com/document/d/1KjHbTE8RrvmQ-3MxCgeWg679YPBmGhxznZe5mLX60CA/edit", nlm: "" },
+                  { id: 'cp3', title: "Concept of Biological or Diurnal Rhythm", gdoc: "", nlm: "" },
+                  { id: 'cp4', title: "Specimen Collection and Handling", gdoc: "", nlm: "" },
+                  { id: 'cp5', title: "Analytical Instrumentation in Chemical Pathology Laboratory", gdoc: "https://docs.google.com/document/d/1YPEIWTmBAMCs8-gJfZj7Vt0LcoK5C7eI-SOalvYeRvU/edit", nlm: "" },
+                  { id: 'cp6', title: "Potassium Homeostasis", gdoc: "https://docs.google.com/document/d/1yjaxk_gx0NEPLWKvTc0Fs_OvCBD2Gm4tAIzE6znT7SA/edit", nlm: "" },
+                  { id: 'cp7', title: "Potassium Homeostasis Cont'd: Hyperkalemia", gdoc: "", nlm: "" },
+                  { id: 'cp8', title: "Urinalysis", gdoc: "", nlm: "" },
+                  { id: 'cp9', title: "Tumour Marker", gdoc: "https://docs.google.com/document/d/1v5OlmRk97P2-42lu14coCEezdxEqSusr4xSXK6bnfP8/edit", nlm: "" },
+                  { id: 'cp10', title: "Urinalysis Cont'd", gdoc: "", nlm: "" },
+                ]
+              },
+              {
+                instructor: "Dr. John Ohiri",
+                topics: [
+                  { id: 'cp11', title: "Laboratory Safety, S.I. Units and Reference Ranges", gdoc: "https://docs.google.com/document/d/1pS-N71Plz_MERmWtHVDNw4eFVcj7GYgW7c_rGcoFcW8/edit", nlm: "" },
+                  { id: 'cp12', title: "Fluid and Electrolyte Balance", gdoc: "https://docs.google.com/document/d/19GgYSthUwA7tR33zABWVeIJd9-XhSz6zs3gTPy17DLg/edit", nlm: "" },
+                  { id: 'cp13', title: "The Kidney Function Tests (KFT)", gdoc: "https://docs.google.com/document/d/1tugBkBd3N1kb2VWVnAlSfD8K1HuhF8YzvcAPSNrdGJ0/edit", nlm: "" },
+                  { id: 'cp14', title: "Acid - Base balance", gdoc: "https://docs.google.com/document/d/1-cNYpr1ZBZk0UBKp7tUpgbxQfVLq3DZg6ETMJE7dEA4/edit", nlm: "" },
+                  { id: 'cp15', title: "Diabetes", gdoc: "https://docs.google.com/document/d/14RkjdKHiYLDdkl2czTc2LOgupNQQwrPmegXmW8nrg0A/edit", nlm: "" },
+                  { id: 'cp16', title: "Thyroid Function", gdoc: "https://docs.google.com/document/d/1t88soCqhaqKoKKDd-bjmFb0UJKoZ2qt4t_zWLzmmBMw/edit", nlm: "" },
+                ]
+              },
+              {
+                instructor: "Mr. Obinna Nwabueze",
+                topics: [
+                  { id: 'cp17', title: "Introduction to Chemical Pathology Practicals, Body Fluids, Collection Methods", gdoc: "", nlm: "" },
+                ]
+              },
+              {
+                instructor: "Dr Okwara E. Chidiebere",
+                topics: [
+                  { id: 'cp18', title: "Metabolic Bone Disease", gdoc: "https://docs.google.com/document/d/1WYKbPUpznldjHXkbAodlGdwc3u62AvXvAn1QDuIkJGY/edit", nlm: "" },
+                  { id: 'cp19', title: "Renal Tubular Acidosis", gdoc: "https://docs.google.com/document/d/1M-Gfb8HFDyPU3YqFEEEf0MVGmaEwaEyoGvoPTdJBUmg/edit", nlm: "" },
+                  { id: 'cp20', title: "Bilirubin Metabolism", gdoc: "https://docs.google.com/document/d/1sff8ICVo-FLhneaeHSOkgjByZy9bDeO2nUBi080xSts/edit", nlm: "" },
+                  { id: 'cp21', title: "Hyperuricaemia & Gout", gdoc: "https://docs.google.com/document/d/14AXjCEPbFeu5rBc_8gO4R0Udep4jr6-8l6jektw_QQ4/edit", nlm: "" },
+                ]
+              },
+              {
+                instructor: "Dr. Nwadinigwe Fortune",
+                topics: [
+                  { id: 'cp22', title: "Liver Function Tests", gdoc: "https://docs.google.com/document/d/1v93mdSMgYlh4j1P4ic0YyuzCF9pnseRJFC23pH5dPPA/edit", nlm: "" },
+                  { id: 'cp23', title: "Magnesium Metabolism", gdoc: "https://docs.google.com/document/d/1y8qDUOCQvjf6LmNloRP_nSEIzArFGIiRGmbDQsBqWzA/edit", nlm: "" },
+                  { id: 'cp24', title: "Plasma Proteins and its Disorders", gdoc: "https://docs.google.com/document/d/15b9b5nBtGVpJOjizqB0L8OL5wcq32Vg9iVcAFTzv1O4/edit", nlm: "" },
+                ]
+              },
+              {
+                instructor: "Dr. Udeji Venus Chinyere",
+                topics: [
+                  { id: 'cp25', title: "Point of Care Testing and Application", gdoc: "https://docs.google.com/document/d/1YDDE6u5bTCCI1ODGpQg1Y9E6irGQj0zE1FIVnVTCTEk/edit", nlm: "" },
+                  { id: 'cp26', title: "Cerebrospinal Fluid (CSF) in Health and Diseases", gdoc: "https://docs.google.com/document/d/1h4dVSsEhjBrTKetU3w9dSyTrID4GSfzAi6rC0zsgsWA/edit", nlm: "" },
+                ]
+              }
+            ]
+          },
+          {
+            subject: "Haematology",
+            icon: <IconDroplet className="text-red-500" size={24} />,
+            color: "bg-red-50 border-red-200 text-red-800",
+            sections: [
+              {
+                instructor: "Dr. Opara HOD",
+                topics: [
+                  { id: 'ha1', title: "Introduction to Immunology, Lymph node Structure & Function", gdoc: "https://docs.google.com/document/d/1AMSzFe2kXiYuEuEBw6_ZN-BgqX2NR4edHSahm11Z7i0/edit", nlm: "" },
+                  { id: 'ha2', title: "Lymphopoiesis and Types of Lymphocytes", gdoc: "", nlm: "" },
+                  { id: 'ha3', title: "Anemia: Definition, Classification, Assessment", gdoc: "", nlm: "" },
+                  { id: 'ha4', title: "Benign Disorders of WBC's", gdoc: "", nlm: "" },
+                  { id: 'ha5', title: "Anemia cont'd - Physiologic Adaptation", gdoc: "", nlm: "" },
+                  { id: 'ha6', title: "Iron Metabolism", gdoc: "https://docs.google.com/document/d/1A3drOW34eLhmFYPpxT7m2d9bcZBfEHKMIcvj7_oud_U/edit", nlm: "" },
+                  { id: 'ha7', title: "Iron Deficiency Anaemia - IDA", gdoc: "https://docs.google.com/document/d/1F6LEMeDIgZnKAhSE8WoonPnOnGX06Qd9_F7puwCabfI/edit", nlm: "" },
+                  { id: 'ha8', title: "Iron Overload", gdoc: "https://docs.google.com/document/d/1A3drOW34eLhmFYPpxT7m2d9bcZBfEHKMIcvj7_oud_U/edit", nlm: "" },
+                  { id: 'ha9', title: "Thalassemia", gdoc: "https://docs.google.com/document/d/1s-y2mViUpVq6KivCC0922YQYnKzIGpkiQ75R4Qvjw3w/edit", nlm: "" },
+                  { id: 'ha10', title: "Hypersensitivity Reactions", gdoc: "https://docs.google.com/document/d/1F6LEMeDIgZnKAhSE8WoonPnOnGX06Qd9_F7puwCabfI/edit", nlm: "" },
+                  { id: 'ha11', title: "Hemolytic disease of the newborn", gdoc: "https://docs.google.com/document/d/1amjZ8WGe6393ZUfsS4p93mdD5h0hdhHr9Foy4d39wak/edit", nlm: "" },
+                  { id: 'ha12', title: "Acute Blood Loss and Massive Haemorrhage", gdoc: "", nlm: "" },
+                  { id: 'ha13', title: "Thrombosis", gdoc: "https://docs.google.com/document/d/1AVY0z6CFQEIbZPjBjL2Qv4IdTyVgX5F3irh0OxyG2z0/edit", nlm: "" },
+                ]
+              },
+              {
+                instructor: "Dr. Malachi Iheanacho",
+                topics: [
+                  { id: 'ha14', title: "Introduction to Hematology and Overview of Hemopoiesis", gdoc: "https://docs.google.com/document/d/1cq3jLGOIDn0g89Rq-gA1GUtaiFJBSiSzUxGt99V_WT8/edit", nlm: "" },
+                  { id: 'ha15', title: "Bone Marrow Microenvironment", gdoc: "https://docs.google.com/document/d/1lwkGRa-VWc-P5UTrjRLZ9WX7W5olPlvMAhjVWCpvJxQ/edit", nlm: "" },
+                  { id: 'ha16', title: "Introduction to RBC Biochemistry", gdoc: "https://docs.google.com/document/d/1EzbGQanbjJqnI5uI0IJH3b7w_Es3bGPyBKHPpzukKHw/edit", nlm: "" },
+                  { id: 'ha17', title: "Red Cell Membrane", gdoc: "https://docs.google.com/document/d/1LsSjIIdJcWPBynCcpTrp-QR8OGe8vFJC4FuFRYbN3pM/edit", nlm: "" },
+                  { id: 'ha18', title: "Hemoglobin Synthesis", gdoc: "https://docs.google.com/document/d/1FzwlfGcsFrWGeObzFXt746iuJVgB56Ri_Mv_QYxFVts/edit", nlm: "" },
+                  { id: 'ha19', title: "Immune Hemolytic Anemias", gdoc: "", nlm: "" },
+                  { id: 'ha20', title: "Immunology of HIV/AIDS", gdoc: "", nlm: "" },
+                  { id: 'ha21', title: "Acute Leukemias", gdoc: "https://docs.google.com/document/d/1b_aYf3lnT8rd7zURqS1nOdYdrq1fIwYTFwjlwjdHzpw/edit", nlm: "" },
+                ]
+              },
+              {
+                instructor: "Ms. Nnenna Uguru Kalus",
+                topics: [
+                  { id: 'ha22', title: "Anatomy and Physiology of the Bone Marrow", gdoc: "https://docs.google.com/document/d/1BYa3-9PvHrUFZz_NWlPNzAY1Hey7pifeLoWG_XWuOac/edit", nlm: "" },
+                  { id: 'ha23', title: "Spleen: Structure and Function", gdoc: "https://docs.google.com/document/d/1pRlavzqwD-n4kzWe_sqfauY5nCpb76HniXpLeGYT5_I/edit", nlm: "" },
+                  { id: 'ha24', title: "Innate and Adaptive Immunity", gdoc: "https://docs.google.com/document/d/14DB1bc4iyYqDqkbMIE9VXWEeTIVw7XaQDc4lOHD5rlo/edit", nlm: "" },
+                  { id: 'ha25', title: "Immune Tolerance", gdoc: "https://docs.google.com/document/d/1xBr2KpYTFro9wNZaHUpPYeijDWh9Ve6eEQbTtfjP10k/edit", nlm: "" },
+                  { id: 'ha26', title: "WBC Physiology: Granulocytes, Monocytes, and Lymphocytes", gdoc: "https://docs.google.com/document/d/1WcapBAMvEhw270ZBO_Gk-_3pJzjYMztwSIjkKgENKKw/edit", nlm: "" },
+                  { id: 'ha27', title: "Haemolytic Anemia", gdoc: "https://docs.google.com/document/d/1KkZQfdyqflXCs-8HuqtWIr_N7q72F2EhGKvCmcEuqro/edit", nlm: "" },
+                  { id: 'ha28', title: "Intro to Transfusions", gdoc: "https://docs.google.com/document/d/1HNG6IfI6TeVqrtXOsZcKK1qDxJRgMpOLhsDDSKAc6GM/edit", nlm: "" },
+                ]
+              },
+              {
+                instructor: "Dr. Ehirim Chinedu O.",
+                topics: [
+                  { id: 'ha29', title: "Erythropoiesis", gdoc: "https://docs.google.com/document/d/1uMVo0DmQ-K7FJiqoCbb_yFIF3-__jCKD7-AaeHjUYqo/edit", nlm: "" },
+                  { id: 'ha30', title: "Thrombopoiesis", gdoc: "https://docs.google.com/document/d/1B_Dgn6YtUXdRgy1GqhvsrZiEK5k8fOVFZbjViNLYKR4/edit", nlm: "" },
+                  { id: 'ha31', title: "Cell Signalling in Haematology", gdoc: "https://docs.google.com/document/d/1F_8viWY5j3irOzZKgEGSLYYNg3LOdfEWy069RzQI4Xg/edit", nlm: "" },
+                  { id: 'ha32', title: "Immune Response: Primary and Secondary", gdoc: "https://docs.google.com/document/d/1Td9pTVz8aoWXXFBEROD_ugdbVXz0LlBTQZKyP00mT6g/edit", nlm: "" },
+                ]
+              },
+              {
+                instructor: "Dr. Mrs. Confidence Nwabugwu",
+                topics: [
+                  { id: 'ha33', title: "Myelopoiesis", gdoc: "", nlm: "" },
+                  { id: 'ha34', title: "Plasma cell development", gdoc: "https://docs.google.com/document/d/1V1m2gSOHvLz4yhGDks1H8VtaTs2OKJQ_0jCS21zK1OI/edit", nlm: "" },
+                  { id: 'ha35', title: "Antigens, Immunogens, Haptens: Antigenic Determinants", gdoc: "https://docs.google.com/document/d/1vKrReAdXnGibRXhRKMPp2hDUjFSHlpc7V7R0VYZlmH8/edit", nlm: "" },
+                  { id: 'ha36', title: "Blood Cell Count", gdoc: "", nlm: "" },
+                  { id: 'ha37', title: "Peripheral Blood Cells - Microscopy", gdoc: "", nlm: "" },
+                ]
+              },
+              {
+                instructor: "Dr. Mrs. Ralu Emeka-Obi",
+                topics: [
+                  { id: 'ha38', title: "Haematology Laboratory Quality and Safety", gdoc: "", nlm: "" },
+                  { id: 'ha39', title: "Peripheral Blood Film/Smear & Cell Identification", gdoc: "", nlm: "" },
+                  { id: 'ha40', title: "Blood Group Serology Techniques & Pretransfusion Testing", gdoc: "", nlm: "" },
+                  { id: 'ha41', title: "Hemoglobin Electrophoresis & Coagulation", gdoc: "", nlm: "" },
+                ]
+              }
+            ]
+          },
+          {
+            subject: "Medical Microbiology",
+            icon: <IconShieldAlert className="text-emerald-500" size={24} />,
+            color: "bg-emerald-50 border-emerald-200 text-emerald-800",
+            sections: [
+              {
+                instructor: "Prof Nwokeji (General & Bacteriology)",
+                topics: [
+                  { id: 'mm1', title: "Sterilization, Disinfection, and Infection Control", gdoc: "https://docs.google.com/document/d/1QfWU1jrQugCvoDZmBfSkvP0cOGjgCzFadvcIrqbxBqI/edit", nlm: "" },
+                  { id: 'mm2', title: "Introductory Bacteriology & Bacterial Pathogenesis", gdoc: "https://docs.google.com/document/d/1L6L7nb9BUxOKXTPnecTzl64-IACDh6Q4c_n1YTMj3V0/edit", nlm: "" },
+                  { id: 'mm3', title: "Staphylococcus & Streptococcus", gdoc: "https://docs.google.com/document/d/1dLEF6o49tnIAyOwYMfloyc-9IpFwg2fpvvHu7PwPvzE/edit", nlm: "" },
+                  { id: 'mm4', title: "Enterobactericeae", gdoc: "https://docs.google.com/document/d/1xz4IGWDUHfDJ4S-zcDCe4mz7Fp71lm9nJmmZhxVAAWU/edit", nlm: "" },
+                  { id: 'mm5', title: "Gram Positive & Negative Cocci / Rods", gdoc: "https://docs.google.com/document/d/1SGBIb7cp-JIQbpPxSogTMLJYQX31hHBSoR9uj4w8nHY/edit", nlm: "" },
+                  { id: 'mm6', title: "STIs and UTIs: Neisseria Gonorrhoeae & Pseudomonas", gdoc: "https://docs.google.com/document/d/1LP5Z-Ns3p7MZ8Ke34X_aFuzcMu6aXSuqDjWLzXXJgeM/edit", nlm: "" },
+                  { id: 'mm7', title: "Mycobacterium", gdoc: "https://docs.google.com/document/d/10Xd3j3RCExZ-2NoYh5FQqF7scB2oR2AvP46Vms2a8jw/edit", nlm: "" },
+                ]
+              },
+              {
+                instructor: "Dr. Chigo U.N. (General & Virology)",
+                topics: [
+                  { id: 'mm8', title: "Introduction to Virology", gdoc: "https://docs.google.com/document/d/1tTF60Mw4OhTxzT3fKCHjCfj9VnkLYLGwK7nah95PoXg/edit", nlm: "https://notebooklm.google.com/notebook/186c873d-e8e4-4a70-bba4-93d78adfee23" },
+                  { id: 'mm9', title: "Antimicrobial Drug Resistance", gdoc: "https://docs.google.com/document/d/1_a-04luhaOd7YB964F2xCzhQWhRAkHlmv_CBFlPLAiw/edit", nlm: "" },
+                  { id: 'mm10', title: "Serological Diagnosis of Infections", gdoc: "https://docs.google.com/document/d/1HNYzB4kl4Lvg9fDIv11SrEqLYIAMj3oP-c9iM9hLB70/edit", nlm: "" },
+                  { id: 'mm11', title: "Microbes of Dental Importance", gdoc: "https://docs.google.com/document/d/1aZBX2cy2zfZWTrLvYJpP2FrRiYkXjbc5mXDYGzZsJJs/edit", nlm: "" },
+                  { id: 'mm12', title: "Opportunistic Infections (HIV/AIDS)", gdoc: "https://docs.google.com/document/d/1l1NA5XAZg2_q0sG3sGzmGjUgOQ0dIAX_Y9Em1YA-19M/edit", nlm: "" },
+                  { id: 'mm13', title: "Control of Infectious Diseases", gdoc: "https://docs.google.com/document/d/1el21FrfI64YSQk5NbNTgqaGU8fPhF0I3dClTfMv5SBU/edit", nlm: "" },
+                  { id: 'mm14', title: "SSTIs", gdoc: "https://docs.google.com/document/d/1RHYxoIcNUS-NVqVjAVee9C49-dkqAxpDk3-u9tZwq40/edit", nlm: "" },
+                  { id: 'mm15', title: "Antiviral Chemotherapy", gdoc: "https://docs.google.com/document/d/1XEy-LkXTKDe3612Pyx_rdlLmnhYEckq5WueozwyaexM/edit", nlm: "" },
+                  { id: 'mm16', title: "Hepatitis Viruses (Hepatoviruses)", gdoc: "https://docs.google.com/document/d/1JO3bFwlbYiqj-XmVoR5IHiuaq7o-COP4NQSOp5SBmLU/edit", nlm: "" },
+                  { id: 'mm17', title: "Herpesviridae", gdoc: "https://docs.google.com/document/d/1T5uLy5lmkIzQvMLDUxOdCKdkqgaY48yyV9la7wDFHIo/edit", nlm: "" },
+                ]
+              },
+              {
+                instructor: "Prof. Akujobi (Mycology) & Prof Amadi (Parasitology)",
+                topics: [
+                  { id: 'mm18', title: "Classification of Fungi and Fungal Diseases", gdoc: "https://docs.google.com/document/d/1PkieAE3VimJ8Zf4htMKgBbAz3-LwwO1pHRu-zRW-QR4/edit", nlm: "" },
+                  { id: 'mm19', title: "Superficial Mycoses", gdoc: "https://docs.google.com/document/d/1FL6h_GevDk7LZHd7DI7h0ZxcBKOm7aqOvWXxCSDZbiw/edit", nlm: "" },
+                  { id: 'mm20', title: "Cutaneous Mycoses - Dermatophytes", gdoc: "https://docs.google.com/document/d/1eXUrBLDEJ0ky92JxJcHZyOIAUHC9MI3TPZ2edGcgfRw/edit", nlm: "" },
+                  { id: 'mm21', title: "Deep Mycoses", gdoc: "https://docs.google.com/document/d/1NLMHj0DCQvLiH9xxAF36kMWnNiMdPI68PhPSScjdltA/edit", nlm: "" },
+                  { id: 'mm22', title: "Intro to Medical Parasitology & Amoebiasis", gdoc: "", nlm: "" },
+                ]
+              }
+            ]
+          },
+          {
+            subject: "Pharmacology",
+            icon: <IconPill className="text-purple-500" size={24} />,
+            color: "bg-purple-50 border-purple-200 text-purple-800",
+            sections: [
+              {
+                instructor: "HOD Dr. P.U. Agasi",
+                topics: [
+                  { id: 'ph1', title: "Intro to Pharmacology 2, Plasma Protein Binding", gdoc: "", nlm: "" },
+                  { id: 'ph2', title: "ANS - Parasympathetic NS, Cholinomimetics", gdoc: "", nlm: "" },
+                  { id: 'ph3', title: "Autocoid Hormones", gdoc: "", nlm: "" },
+                  { id: 'ph4', title: "Toxicology", gdoc: "https://docs.google.com/document/d/14jb3mExvPkUNDUSg5ycvuC9ESt9g-W5sbGXbhnTqQjg/edit", nlm: "" },
+                ]
+              },
+              {
+                instructor: "Prof. L.U. Amazu",
+                topics: [
+                  { id: 'ph5', title: "New Drug Development: Drug Discovery", gdoc: "", nlm: "" },
+                  { id: 'ph6', title: "Adverse drug effects & Drug Interactions", gdoc: "", nlm: "" },
+                  { id: 'ph7', title: "Adrenergic Drugs", gdoc: "", nlm: "" },
+                  { id: 'ph8', title: "CVS: Anti-diuretics, Antihypertensives", gdoc: "", nlm: "" },
+                  { id: 'ph9', title: "Antiviral Agents & Drugs of Abuse", gdoc: "", nlm: "" },
+                  { id: 'ph10', title: "Autacoids & Ergots Alkaloids", gdoc: "https://docs.google.com/document/d/1AyLuQAbPy_SKGJuacRFNfiCo_ZaAOLyTJw5xLEsFD0M/edit", nlm: "" },
+                  { id: 'ph11', title: "Adrenocorticoids", gdoc: "https://docs.google.com/document/d/12TJn9VzvONqu6XC-zVsxoGOWTeQZNoXxHTrSHodQEIQ/edit", nlm: "" },
+                ]
+              },
+              {
+                instructor: "Dr. Anele Donatus Onyebuchi",
+                topics: [
+                  { id: 'ph12', title: "Anaesthesia & NSAIDs", gdoc: "", nlm: "" },
+                  { id: 'ph13', title: "Anti anginal drugs & Heart Failure", gdoc: "", nlm: "" },
+                  { id: 'ph14', title: "Insulin and Oral Hypoglycemics", gdoc: "", nlm: "" },
+                  { id: 'ph15', title: "Vaccines: Pharmacology and Immunology", gdoc: "", nlm: "" },
+                  { id: 'ph16', title: "Anti - Parasitic Agents", gdoc: "https://docs.google.com/document/d/1vZF_8W2n0O-7eQEyzlA3cBBo8lkjfvHRspHMr9-AkE4/edit", nlm: "" },
+                  { id: 'ph17', title: "Immunopharmacology", gdoc: "https://docs.google.com/document/d/1RuwVLgAvKaLGpZnh5cVWvpzNlRjOrn9xudLxZKBecw0/edit", nlm: "" },
+                  { id: 'ph18', title: "Anti - Parkinson Drugs", gdoc: "https://docs.google.com/document/d/1jP0vlmaiSCpqQOD6YtAgm29bftVbelzqfCXyfGziTGA/edit", nlm: "" },
+                  { id: 'ph19', title: "Pharmacokinetics", gdoc: "https://docs.google.com/document/d/17yKM3ceJcOaFadP9ZRuRODIQfz9R1q7SCCJp4Fq2bMs/edit", nlm: "" },
+                ]
+              },
+              {
+                instructor: "Lecturer Emmanuel Emeka Ubah",
+                topics: [
+                  { id: 'ph20', title: "Principles of Antimicrobial Therapy", gdoc: "", nlm: "" },
+                  { id: 'ph21', title: "Beta-Lactams", gdoc: "https://docs.google.com/document/d/1-MAI7CZcXGHx8V9PMEjXid3HL-ZxtrMibCtGV0asDAg/edit", nlm: "" },
+                  { id: 'ph22', title: "Drugs Used in Asthma", gdoc: "https://docs.google.com/document/d/1uvd7UHAc9crBhKobvgelRX_O0vq8IHYhjJ8Sk0XaUSU/edit", nlm: "" },
+                  { id: 'ph23', title: "Oxygen Therapy", gdoc: "https://docs.google.com/document/d/1D-Q7L5Pkuq6lYkUVyE3infC21KbQS0BN5xtM2n-SDv4/edit", nlm: "" },
+                  { id: 'ph24', title: "Anaemia Drug Therapy", gdoc: "https://docs.google.com/document/d/1ZX9n7IKu_O5nV5Kvzx0mgmS6JHDP2tuEgJDQO_MBrvI/edit", nlm: "" },
+                ]
+              },
+              {
+                instructor: "Mr. Eric O. Irinmwinuwa & Mrs Ezinne C. Okoroafor",
+                topics: [
+                  { id: 'ph25', title: "Anti-coagulants", gdoc: "https://docs.google.com/document/d/1aHsvb6BgzL5vRRBvKkHma2NqVLb-Df30OZLMPJlIQFI/edit", nlm: "" },
+                  { id: 'ph26', title: "Drugs active on skin and mucous membranes", gdoc: "https://docs.google.com/document/d/1SnaF00ottANS4DKg66Ftnjk-19sNU85-HizEey3439A/edit", nlm: "" },
+                  { id: 'ph27', title: "GIT Pharmacology", gdoc: "https://docs.google.com/document/d/1lQwmgxmfMWVDNX9JkV3nC8rrWsL0k-pQNGRQrGWheag/edit", nlm: "" },
+                  { id: 'ph28', title: "Renal Systemic Pharmacology", gdoc: "https://docs.google.com/document/d/1M5QsCOafxhFDijqt9iThH5ymcFDX1uipINaHGCMW_VQ/edit", nlm: "" },
+                ]
+              }
+            ]
+          }
+        ];
+
+        function App() {
+          const [data, setData] = useState(initialData);
+          const [searchTerm, setSearchTerm] = useState("");
+          const [activeSubject, setActiveSubject] = useState("All");
+
+          const handleUpdateLink = (subjectIdx, sectionIdx, topicId, type) => {
+            const newLink = window.prompt(`Paste your ${type === 'gdoc' ? 'Google Docs' : 'NotebookLM'} URL here:`);
+            if (newLink !== null) {
+              const newData = [...data];
+              const topicIndex = newData[subjectIdx].sections[sectionIdx].topics.findIndex(t => t.id === topicId);
+              if (topicIndex > -1) {
+                newData[subjectIdx].sections[sectionIdx].topics[topicIndex][type] = newLink;
+                setData(newData);
+              }
+            }
+          };
+
+          const filteredData = useMemo(() => {
+            return data
+              .filter(subj => activeSubject === "All" || subj.subject === activeSubject)
+              .map(subj => {
+                const filteredSections = subj.sections.map(sec => ({
+                  ...sec,
+                  topics: sec.topics.filter(t => t.title.toLowerCase().includes(searchTerm.toLowerCase()))
+                })).filter(sec => sec.topics.length > 0);
+                return { ...subj, sections: filteredSections };
+              })
+              .filter(subj => subj.sections.length > 0);
+          }, [data, searchTerm, activeSubject]);
+
+          return (
+            <div className="min-h-screen p-4 md:p-8">
+              <div className="max-w-6xl mx-auto mb-8">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                  <div>
+                    <h1 className="text-3xl font-bold text-gray-900">Lecture Archive</h1>
+                    <p className="text-gray-500 mt-1">Pathology and Pharmacology Hub</p>
+                  </div>
+                  
+                  <div className="relative w-full md:w-72">
+                    <div className="absolute left-3 top-3 text-gray-400">
+                        <IconSearch size={18} />
+                    </div>
+                    <input 
+                      type="text" 
+                      placeholder="Search topics..." 
+                      className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm bg-white"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex overflow-x-auto pb-2 gap-2 hide-scrollbar">
+                  <button 
+                    onClick={() => setActiveSubject("All")}
+                    className={`px-4 py-2 rounded-full whitespace-nowrap font-medium text-sm transition-colors ${activeSubject === "All" ? "bg-gray-800 text-white" : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-100"}`}
+                  >
+                    All Subjects
+                  </button>
+                  {data.map(subj => (
+                    <button 
+                      key={subj.subject}
+                      onClick={() => setActiveSubject(subj.subject)}
+                      className={`px-4 py-2 rounded-full whitespace-nowrap font-medium text-sm transition-colors flex items-center gap-2
+                        ${activeSubject === subj.subject ? subj.color.replace('bg-', 'bg-opacity-100 bg-').replace('text-', 'text-white border-transparent bg-') : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-100"}`}
+                    >
+                      {subj.subject}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="max-w-6xl mx-auto space-y-10">
+                {filteredData.length === 0 ? (
+                  <div className="text-center py-20 bg-white rounded-xl border border-gray-100 shadow-sm">
+                    <div className="flex justify-center mb-4 text-gray-300">
+                        <IconSearch size={48} />
+                    </div>
+                    <h3 className="text-xl font-medium text-gray-600">No topics found</h3>
+                    <p className="text-gray-400 mt-2">Try adjusting your search or filters.</p>
+                  </div>
+                ) : (
+                  filteredData.map((subject, sIdx) => (
+                    <div key={subject.subject}>
+                      <div className="flex items-center gap-3 mb-6 border-b border-gray-200 pb-2">
+                        <div className={`p-2 rounded-lg ${subject.color.split(' ')[0]}`}>
+                          {subject.icon}
+                        </div>
+                        <h2 className="text-2xl font-bold text-gray-800">{subject.subject}</h2>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {subject.sections.map((section, secIdx) => (
+                          <div key={section.instructor} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full">
+                            <div className="bg-gray-50/80 px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+                              <h3 className="font-semibold text-gray-700 flex items-center gap-2">
+                                {section.instructor}
+                              </h3>
+                              <span className="text-xs font-medium px-2 py-1 bg-gray-200 text-gray-600 rounded-full">
+                                {section.topics.length} topics
+                              </span>
+                            </div>
+                            
+                            <div className="divide-y divide-gray-50 flex-grow">
+                              {section.topics.map((topic) => (
+                                <div key={topic.id} className="p-4 hover:bg-blue-50/30 transition-colors group">
+                                  <p className="font-medium text-gray-800 mb-3 leading-snug">{topic.title}</p>
+                                  
+                                  <div className="flex flex-wrap gap-2">
+                                    {topic.gdoc ? (
+                                      <a href={topic.gdoc} target="_blank" rel="noopener noreferrer" 
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition-colors">
+                                        <IconFileText size={14} /> Docs <IconExternalLink size={12} className="ml-0.5 opacity-70" />
+                                      </a>
+                                    ) : (
+                                      <button onClick={() => handleUpdateLink(data.findIndex(d=>d.subject===subject.subject), data.findIndex(d=>d.subject===subject.subject) > -1 ? data[data.findIndex(d=>d.subject===subject.subject)].sections.findIndex(s=>s.instructor===section.instructor) : -1, topic.id, 'gdoc')}
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-white text-gray-400 border border-dashed border-gray-300 hover:text-green-600 hover:border-green-300 hover:bg-green-50 transition-colors">
+                                        <IconPlus size={14} /> Add Docs
+                                      </button>
+                                    )}
+
+                                    {topic.nlm ? (
+                                      <a href={topic.nlm} target="_blank" rel="noopener noreferrer" 
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors">
+                                        <IconBookOpen size={14} /> NotebookLM <IconExternalLink size={12} className="ml-0.5 opacity-70" />
+                                      </a>
+                                    ) : (
+                                      <button onClick={() => handleUpdateLink(data.findIndex(d=>d.subject===subject.subject), data.findIndex(d=>d.subject===subject.subject) > -1 ? data[data.findIndex(d=>d.subject===subject.subject)].sections.findIndex(s=>s.instructor===section.instructor) : -1, topic.id, 'nlm')}
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-white text-gray-400 border border-dashed border-gray-300 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-colors">
+                                        <IconPlus size={14} /> Add Notebook
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
