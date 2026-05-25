@@ -48,6 +48,18 @@
         const IconCopy = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>;
         const IconCheck = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="20 6 9 17 4 12"></polyline></svg>;
 
+        // Icon Mapping Helper
+        const getSubjectIcon = (iconName) => {
+            switch(iconName) {
+                case 'microscope': return <IconMicroscope className="text-blue-500" size={24} />;
+                case 'beaker': return <IconBeaker className="text-amber-500" size={24} />;
+                case 'droplet': return <IconDroplet className="text-red-500" size={24} />;
+                case 'shield': return <IconShieldAlert className="text-emerald-500" size={24} />;
+                case 'pill': return <IconPill className="text-purple-500" size={24} />;
+                default: return <IconBookOpen className="text-gray-500" size={24} />;
+            }
+        };
+
         // Fuzzy Search Algorithm
         const isFuzzyMatch = (pattern, str) => {
           if (!pattern) return true;
@@ -176,7 +188,7 @@
                     <div key={subject.subject}>
                       <div className="flex items-center gap-3 mb-6 border-b border-gray-200 pb-2">
                         <div className={`p-2 rounded-lg ${subject.color.split(' ')[0]}`}>
-                          {subject.icon}
+                          {getSubjectIcon(subject.icon)}
                         </div>
                         <h2 className="text-2xl font-bold text-gray-800">{subject.subject}</h2>
                       </div>
