@@ -2,7 +2,7 @@
 const initialData = [
     {
             subject: "Anatomical Pathology",
-            icon: <IconMicroscope className="text-blue-500" size={24} />,
+            icon: "Microscope",
             color: "bg-blue-50 border-blue-200 text-blue-800",
             sections: [
               {
@@ -87,7 +87,7 @@ const initialData = [
           },
           {
             subject: "Chemical Pathology",
-            icon: <IconBeaker className="text-amber-500" size={24} />,
+            icon: "Beaker",
             color: "bg-amber-50 border-amber-200 text-amber-800",
             sections: [
               {
@@ -162,7 +162,7 @@ const initialData = [
           },
           {
             subject: "Haematology",
-            icon: <IconDroplet className="text-red-500" size={24} />,
+            icon: "Droplet",
             color: "bg-red-50 border-red-200 text-red-800",
             sections: [
               {
@@ -269,7 +269,7 @@ const initialData = [
           },
           {
             subject: "Medical Microbiology",
-            icon: <IconShieldAlert className="text-emerald-500" size={24} />,
+            icon: "ShieldAlert",
             color: "bg-emerald-50 border-emerald-200 text-emerald-800",
             sections: [
               {
@@ -383,7 +383,7 @@ const initialData = [
           },
           {
             subject: "Pharmacology",
-            icon: <IconPill className="text-purple-500" size={24} />,
+            icon: "Pill",
             color: "bg-purple-50 border-purple-200 text-purple-800",
             sections: [
                 {
