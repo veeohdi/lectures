@@ -49,17 +49,20 @@
         const IconCheck = ({ size=24, className="" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="20 6 9 17 4 12"></polyline></svg>;
 
         // Icon Mapping Helper
-        const getSubjectIcon = (iconName) => {
-            switch(iconName) {
-                case 'microscope': return <IconMicroscope className="text-blue-500" size={24} />;
-                case 'beaker': return <IconBeaker className="text-amber-500" size={24} />;
-                case 'droplet': return <IconDroplet className="text-red-500" size={24} />;
-                case 'shield': return <IconShieldAlert className="text-emerald-500" size={24} />;
-                case 'pill': return <IconPill className="text-purple-500" size={24} />;
-                default: return <IconBookOpen className="text-gray-500" size={24} />;
-            }
-        };
-
+const getSubjectIcon = (iconName) => {
+    // Automatically converts text to lowercase to prevent capitalization errors
+    const normalizedName = iconName ? iconName.toLowerCase() : '';
+    
+    switch(normalizedName) {
+        case 'microscope': return <IconMicroscope className="text-blue-500" size={24} />;
+        case 'beaker': return <IconBeaker className="text-amber-500" size={24} />;
+        case 'droplet': return <IconDroplet className="text-red-500" size={24} />;
+        case 'shield': 
+        case 'shieldalert': return <IconShieldAlert className="text-emerald-500" size={24} />;
+        case 'pill': return <IconPill className="text-purple-500" size={24} />;
+        default: return <IconBookOpen className="text-gray-500" size={24} />;
+    }
+};
         // Fuzzy Search Algorithm
         const isFuzzyMatch = (pattern, str) => {
           if (!pattern) return true;
