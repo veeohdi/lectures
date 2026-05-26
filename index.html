@@ -237,7 +237,7 @@
               .filter(s => s.sections.length > 0);
           }, [data, debouncedSearch, activeSubject]);
 
-          const totalTopics = data.reduce((a, s) => a + s.sections.reduce((b, sec) => b + sec.topics.length, 0), 0);
+          const totalTopics = filteredData.reduce((a, s) => a + s.sections.reduce((b, sec) => b + sec.topics.length, 0), 0);
 
           return (
             <div className="app-container">
