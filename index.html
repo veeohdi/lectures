@@ -184,18 +184,25 @@
           const filteredData = useMemo(() => {
             return data
               .filter(subj => activeSubject === "All" || subj.subject === activeSubject)
-              .map(subj => {
-                const filteredSections = subj.sections.map(sec => ({
-                  ...sec,
-                  topics: sec.topics.filter(t => {
-                      return t.title.toLowerCase().includes(debouncedSearch.toLowerCase()) || isFuzzyMatch(debouncedSearch, t.title);
-                  })
-                })).filter(sec => sec.topics.length > 0);
-                return { ...subj, sections: filteredSections };
-              })
-              .filter(subj => subj.sections.length > 0);
-          }, [data, debouncedSearch, activeSubject]);
+            {data.map(subj => {
+                    // Cleanly extract the text color (e.g., "text-blue-800") 
+                    // and convert it to the active background color (e.g., "bg-blue-800")
+                    const textColorClass = subj.color.split(' ').find(c => c.startsWith('text-'));
+                    const activeBgClass = textColorClass ? textColorClass.replace('text-', 'bg-') : 'bg-gray-800';
 
+                    return (
+                      <button 
+                        key={subj.subject}
+                        onClick={() => setActiveSubject(subj.subject)}
+                        className={`px-4 py-2 rounded-full whitespace-nowrap font-medium text-sm transition-all duration-200 active:scale-95 flex items-center gap-2
+                          ${activeSubject === subj.subject 
+                            ? `${activeBgClass} text-white shadow-md border-transparent` 
+                            : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-100 hover:shadow-sm"}`}
+                      >
+                        {subj.subject}
+                      </button>
+                    );
+                  })}
           const totalTopics = data.reduce((acc, sub) => acc + sub.sections.reduce((a, s) => a + s.topics.length, 0), 0);
 
           return (
