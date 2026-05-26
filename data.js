@@ -180,8 +180,8 @@ const initialData = [
                   { id: 'ha9a', title: "Hemolytic disease of the newborn", gdoc: "https://docs.google.com/document/d/1amjZ8WGe6393ZUfsS4p93mdD5h0hdhHr9Foy4d39wak/edit", nlm: "https://notebooklm.google.com/notebook/815ec2df-e95a-41a8-afec-812f29dcc39b" },
                   { id: 'ha9b', title: "Acute Blood Loss and Massive Haemorrhage", gdoc: "", nlm: "" },
                   { id: 'ha9c', title: "Thrombosis", gdoc: "https://docs.google.com/document/d/1AVY0z6CFQEIbZPjBjL2Qv4IdTyVgX5F3irh0OxyG2z0/edit", nlm: "https://notebooklm.google.com/notebook/57e12532-adae-49cc-be9a-7ecf3f1b6183?authuser=3" },
-                  { id: 'ha9b', title: "Tumour Markers in Haematological Malignancies", gdoc: "https://docs.google.com/document/d/1IndAsyPZKQDDgwkxI1L10Oo3XnV5bqGCxRuj1wRV5v8/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/0c3e715e-8d95-46e1-80f2-30677a047aa1" },
-                  { id: 'ha9b', title: "Chemotheraphy in Immunological Malignancies", gdoc: "https://docs.google.com/document/d/1ygJmXfegZERkRw62XsQ73lAC3mZejYfOJHQyx8nDGFg/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/a6952a03-dd33-4569-bfab-db5acdb26473" },
+                  { id: 'ha9d', title: "Tumour Markers in Haematological Malignancies", gdoc: "https://docs.google.com/document/d/1IndAsyPZKQDDgwkxI1L10Oo3XnV5bqGCxRuj1wRV5v8/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/0c3e715e-8d95-46e1-80f2-30677a047aa1" },
+                  { id: 'ha9e', title: "Chemotheraphy in Immunological Malignancies", gdoc: "https://docs.google.com/document/d/1ygJmXfegZERkRw62XsQ73lAC3mZejYfOJHQyx8nDGFg/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/a6952a03-dd33-4569-bfab-db5acdb26473" },
                 ]
               },
               {
@@ -197,6 +197,8 @@ const initialData = [
                   { id: 'ha21', title: "Acute and Chronic Leukemias", gdoc: "https://docs.google.com/document/d/1b_aYf3lnT8rd7zURqS1nOdYdrq1fIwYTFwjlwjdHzpw/edit", nlm: "https://notebooklm.google.com/notebook/6cd18b4e-70c6-4504-84a3-5450695993c9?authuser=3" },
                   { id: 'ha21a', title: "Paroxysmal Nocturnal Hemoglobunemia (Bone Marrow Failure)", gdoc: "https://docs.google.com/document/d/1o1on_vdMbqU9tzgaBlAw1qt9bCCFuqoRPqUypgluNWE/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/164546cc-bbd0-4376-8b26-f3974c085018?authuser=3" },
                   { id: 'ha21b', title: "Aplastic Anaemia (Bone Marrow Failure)", gdoc: "https://docs.google.com/document/d/1z7iEt0hpRpsvjZr2WeZwOoGFRsGZYJ7qv7XX9eugEfI/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/b91ba363-a020-401b-81b0-8d6dad9e9aa6" },
+                  { id: 'ha21c', title: "Systemic Lupus Erythematosus (SLE)", gdoc: "https://docs.google.com/document/d/1eNKp-Fwbnur2jDQrPB_FO8M78QNKc7X6dwBJKpZzNCI/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/9ba1150d-f5e0-4070-bd1e-f6e75e51368c" },
+                    //{ id: 'cp11', title: "My Brand New Topic", gdoc: "https://...", nlm: "https://..." },
                 ]
               },
               {
