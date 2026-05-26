@@ -1,4 +1,4 @@
-# MedVault — Lecture Archive
+# MedVault
 
 MedVault is a beautifully curated, high-performance archive of medical lecture notes covering Pathology, Pharmacology, Haematology, and Microbiology. Built for medical students, it provides instant access to study resources and summaries.
 
