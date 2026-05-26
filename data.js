@@ -330,6 +330,7 @@ const initialData = [
                   { id: 'mm44b', title: "Campylobacter", gdoc: "https://docs.google.com/document/d/1XVO3Ae1jXgPy6_BbvomUSf0BH1ZSFU9Qrqtrrtw_k_c/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/43b773e5-7a90-45d4-849c-4cda441ca775" },
                   { id: 'mm44c', title: "Helicobacter", gdoc: "https://docs.google.com/document/d/16fonD8k7EY2gx1VPJXL6LRYasXroK9uZ4_YK5mCHwBI/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/1d280244-3af8-4d49-b34f-9544dd2aa585" },
                   { id: 'mm44d', title: "Shigella", gdoc: "https://docs.google.com/document/d/188yFZW02M2EdWXNFmGjOGINCjOQnCOFawHNao5F_uZ8/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/a6e0d5a2-151e-4f78-9729-41db3bdd1843" },
+                  { id: 'mm44e', title: "Mycoplasma", gdoc: "https://docs.google.com/document/d/1Gk_ut2YLlQJm4Ma4oXnQYQfYnsNYzf6fYkDBlz6fuNo/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/450fd00d-4a89-4c7c-8783-a2767df98b29" },
                 ]
               },
               {
