@@ -331,6 +331,9 @@ const initialData = [
                   { id: 'mm44c', title: "Helicobacter", gdoc: "https://docs.google.com/document/d/16fonD8k7EY2gx1VPJXL6LRYasXroK9uZ4_YK5mCHwBI/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/1d280244-3af8-4d49-b34f-9544dd2aa585" },
                   { id: 'mm44d', title: "Shigella", gdoc: "https://docs.google.com/document/d/188yFZW02M2EdWXNFmGjOGINCjOQnCOFawHNao5F_uZ8/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/a6e0d5a2-151e-4f78-9729-41db3bdd1843" },
                   { id: 'mm44e', title: "Mycoplasma", gdoc: "https://docs.google.com/document/d/1Gk_ut2YLlQJm4Ma4oXnQYQfYnsNYzf6fYkDBlz6fuNo/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/450fd00d-4a89-4c7c-8783-a2767df98b29" },
+                  { id: 'mm44f', title: "Chlamydia", gdoc: "https://docs.google.com/document/d/1MbxPqhDV_F7YBrLEVjIIT-rdIMNIYT9H80p2qkj8f1s/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/9fee8aac-a17b-4f12-ae36-e0690248dff8" }, 
+                  { id: 'mm44g', title: "Rickettsiae", gdoc: "https://docs.google.com/document/d/1kuc_IKA7qmH1ibiOFC4hJpo5-c7K8SvPaLiSxAF5gqA/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/141b0a18-9aff-4cbb-b34b-7328f475ee9f" }, 
+                    //{ id: 'cp11', title: "My Brand New Topic", gdoc: "https://...", nlm: "..." },
                 ]
               },
               {
