@@ -1,2 +1,5 @@
 node_modules/
 .DS_Store
+node-v*-linux-x64/
+node.tar.xz
+install_nvm.sh
