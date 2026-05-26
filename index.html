@@ -21,7 +21,7 @@
     <script src="data.js"></script>
     
     <style>
-      /* Elegant macOS style scrollbar instead of completely hidden */
+      /* Elegant macOS style scrollbar */
       ::-webkit-scrollbar {
         width: 6px;
         height: 6px;
@@ -51,7 +51,7 @@
       @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans selection:bg-blue-100 selection:text-blue-900">
+<body class="text-gray-800 font-sans selection:bg-blue-100 selection:text-blue-900">
     <div id="root"></div>
 
     <script type="text/babel">
@@ -198,8 +198,18 @@
 
           const totalTopics = data.reduce((acc, sub) => acc + sub.sections.reduce((a, s) => a + s.topics.length, 0), 0);
 
+          // Determine the active background color based on the selected subject
+          const activeThemeClass = useMemo(() => {
+            if (activeSubject === "All") return "bg-slate-50";
+            const subj = data.find(d => d.subject === activeSubject);
+            if (subj) {
+                return subj.color.split(' ').find(c => c.startsWith('bg-')) || "bg-slate-50";
+            }
+            return "bg-slate-50";
+          }, [activeSubject, data]);
+
           return (
-            <div className="min-h-screen p-4 md:p-8">
+            <div className={`min-h-screen p-4 md:p-8 transition-colors duration-700 ease-in-out ${activeThemeClass}`}>
               <div className="max-w-7xl mx-auto mb-8">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                   <div>
@@ -236,16 +246,24 @@
                   >
                     All Subjects
                   </button>
-                  {data.map(subj => (
-                    <button 
-                      key={subj.subject}
-                      onClick={() => setActiveSubject(subj.subject)}
-                      className={`px-4 py-2 rounded-full whitespace-nowrap font-medium text-sm transition-all duration-200 active:scale-95 flex items-center gap-2
-                        ${activeSubject === subj.subject ? subj.color.replace('bg-', 'bg-opacity-100 bg-').replace('text-', 'text-white border-transparent bg- shadow-md') : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-100 hover:shadow-sm"}`}
-                    >
-                      {subj.subject}
-                    </button>
-                  ))}
+                  {data.map(subj => {
+                    // Cleanly extract the text color and convert it to the active background color
+                    const textColorClass = subj.color.split(' ').find(c => c.startsWith('text-'));
+                    const activeBgClass = textColorClass ? textColorClass.replace('text-', 'bg-') : 'bg-gray-800';
+
+                    return (
+                      <button 
+                        key={subj.subject}
+                        onClick={() => setActiveSubject(subj.subject)}
+                        className={`px-4 py-2 rounded-full whitespace-nowrap font-medium text-sm transition-all duration-200 active:scale-95 flex items-center gap-2
+                          ${activeSubject === subj.subject 
+                            ? `${activeBgClass} text-white shadow-md border-transparent` 
+                            : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-100 hover:shadow-sm"}`}
+                      >
+                        {subj.subject}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
