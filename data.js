@@ -433,7 +433,7 @@ const initialData = [
               {
                 instructor: "Dr. Anele Donatus Onyebuchi",
                 topics: [
-                  { id: 'ph24', title: "Anaesthesia", gdoc: "", nlm: "" },
+                  { id: 'ph24', title: "Anaesthesia", gdoc: "https://docs.google.com/document/d/1Xduseg6RCplYn23NbT34QFZlZ0TEjJKgjNiFkRDoYo0/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/51e78f90-e04f-4557-ba74-da75654fc6cd" },
                   { id: 'ph25', title: "NSAID's", gdoc: "", nlm: "" },
                   { id: 'ph26', title: "Pharmacodynamic Concepts", gdoc: "https://docs.google.com/document/d/1z-32_FCLUUtyMShm1UcZHLcIWM_iA_nWe1gJ_MGEjyE/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/98c3923b-baa3-4d23-a932-7264af385993" },
                   { id: 'ph27', title: "Antihypertensives", gdoc: "https://docs.google.com/document/d/1A5qtwlxnEJwqP2Ky3oIuIT31L3V8MVEq3LZZeZ17EJk/edit?usp=sharing", nlm: "" },
