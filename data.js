@@ -474,6 +474,7 @@ const initialData = [
                   { id: 'ph61', title: "Vitamins", gdoc: "https://docs.google.com/document/d/1lEfL62x7BG7mt7H5f-vrunnV4xM_9oJwPC5SkYqw5v4/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/b8fcafe5-f175-4fd7-8ac2-f4d340a37c9" },
                   { id: 'ph61a', title: "Alzheimer's", gdoc: "https://docs.google.com/document/d/154s_moYPe5JHbrfzLBUbADgy1U0cyv4eFdql3Ip1UqU/edit?usp=drivesdk", nlm: "https://notebooklm.google.com/notebook/96321c66-e909-48ea-ad32-67c19b6e4297?authuser=3" },
                   { id: 'ph61b', title: "Antidepressants", gdoc: "https://docs.google.com/document/d/19F9izPcsM2gJzWqVsEHmV3jaHxvG3ep1jWOLj71pOEU/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/57b987ec-62f0-4458-bb28-3f80075ef625" },
+                  { id: 'ph61c', title: "Opioids", gdoc: "https://docs.google.com/document/d/1fBPaaj0OR_kfVmYpMFSr7YyiE1RjD_rA5tq6ji_4iPM/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/7d9ffaef-93d0-4f8f-abdd-e7dd4095e84e" },
                 ]
               },
               {
