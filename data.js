@@ -486,6 +486,8 @@ const initialData = [
                   { id: 'ph67', title: "Agents that affect Calcification", gdoc: "", nlm: "" },
                   { id: 'ph68', title: "Anti-coagulants, Fibrinolytics, Antifibrinolytics and Antiplatelet Agents", gdoc: "https://docs.google.com/document/d/1aHsvb6BgzL5vRRBvKkHma2NqVLb-Df30OZLMPJlIQFI/edit", nlm: "" },
                   { id: 'ph73', title: "Lipid Lowering Agents", gdoc: "", nlm: "" },
+                  { id: 'ph73a', title: "Endocrine Drugs", gdoc: "", nlm: "" },
+                  { id: 'ph73b', title: "Androgens & Steriods", gdoc: "", nlm: "" },
                 ]
               },
               {
