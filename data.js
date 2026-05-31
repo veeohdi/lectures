@@ -401,14 +401,18 @@ const initialData = [
               {
                 instructor: "HOD Dr. P.U. Agasi",
                 topics: [
-                  { id: 'ph1', title: "Intro to Pharmacology", gdoc: "https://docs.google.com/document/d/1qCroISEmYbu2ASx6gQNkEUSMzyxVt36eYxcpnFqUWz8/edit?usp=sharing", nlm: "" },
+                  { id: 'ph1', title: "Intro to Pharmacology", gdoc: "https://docs.google.com/document/d/1qCroISEmYbu2ASx6gQNkEUSMzyxVt36eYxcpnFqUWz8/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/f02430ba-1276-498d-85b7-2f5726c5db25" },
                   { id: 'ph2', title: "Intro to Pharm 2: Plasma Protein Binding", gdoc: "https://docs.google.com/document/d/1dFju238yoozTWkx0OQ0YxyDvcxZYw20W6URVGtMsZew/edit?usp=sharing", nlm: "" },
                   { id: 'ph4', title: "Intro to Autonomic Pharmacology - (ANS 1)", gdoc: "https://docs.google.com/document/d/1qvVEY060eYBdR13rEwiBXqg2TPmyQkIy0bJvOFfj6zQ/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/7934d0fe-66e5-4687-9621-3f17e557a722" },
                   { id: 'ph5', title: "Cholinoceptor-Activating & Cholinesterase-Inhibiting Drugs - (ANS 2)", gdoc: "https://docs.google.com/document/d/160tD8Ic88r2CjiHXUoD3g_2kM4X2ahkYovgvRV47f9s/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/eda5de4a-01a0-4324-b862-33973314e95d" },
                   { id: 'ph6', title: "Cholinoceptor-blocking drugs - (ANS 3)", gdoc: "https://docs.google.com/document/d/10vZCTtKtzfn5HuOdvL3AqU6W8uY2uNqbRjaxHBvLxGg/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/5631cc18-d3bf-48b5-a813-d676623d11b7" },
                   { id: 'ph8', title: "Autocoid Hormones", gdoc: "https://docs.google.com/document/d/1-CVFey5yLm6fSfSzqMkbHF0uDDIRasTiGN6Rcjc3X5k/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/de743c62-40ef-42cc-83bf-63722d7d4d06" },
                   { id: 'ph9', title: "Toxicology & Toxicological Dose Descriptors", gdoc: "https://docs.google.com/document/d/14jb3mExvPkUNDUSg5ycvuC9ESt9g-W5sbGXbhnTqQjg/edit", nlm: "https://notebooklm.google.com/notebook/85b3b058-41e1-453c-b794-a94f813c43ce" },
-                  { id: 'ph10', title: "Cancer Chemotheraphy", gdoc: "https://docs.google.com/document/d/117ZUvtlQe4fgwFUlbXErokGxyaPFs97VGpikhO1tyuE/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/22307468-383f-4fe8-bbdb-78e80f257447" },
+                  { id: 'ph10', title: "Acute and General Toxicology Studies", gdoc: "https://docs.google.com/document/d/1BrpxhDosopcxaO1Hu7VTKCWVZZD2raXehEUirEuhzQk/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/70fff558-ed68-48dc-b4d3-e2d48ca12ddb" },
+                  { id: 'ph11', title: "Cancer Chemotheraphy", gdoc: "https://docs.google.com/document/d/117ZUvtlQe4fgwFUlbXErokGxyaPFs97VGpikhO1tyuE/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/22307468-383f-4fe8-bbdb-78e80f257447" },
+
+                    
+                  //{ id: 'cp11', title: "My Brand New Topic", gdoc: "https://...", nlm: "https://..." },
                   
                 ]
               },
@@ -488,7 +492,7 @@ const initialData = [
                   { id: 'ph68', title: "Anti-coagulants, Fibrinolytics, Antifibrinolytics and Antiplatelet Agents", gdoc: "https://docs.google.com/document/d/1aHsvb6BgzL5vRRBvKkHma2NqVLb-Df30OZLMPJlIQFI/edit", nlm: "" },
                   { id: 'ph73', title: "Lipid Lowering Agents", gdoc: "", nlm: "" },
                   { id: 'ph73a', title: "Endocrine Drugs", gdoc: "", nlm: "" },
-                  { id: 'ph73b', title: "Androgens & Steriods", gdoc: "", nlm: "" },
+                  { id: 'ph73b', title: "Androgens & Steroids", gdoc: "", nlm: "" },
                 ]
               },
               {
