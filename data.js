@@ -401,20 +401,21 @@ const initialData = [
               {
                 instructor: "HOD Dr. P.U. Agasi",
                 topics: [
+                  { id: 'ph1', title: "Intro to Pharmacology", gdoc: "https://docs.google.com/document/d/1qCroISEmYbu2ASx6gQNkEUSMzyxVt36eYxcpnFqUWz8/edit?usp=sharing", nlm: "" },
                   { id: 'ph2', title: "Intro to Pharm 2: Plasma Protein Binding", gdoc: "https://docs.google.com/document/d/1dFju238yoozTWkx0OQ0YxyDvcxZYw20W6URVGtMsZew/edit?usp=sharing", nlm: "" },
                   { id: 'ph4', title: "Intro to Autonomic Pharmacology - (ANS 1)", gdoc: "https://docs.google.com/document/d/1qvVEY060eYBdR13rEwiBXqg2TPmyQkIy0bJvOFfj6zQ/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/7934d0fe-66e5-4687-9621-3f17e557a722" },
                   { id: 'ph5', title: "Cholinoceptor-Activating & Cholinesterase-Inhibiting Drugs - (ANS 2)", gdoc: "https://docs.google.com/document/d/160tD8Ic88r2CjiHXUoD3g_2kM4X2ahkYovgvRV47f9s/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/eda5de4a-01a0-4324-b862-33973314e95d" },
                   { id: 'ph6', title: "Cholinoceptor-blocking drugs - (ANS 3)", gdoc: "https://docs.google.com/document/d/10vZCTtKtzfn5HuOdvL3AqU6W8uY2uNqbRjaxHBvLxGg/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/5631cc18-d3bf-48b5-a813-d676623d11b7" },
-                  { id: 'ph8', title: "Autocoid Hormones", gdoc: "", nlm: "" },
-                  { id: 'ph9', title: "Toxicology", gdoc: "https://docs.google.com/document/d/14jb3mExvPkUNDUSg5ycvuC9ESt9g-W5sbGXbhnTqQjg/edit", nlm: "" },
-                  { id: 'ph9a', title: "Cancer Chemotheraphy", gdoc: "https://docs.google.com/document/d/117ZUvtlQe4fgwFUlbXErokGxyaPFs97VGpikhO1tyuE/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/22307468-383f-4fe8-bbdb-78e80f257447" },
+                  { id: 'ph8', title: "Autocoid Hormones", gdoc: "https://docs.google.com/document/d/1-CVFey5yLm6fSfSzqMkbHF0uDDIRasTiGN6Rcjc3X5k/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/de743c62-40ef-42cc-83bf-63722d7d4d06" },
+                  { id: 'ph9', title: "Toxicology & Toxicological Dose Descriptors", gdoc: "https://docs.google.com/document/d/14jb3mExvPkUNDUSg5ycvuC9ESt9g-W5sbGXbhnTqQjg/edit", nlm: "https://notebooklm.google.com/notebook/85b3b058-41e1-453c-b794-a94f813c43ce" },
+                  { id: 'ph10', title: "Cancer Chemotheraphy", gdoc: "https://docs.google.com/document/d/117ZUvtlQe4fgwFUlbXErokGxyaPFs97VGpikhO1tyuE/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/22307468-383f-4fe8-bbdb-78e80f257447" },
                   
                 ]
               },
               {
                 instructor: "Prof. L.U. Amazu",
                 topics: [
-                  { id: 'ph11', title: "Intro to Pharmacology", gdoc: "https://docs.google.com/document/d/1qCroISEmYbu2ASx6gQNkEUSMzyxVt36eYxcpnFqUWz8/edit?usp=sharing", nlm: "" },
+                 
                   { id: 'ph12', title: "New Drug Development: Drug Discovery", gdoc: "https://docs.google.com/document/d/1uoabF1DCN6b4Tq_lLu6T9-0BBePWZ9I1OF1_kQYwTrA/edit?usp=sharing", nlm: "" },
                   { id: 'ph13', title: "Adverse drug effects", gdoc: "https://docs.google.com/document/d/1UQfTXPE2XFCX3KZOLpToaL5MSLO-SmWZ8JYnywMX_0c/edit?usp=sharing", nlm: "" },
                   { id: 'ph14', title: "Drug Interactions", gdoc: "https://docs.google.com/document/d/1-UZ-i8NOlzkYaxBDOyf9aPZXHCOR6Rtjjfxu4gEvVCQ/edit?usp=sharing", nlm: "" },
