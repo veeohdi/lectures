@@ -493,7 +493,7 @@ const initialData = [
                   { id: 'ph66', title: "Minerals", gdoc: "https://docs.google.com/document/d/1zSewvCAJEB_fsnI4nRm2n4MGvoaVGPmfjPG2xM05ENc/edit?usp=sharing", nlm: "" },
                   { id: 'ph67', title: "Agents that affect Calcification", gdoc: "", nlm: "" },
                   { id: 'ph68', title: "Anti-coagulants, Fibrinolytics, Antifibrinolytics and Antiplatelet Agents", gdoc: "https://docs.google.com/document/d/1aHsvb6BgzL5vRRBvKkHma2NqVLb-Df30OZLMPJlIQFI/edit", nlm: "" },
-                  { id: 'ph73', title: "Lipid Lowering Agents", gdoc: "", nlm: "" },
+                  { id: 'ph73', title: "Lipid Lowering Agents", gdoc: "https://docs.google.com/document/d/1i7qn2PrOOk7XaOLNoc4T1cEEP6EUdgD-EUHvFLHEAgU/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/9ec9fa2c-313d-4cf6-93e8-b504bd24baff" },
                   { id: 'ph73a', title: "Endocrine Drugs", gdoc: "", nlm: "" },
                   { id: 'ph73b', title: "Androgens & Steroids", gdoc: "", nlm: "" },
                   { id: 'ph73c', title: "Agents in Renal Failure & Antihelminths", gdoc: "https://docs.google.com/document/d/1VXkLCrupYoEDqpx3p2w53NJc-bxhvWYWDvpGOiBIXtQ/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/cd70aea7-5281-468d-b6e3-9bb7fb1bca5a" }, 
