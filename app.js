@@ -1,3 +1,4 @@
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
 const {
   useState,
   useMemo,
@@ -218,10 +219,39 @@ const isFuzzyMatch = (pattern, str) => {
   return re.test(str);
 };
 
+/* ─── LITE MODE HOOK ─── */
+function useLiteMode() {
+  const [isLite, setIsLite] = useState(() => {
+    const saved = localStorage.getItem('medvault-lite');
+    if (saved !== null) return saved === 'true';
+
+    // Auto-detect struggling hardware
+    let isStruggling = false;
+    if (navigator.deviceMemory && navigator.deviceMemory <= 4) isStruggling = true;
+    if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) isStruggling = true;
+    if (navigator.connection && navigator.connection.saveData) isStruggling = true;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) isStruggling = true;
+    return isStruggling;
+  });
+  useEffect(() => {
+    localStorage.setItem('medvault-lite', isLite);
+    if (isLite) {
+      document.body.classList.add('lite-mode');
+    } else {
+      document.body.classList.remove('lite-mode');
+    }
+  }, [isLite]);
+  const toggleLite = useCallback(() => setIsLite(p => !p), []);
+  return {
+    isLite,
+    toggleLite
+  };
+}
+
 /* ─── THEME HOOK ─── */
 function useTheme() {
   const [theme, setTheme] = useState(() => {
-    return document.documentElement.getAttribute('data-theme') || 'light';
+    return document.documentElement.getAttribute('data-theme') || 'dark';
   });
   const toggle = useCallback(() => {
     const next = theme === 'light' ? 'dark' : 'light';
@@ -234,6 +264,147 @@ function useTheme() {
     theme,
     toggle
   };
+}
+
+/* ─── EASTER EGG HOOK ─── */
+function useEasterEggs() {
+  const [easterEggFound, setEasterEggFound] = useState(false);
+  const [clickCount, setClickCount] = useState(0);
+  useEffect(() => {
+    const konami = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+    let idx = 0;
+    const handler = e => {
+      if (e.key === konami[idx]) {
+        idx++;
+        if (idx === konami.length) {
+          setEasterEggFound(true);
+          idx = 0;
+        }
+      } else {
+        idx = 0;
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+  const handleLogoClick = useCallback(() => {
+    setClickCount(c => {
+      const nc = c + 1;
+      if (nc >= 5) {
+        setEasterEggFound(true);
+        return 0;
+      }
+      return nc;
+    });
+    setTimeout(() => setClickCount(0), 2000);
+  }, []);
+  useEffect(() => {
+    if (easterEggFound) {
+      document.body.classList.add('easter-egg');
+      // Play a fun little haptic if on mobile
+      if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+    }
+  }, [easterEggFound]);
+  return {
+    easterEggFound,
+    setEasterEggFound,
+    handleLogoClick
+  };
+}
+
+/* ─── EASTER EGG MODAL ─── */
+function EasterEggModal({
+  onClose
+}) {
+  const [name, setName] = useState('');
+  const [status, setStatus] = useState('');
+  const handleSubmit = async e => {
+    e.preventDefault();
+    setStatus('Sending...');
+    try {
+      const response = await fetch("https://formspree.io/f/xqeogvan", {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          Name: name || 'Anonymous',
+          message: "I found the MedVault Easter Egg!"
+        })
+      });
+      if (response.ok) {
+        setStatus('Sent! 🎉');
+        setTimeout(() => onClose(), 1500);
+      } else {
+        setStatus('Error sending.');
+      }
+    } catch (err) {
+      setStatus('Error sending.');
+    }
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "modal-overlay",
+    onClick: onClose
+  }, /*#__PURE__*/React.createElement(motion.div, {
+    initial: {
+      scale: 0.94,
+      y: 12
+    },
+    animate: {
+      scale: 1,
+      y: 0
+    },
+    exit: {
+      scale: 0.94,
+      y: 12
+    },
+    className: "modal-panel",
+    onClick: e => e.stopPropagation()
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "glass-bg",
+    "aria-hidden": "true"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "modal-header"
+  }, /*#__PURE__*/React.createElement("h2", {
+    className: "modal-title"
+  }, "\uD83C\uDF89 You found a secret!"), /*#__PURE__*/React.createElement("button", {
+    className: "modal-close",
+    onClick: onClose
+  }, /*#__PURE__*/React.createElement(IconX, {
+    size: 15
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "modal-body",
+    style: {
+      textAlign: 'center'
+    }
+  }, /*#__PURE__*/React.createElement("p", {
+    style: {
+      marginBottom: '16px',
+      lineHeight: 1.5
+    }
+  }, "You've uncovered one of the hidden Easter Eggs! If you'd like to let the creator know you found it, enter your name below."), /*#__PURE__*/React.createElement("form", {
+    onSubmit: handleSubmit,
+    style: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '12px'
+    }
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "text",
+    className: "search-input",
+    placeholder: "Your name (optional)",
+    value: name,
+    onChange: e => setName(e.target.value),
+    disabled: !!status
+  }), /*#__PURE__*/React.createElement("button", {
+    type: "submit",
+    className: "resource-link gdoc",
+    style: {
+      justifyContent: 'center'
+    },
+    disabled: !!status
+  }, status || 'Let them know!')))));
 }
 
 /* ============================================
@@ -262,12 +433,27 @@ function App() {
     theme,
     toggle: toggleTheme
   } = useTheme();
+  const {
+    isLite,
+    toggleLite
+  } = useLiteMode();
+  const {
+    easterEggFound,
+    setEasterEggFound,
+    handleLogoClick
+  } = useEasterEggs();
 
   // Debounce
   useEffect(() => {
-    const t = setTimeout(() => setDebouncedSearch(searchTerm), 200);
-    return () => clearTimeout(t);
-  }, [searchTerm]);
+    const timer = setTimeout(() => {
+      if (searchTerm.toLowerCase() === 'liquidglass') {
+        setEasterEggFound(true);
+        setSearchTerm("");
+      }
+      setDebouncedSearch(searchTerm);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm, setEasterEggFound]);
 
   // Cmd/Ctrl+K
   useEffect(() => {
@@ -383,7 +569,12 @@ function App() {
   }, /*#__PURE__*/React.createElement("div", {
     className: "brand"
   }, /*#__PURE__*/React.createElement("h1", {
-    className: "brand-title"
+    className: "brand-title",
+    onClick: handleLogoClick,
+    style: {
+      cursor: 'pointer',
+      userSelect: 'none'
+    }
   }, "MedVault"), /*#__PURE__*/React.createElement("div", {
     className: "brand-subtitle"
   }, /*#__PURE__*/React.createElement("span", {
@@ -396,6 +587,12 @@ function App() {
   }), totalTopics, " Topics")), /*#__PURE__*/React.createElement("div", {
     className: "header-actions"
   }, /*#__PURE__*/React.createElement("button", {
+    id: "lite-toggle",
+    className: `icon-btn ${isLite ? 'active' : ''}`,
+    onClick: toggleLite,
+    title: isLite ? "Switch to Full Experience" : "Switch to Lite Mode (Faster)",
+    "aria-label": "Toggle Lite Mode"
+  }, "\u26A1 ", isLite ? 'Lite Mode On' : 'Lite Mode Off'), /*#__PURE__*/React.createElement("button", {
     id: "changelog-btn",
     className: "icon-btn",
     onClick: () => setIsChangelogOpen(true)
@@ -471,6 +668,9 @@ function App() {
     },
     className: "empty-state glass glass-glow"
   }, /*#__PURE__*/React.createElement("div", {
+    className: "glass-bg",
+    "aria-hidden": "true"
+  }), /*#__PURE__*/React.createElement("div", {
     className: "empty-state-icon"
   }, /*#__PURE__*/React.createElement(IconSearch, {
     size: 48
@@ -480,20 +680,26 @@ function App() {
     return /*#__PURE__*/React.createElement(motion.section, {
       key: subject.subject,
       layout: true,
-      initial: {
+      initial: isLite ? {
+        opacity: 0
+      } : {
         opacity: 0,
-        y: 20
+        y: 30
       },
-      animate: {
+      whileInView: {
         opacity: 1,
         y: 0
+      },
+      viewport: {
+        once: true,
+        margin: "-50px"
       },
       exit: {
         opacity: 0,
         scale: 0.97
       },
       transition: {
-        duration: 0.4,
+        duration: 0.5,
         ease: [0.16, 1, 0.3, 1]
       },
       className: "subject-section"
@@ -507,123 +713,145 @@ function App() {
       className: "subject-title"
     }, subject.subject)), /*#__PURE__*/React.createElement("div", {
       className: "cards-grid"
-    }, /*#__PURE__*/React.createElement(AnimatePresence, null, subject.sections.map((section, secIdx) => /*#__PURE__*/React.createElement(motion.div, {
-      key: section.instructor,
-      layout: true,
-      initial: {
-        opacity: 0,
-        y: 14
-      },
-      animate: {
-        opacity: 1,
-        y: 0
-      },
-      exit: {
-        opacity: 0,
-        scale: 0.96
-      },
-      transition: {
-        duration: 0.3,
-        delay: secIdx * 0.05
-      },
-      className: "instructor-card glass glass-glow"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "card-header"
-    }, /*#__PURE__*/React.createElement("h3", {
-      className: "card-instructor"
-    }, section.instructor), /*#__PURE__*/React.createElement("span", {
-      className: "card-count"
-    }, section.topics.length)), /*#__PURE__*/React.createElement("div", {
-      className: "topic-list"
-    }, /*#__PURE__*/React.createElement(AnimatePresence, null, section.topics.map(topic => {
-      const hasG = !!(topic.gdoc && topic.gdoc.trim());
-      const hasN = !!(topic.nlm && topic.nlm.trim());
-      const dot = hasG && hasN ? 'full' : hasG || hasN ? 'partial' : 'none';
-      return /*#__PURE__*/React.createElement(motion.div, {
-        key: topic.id,
-        layout: true,
+    }, /*#__PURE__*/React.createElement(AnimatePresence, null, subject.sections.map((section, secIdx) => {
+      const animProps = isLite ? {
         initial: {
-          opacity: 0,
-          x: -6
-        },
-        animate: {
-          opacity: 1,
-          x: 0
-        },
-        exit: {
           opacity: 0
         },
-        className: "topic-item"
-      }, /*#__PURE__*/React.createElement("div", {
-        className: "topic-title"
-      }, /*#__PURE__*/React.createElement("span", {
-        className: `status-dot ${dot}`,
-        title: hasG && hasN ? 'All resources' : hasG || hasN ? 'Partial' : 'No resources',
+        animate: {
+          opacity: 1
+        }
+      } : {
+        initial: {
+          opacity: 0,
+          y: 50,
+          scale: 0.95
+        },
+        whileInView: {
+          opacity: 1,
+          y: 0,
+          scale: 1
+        },
+        viewport: {
+          once: true,
+          margin: "0px 0px -40px 0px"
+        }
+      };
+      return /*#__PURE__*/React.createElement(motion.div, _extends({
+        key: section.instructor,
+        layout: true
+      }, animProps, {
+        exit: {
+          opacity: 0,
+          scale: 0.96
+        },
+        transition: {
+          duration: 0.5,
+          ease: [0.22, 1, 0.36, 1],
+          delay: isLite ? 0 : secIdx * 0.05
+        },
+        className: "instructor-card glass glass-glow"
+      }), /*#__PURE__*/React.createElement("div", {
+        className: "glass-bg",
         "aria-hidden": "true"
-      }), /*#__PURE__*/React.createElement("span", null, topic.title)), /*#__PURE__*/React.createElement("div", {
-        className: "resource-buttons"
-      }, hasG ? /*#__PURE__*/React.createElement("div", {
-        className: "resource-btn-group"
-      }, /*#__PURE__*/React.createElement("a", {
-        href: topic.gdoc,
-        target: "_blank",
-        rel: "noopener noreferrer",
-        className: "resource-link gdoc"
-      }, /*#__PURE__*/React.createElement(IconFileText, {
-        size: 13
-      }), " Docs ", /*#__PURE__*/React.createElement(IconExternalLink, {
-        size: 10
-      })), /*#__PURE__*/React.createElement("button", {
-        className: "copy-btn gdoc",
-        onClick: () => handleCopy(topic.gdoc, `${topic.id}-g`),
-        "aria-label": "Copy link"
-      }, copiedId === `${topic.id}-g` ? /*#__PURE__*/React.createElement(IconCheck, {
-        size: 13
-      }) : /*#__PURE__*/React.createElement(IconCopy, {
-        size: 13
-      }))) : /*#__PURE__*/React.createElement("button", {
-        className: "add-link-btn gdoc",
-        onClick: () => setLinkModal({
-          isOpen: true,
-          topicId: topic.id,
-          type: 'gdoc',
-          subjectIdx: data.findIndex(d => d.subject === subject.subject),
-          sectionIdx: data[data.findIndex(d => d.subject === subject.subject)].sections.findIndex(s => s.instructor === section.instructor)
-        })
-      }, /*#__PURE__*/React.createElement(IconPlus, {
-        size: 13
-      }), " Add Docs"), hasN ? /*#__PURE__*/React.createElement("div", {
-        className: "resource-btn-group"
-      }, /*#__PURE__*/React.createElement("a", {
-        href: topic.nlm,
-        target: "_blank",
-        rel: "noopener noreferrer",
-        className: "resource-link nlm"
-      }, /*#__PURE__*/React.createElement(IconBookOpen, {
-        size: 13
-      }), " NotebookLM ", /*#__PURE__*/React.createElement(IconExternalLink, {
-        size: 10
-      })), /*#__PURE__*/React.createElement("button", {
-        className: "copy-btn nlm",
-        onClick: () => handleCopy(topic.nlm, `${topic.id}-n`),
-        "aria-label": "Copy link"
-      }, copiedId === `${topic.id}-n` ? /*#__PURE__*/React.createElement(IconCheck, {
-        size: 13
-      }) : /*#__PURE__*/React.createElement(IconCopy, {
-        size: 13
-      }))) : topic.nlm !== undefined && /*#__PURE__*/React.createElement("button", {
-        className: "add-link-btn nlm",
-        onClick: () => setLinkModal({
-          isOpen: true,
-          topicId: topic.id,
-          type: 'nlm',
-          subjectIdx: data.findIndex(d => d.subject === subject.subject),
-          sectionIdx: data[data.findIndex(d => d.subject === subject.subject)].sections.findIndex(s => s.instructor === section.instructor)
-        })
-      }, /*#__PURE__*/React.createElement(IconPlus, {
-        size: 13
-      }), " Add Notebook")));
-    }))))))));
+      }), /*#__PURE__*/React.createElement("div", {
+        className: "card-header"
+      }, /*#__PURE__*/React.createElement("h3", {
+        className: "card-instructor"
+      }, section.instructor), /*#__PURE__*/React.createElement("span", {
+        className: "card-count"
+      }, section.topics.length)), /*#__PURE__*/React.createElement("div", {
+        className: "topic-list"
+      }, /*#__PURE__*/React.createElement(AnimatePresence, null, section.topics.map(topic => {
+        const hasG = !!(topic.gdoc && topic.gdoc.trim());
+        const hasN = !!(topic.nlm && topic.nlm.trim());
+        const dot = hasG && hasN ? 'full' : hasG || hasN ? 'partial' : 'none';
+        return /*#__PURE__*/React.createElement(motion.div, {
+          key: topic.id,
+          layout: true,
+          initial: {
+            opacity: 0,
+            x: -6
+          },
+          animate: {
+            opacity: 1,
+            x: 0
+          },
+          exit: {
+            opacity: 0
+          },
+          className: "topic-item"
+        }, /*#__PURE__*/React.createElement("div", {
+          className: "topic-title"
+        }, /*#__PURE__*/React.createElement("span", {
+          className: `status-dot ${dot}`,
+          title: hasG && hasN ? 'All resources' : hasG || hasN ? 'Partial' : 'No resources',
+          "aria-hidden": "true"
+        }), /*#__PURE__*/React.createElement("span", null, topic.title)), /*#__PURE__*/React.createElement("div", {
+          className: "resource-buttons"
+        }, hasG ? /*#__PURE__*/React.createElement("div", {
+          className: "resource-btn-group"
+        }, /*#__PURE__*/React.createElement("a", {
+          href: topic.gdoc,
+          target: "_blank",
+          rel: "noopener noreferrer",
+          className: "resource-link gdoc"
+        }, /*#__PURE__*/React.createElement(IconFileText, {
+          size: 13
+        }), " Docs ", /*#__PURE__*/React.createElement(IconExternalLink, {
+          size: 10
+        })), /*#__PURE__*/React.createElement("button", {
+          className: "copy-btn gdoc",
+          onClick: () => handleCopy(topic.gdoc, `${topic.id}-g`),
+          "aria-label": "Copy link"
+        }, copiedId === `${topic.id}-g` ? /*#__PURE__*/React.createElement(IconCheck, {
+          size: 13
+        }) : /*#__PURE__*/React.createElement(IconCopy, {
+          size: 13
+        }))) : /*#__PURE__*/React.createElement("button", {
+          className: "add-link-btn gdoc",
+          onClick: () => setLinkModal({
+            isOpen: true,
+            topicId: topic.id,
+            type: 'gdoc',
+            subjectIdx: data.findIndex(d => d.subject === subject.subject),
+            sectionIdx: data[data.findIndex(d => d.subject === subject.subject)].sections.findIndex(s => s.instructor === section.instructor)
+          })
+        }, /*#__PURE__*/React.createElement(IconPlus, {
+          size: 13
+        }), " Add Docs"), hasN ? /*#__PURE__*/React.createElement("div", {
+          className: "resource-btn-group"
+        }, /*#__PURE__*/React.createElement("a", {
+          href: topic.nlm,
+          target: "_blank",
+          rel: "noopener noreferrer",
+          className: "resource-link nlm"
+        }, /*#__PURE__*/React.createElement(IconBookOpen, {
+          size: 13
+        }), " NotebookLM ", /*#__PURE__*/React.createElement(IconExternalLink, {
+          size: 10
+        })), /*#__PURE__*/React.createElement("button", {
+          className: "copy-btn nlm",
+          onClick: () => handleCopy(topic.nlm, `${topic.id}-n`),
+          "aria-label": "Copy link"
+        }, copiedId === `${topic.id}-n` ? /*#__PURE__*/React.createElement(IconCheck, {
+          size: 13
+        }) : /*#__PURE__*/React.createElement(IconCopy, {
+          size: 13
+        }))) : topic.nlm !== undefined && /*#__PURE__*/React.createElement("button", {
+          className: "add-link-btn nlm",
+          onClick: () => setLinkModal({
+            isOpen: true,
+            topicId: topic.id,
+            type: 'nlm',
+            subjectIdx: data.findIndex(d => d.subject === subject.subject),
+            sectionIdx: data[data.findIndex(d => d.subject === subject.subject)].sections.findIndex(s => s.instructor === section.instructor)
+          })
+        }, /*#__PURE__*/React.createElement(IconPlus, {
+          size: 13
+        }), " Add Notebook")));
+      }))));
+    }))));
   }))), /*#__PURE__*/React.createElement(AnimatePresence, null, linkModal.isOpen && /*#__PURE__*/React.createElement(motion.div, {
     initial: {
       opacity: 0
@@ -658,6 +886,9 @@ function App() {
     },
     className: "modal-panel"
   }, /*#__PURE__*/React.createElement("div", {
+    className: "glass-bg",
+    "aria-hidden": "true"
+  }), /*#__PURE__*/React.createElement("div", {
     className: "modal-body"
   }, /*#__PURE__*/React.createElement("h3", {
     className: "link-modal-title"
@@ -714,6 +945,9 @@ function App() {
     },
     className: "modal-panel wide"
   }, /*#__PURE__*/React.createElement("div", {
+    className: "glass-bg",
+    "aria-hidden": "true"
+  }), /*#__PURE__*/React.createElement("div", {
     className: "modal-header"
   }, /*#__PURE__*/React.createElement("h2", {
     className: "modal-title"
@@ -766,11 +1000,16 @@ function App() {
   }, log.changes.map((c, i) => /*#__PURE__*/React.createElement("li", {
     key: i,
     className: "timeline-change"
-  }, c)))))))))), /*#__PURE__*/React.createElement("div", {
+  }, c)))))))))), /*#__PURE__*/React.createElement(AnimatePresence, null, easterEggFound && /*#__PURE__*/React.createElement(EasterEggModal, {
+    onClose: () => setEasterEggFound(false)
+  })), /*#__PURE__*/React.createElement("div", {
     className: `toast ${toast.visible ? 'visible' : 'hidden'}`,
     role: "status",
     "aria-live": "polite"
-  }, /*#__PURE__*/React.createElement(IconCheck, {
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "glass-bg",
+    "aria-hidden": "true"
+  }), /*#__PURE__*/React.createElement(IconCheck, {
     size: 14,
     className: "toast-icon"
   }), toast.message), /*#__PURE__*/React.createElement("footer", {

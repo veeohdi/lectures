@@ -47,10 +47,39 @@
           return re.test(str);
         };
 
+        /* ─── LITE MODE HOOK ─── */
+        function useLiteMode() {
+          const [isLite, setIsLite] = useState(() => {
+            const saved = localStorage.getItem('medvault-lite');
+            if (saved !== null) return saved === 'true';
+            
+            // Auto-detect struggling hardware
+            let isStruggling = false;
+            if (navigator.deviceMemory && navigator.deviceMemory <= 4) isStruggling = true;
+            if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) isStruggling = true;
+            if (navigator.connection && navigator.connection.saveData) isStruggling = true;
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) isStruggling = true;
+            
+            return isStruggling;
+          });
+
+          useEffect(() => {
+            localStorage.setItem('medvault-lite', isLite);
+            if (isLite) {
+              document.body.classList.add('lite-mode');
+            } else {
+              document.body.classList.remove('lite-mode');
+            }
+          }, [isLite]);
+
+          const toggleLite = useCallback(() => setIsLite(p => !p), []);
+          return { isLite, toggleLite };
+        }
+
         /* ─── THEME HOOK ─── */
         function useTheme() {
           const [theme, setTheme] = useState(() => {
-            return document.documentElement.getAttribute('data-theme') || 'light';
+            return document.documentElement.getAttribute('data-theme') || 'dark';
           });
 
           const toggle = useCallback(() => {
@@ -63,6 +92,106 @@
           }, [theme]);
 
           return { theme, toggle };
+        }
+
+        /* ─── EASTER EGG HOOK ─── */
+        function useEasterEggs() {
+          const [easterEggFound, setEasterEggFound] = useState(false);
+          const [clickCount, setClickCount] = useState(0);
+
+          useEffect(() => {
+            const konami = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+            let idx = 0;
+            const handler = (e) => {
+              if (e.key === konami[idx]) {
+                idx++;
+                if (idx === konami.length) {
+                  setEasterEggFound(true);
+                  idx = 0;
+                }
+              } else {
+                idx = 0;
+              }
+            };
+            window.addEventListener('keydown', handler);
+            return () => window.removeEventListener('keydown', handler);
+          }, []);
+
+          const handleLogoClick = useCallback(() => {
+            setClickCount(c => {
+              const nc = c + 1;
+              if (nc >= 5) {
+                setEasterEggFound(true);
+                return 0;
+              }
+              return nc;
+            });
+            setTimeout(() => setClickCount(0), 2000);
+          }, []);
+
+          useEffect(() => {
+            if (easterEggFound) {
+              document.body.classList.add('easter-egg');
+              // Play a fun little haptic if on mobile
+              if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+            }
+          }, [easterEggFound]);
+
+          return { easterEggFound, setEasterEggFound, handleLogoClick };
+        }
+
+        /* ─── EASTER EGG MODAL ─── */
+        function EasterEggModal({ onClose }) {
+          const [name, setName] = useState('');
+          const [status, setStatus] = useState('');
+          
+          const handleSubmit = async (e) => {
+            e.preventDefault();
+            setStatus('Sending...');
+            try {
+              const response = await fetch("https://formspree.io/f/xqeogvan", {
+                method: "POST",
+                headers: { "Accept": "application/json", "Content-Type": "application/json" },
+                body: JSON.stringify({ Name: name || 'Anonymous', message: "I found the MedVault Easter Egg!" })
+              });
+              if (response.ok) {
+                setStatus('Sent! 🎉');
+                setTimeout(() => onClose(), 1500);
+              } else {
+                setStatus('Error sending.');
+              }
+            } catch (err) {
+              setStatus('Error sending.');
+            }
+          };
+
+          return (
+            <div className="modal-overlay" onClick={onClose}>
+              <motion.div initial={{ scale: 0.94, y: 12 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.94, y: 12 }} className="modal-panel" onClick={e => e.stopPropagation()}>
+                <div className="glass-bg" aria-hidden="true"></div>
+                <div className="modal-header">
+                  <h2 className="modal-title">🎉 You found a secret!</h2>
+                  <button className="modal-close" onClick={onClose}><IconX size={15} /></button>
+                </div>
+                <div className="modal-body" style={{ textAlign: 'center' }}>
+                  <p style={{ marginBottom: '16px', lineHeight: 1.5 }}>You've uncovered one of the hidden Easter Eggs! If you'd like to let the creator know you found it, enter your name below.</p>
+                  <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <input 
+                      type="text" 
+                      className="search-input" 
+                      placeholder="Your name (optional)" 
+                      value={name} 
+                      onChange={e => setName(e.target.value)} 
+                      disabled={!!status}
+                    />
+                    <button type="submit" className="resource-link gdoc" style={{ justifyContent: 'center' }} disabled={!!status}>
+                      {status || 'Let them know!'}
+                    </button>
+                  </form>
+                </div>
+              </motion.div>
+            </div>
+          );
         }
 
         /* ============================================
@@ -84,12 +213,20 @@
 
           const searchRef = useRef(null);
           const { theme, toggle: toggleTheme } = useTheme();
+          const { isLite, toggleLite } = useLiteMode();
+          const { easterEggFound, setEasterEggFound, handleLogoClick } = useEasterEggs();
 
           // Debounce
           useEffect(() => {
-            const t = setTimeout(() => setDebouncedSearch(searchTerm), 200);
-            return () => clearTimeout(t);
-          }, [searchTerm]);
+            const timer = setTimeout(() => {
+              if (searchTerm.toLowerCase() === 'liquidglass') {
+                setEasterEggFound(true);
+                setSearchTerm("");
+              }
+              setDebouncedSearch(searchTerm);
+            }, 300);
+            return () => clearTimeout(timer);
+          }, [searchTerm, setEasterEggFound]);
 
           // Cmd/Ctrl+K
           useEffect(() => {
@@ -174,6 +311,8 @@
             setTimeout(() => setCopiedId(null), 2000);
           }, [showToast]);
 
+
+
           const filteredData = useMemo(() => {
             return data
               .filter(s => activeSubject === "All" || s.subject === activeSubject)
@@ -194,7 +333,7 @@
               <header className="header">
                 <div className="header-top">
                   <div className="brand">
-                    <h1 className="brand-title">MedVault</h1>
+                    <h1 className="brand-title" onClick={handleLogoClick} style={{ cursor: 'pointer', userSelect: 'none' }}>MedVault</h1>
                     <div className="brand-subtitle">
                       <span className="brand-tagline">Pathology & Pharmacology Lecture Archive</span>
                       <span className="stat-badge">
@@ -203,6 +342,15 @@
                       </span>
                     </div>
                     <div className="header-actions">
+                      <button
+                        id="lite-toggle"
+                        className={`icon-btn ${isLite ? 'active' : ''}`}
+                        onClick={toggleLite}
+                        title={isLite ? "Switch to Full Experience" : "Switch to Lite Mode (Faster)"}
+                        aria-label="Toggle Lite Mode"
+                      >
+                        ⚡ {isLite ? 'Lite Mode On' : 'Lite Mode Off'}
+                      </button>
                       <button id="changelog-btn" className="icon-btn" onClick={() => setIsChangelogOpen(true)}>
                         <IconHistory size={14} /> Changelog
                       </button>
@@ -271,6 +419,7 @@
                       exit={{ opacity: 0 }}
                       className="empty-state glass glass-glow"
                     >
+                      <div className="glass-bg" aria-hidden="true"></div>
                       <div className="empty-state-icon"><IconSearch size={48} /></div>
                       <h3>No topics found</h3>
                       <p>Try adjusting your search or filters.</p>
@@ -283,10 +432,11 @@
                         <motion.section
                           key={subject.subject}
                           layout
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
+                          initial={isLite ? { opacity: 0 } : { opacity: 0, y: 30 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true, margin: "-50px" }}
                           exit={{ opacity: 0, scale: 0.97 }}
-                          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                           className="subject-section"
                         >
                           <div className="subject-header">
@@ -298,16 +448,24 @@
 
                           <div className="cards-grid">
                             <AnimatePresence>
-                              {subject.sections.map((section, secIdx) => (
-                                <motion.div
-                                  key={section.instructor}
-                                  layout
-                                  initial={{ opacity: 0, y: 14 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  exit={{ opacity: 0, scale: 0.96 }}
-                                  transition={{ duration: 0.3, delay: secIdx * 0.05 }}
-                                  className="instructor-card glass glass-glow"
-                                >
+                              {subject.sections.map((section, secIdx) => {
+                                const animProps = isLite
+                                  ? { initial: { opacity: 0 }, animate: { opacity: 1 } }
+                                  : { 
+                                      initial: { opacity: 0, y: 50, scale: 0.95 },
+                                      whileInView: { opacity: 1, y: 0, scale: 1 },
+                                      viewport: { once: true, margin: "0px 0px -40px 0px" }
+                                    };
+                                return (
+                                  <motion.div
+                                    key={section.instructor}
+                                    layout
+                                    {...animProps}
+                                    exit={{ opacity: 0, scale: 0.96 }}
+                                    transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: isLite ? 0 : secIdx * 0.05 }}
+                                    className="instructor-card glass glass-glow"
+                                  >
+                                  <div className="glass-bg" aria-hidden="true"></div>
                                   <div className="card-header">
                                     <h3 className="card-instructor">{section.instructor}</h3>
                                     <span className="card-count">{section.topics.length}</span>
@@ -376,8 +534,9 @@
                                     </AnimatePresence>
                                   </div>
                                 </motion.div>
-                              ))}
-                            </AnimatePresence>
+                              );
+                            })}
+                          </AnimatePresence>
                           </div>
                         </motion.section>
                       );
@@ -391,6 +550,7 @@
                 {linkModal.isOpen && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="modal-overlay" onClick={e => e.target === e.currentTarget && setLinkModal({ isOpen: false })}>
                     <motion.div initial={{ scale: 0.94, y: 12 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.94, y: 12 }} transition={{ type: "spring", damping: 28, stiffness: 380 }} className="modal-panel">
+                      <div className="glass-bg" aria-hidden="true"></div>
                       <div className="modal-body">
                         <h3 className="link-modal-title">Add {linkModal.type === 'gdoc' ? 'Google Docs' : 'NotebookLM'} Link</h3>
                         <p className="link-modal-desc">Paste the document URL below to link it to this topic.</p>
@@ -410,6 +570,7 @@
                 {isChangelogOpen && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="modal-overlay" onClick={e => e.target === e.currentTarget && setIsChangelogOpen(false)}>
                     <motion.div initial={{ scale: 0.94, y: 12 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.94, y: 12 }} transition={{ type: "spring", damping: 28, stiffness: 380 }} className="modal-panel wide">
+                      <div className="glass-bg" aria-hidden="true"></div>
                       <div className="modal-header">
                         <h2 className="modal-title"><IconHistory size={18} style={{ color: 'var(--accent-active)' }} /> Latest Updates</h2>
                         <button className="modal-close" onClick={() => setIsChangelogOpen(false)} aria-label="Close"><IconX size={15} /></button>
@@ -440,8 +601,14 @@
                 )}
               </AnimatePresence>
 
+              {/* ─── EASTER EGG MODAL ─── */}
+              <AnimatePresence>
+                {easterEggFound && <EasterEggModal onClose={() => setEasterEggFound(false)} />}
+              </AnimatePresence>
+
               {/* ─── TOAST ─── */}
               <div className={`toast ${toast.visible ? 'visible' : 'hidden'}`} role="status" aria-live="polite">
+                <div className="glass-bg" aria-hidden="true"></div>
                 <IconCheck size={14} className="toast-icon" />
                 {toast.message}
               </div>

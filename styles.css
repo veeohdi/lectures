@@ -10,11 +10,12 @@
    ───────────────────────────────────────────── */
 :root {
   /* Page */
-  --page-bg: #f0f2f7;
-  --page-bg-mesh-1: rgba(120, 180, 255, 0.20);
-  --page-bg-mesh-2: rgba(200, 130, 255, 0.15);
-  --page-bg-mesh-3: rgba(100, 240, 200, 0.12);
-  --page-bg-mesh-4: rgba(255, 180, 120, 0.10);
+  --page-bg: #d8dce6;
+  --lite-card-bg: #f0f2f7;
+  --page-bg-mesh-1: rgba(2, 132, 199, 0.15);
+  --page-bg-mesh-2: rgba(3, 105, 161, 0.12);
+  --page-bg-mesh-3: rgba(8, 145, 178, 0.08);
+  --page-bg-mesh-4: rgba(14, 116, 144, 0.06);
 
   /* Active accent — changes per subject */
   --accent-active: #7C4DFF;
@@ -110,10 +111,11 @@
    ───────────────────────────────────────────── */
 [data-theme="dark"] {
   --page-bg: #08080f;
-  --page-bg-mesh-1: rgba(60, 100, 255, 0.12);
-  --page-bg-mesh-2: rgba(160, 60, 255, 0.10);
-  --page-bg-mesh-3: rgba(40, 200, 160, 0.07);
-  --page-bg-mesh-4: rgba(255, 120, 60, 0.06);
+  --lite-card-bg: #16161e;
+  --page-bg-mesh-1: rgba(2, 132, 199, 0.25);
+  --page-bg-mesh-2: rgba(3, 105, 161, 0.20);
+  --page-bg-mesh-3: rgba(8, 145, 178, 0.15);
+  --page-bg-mesh-4: rgba(14, 116, 144, 0.12);
 
   --accent-active: #b388ff;
   --accent-active-soft: rgba(179, 136, 255, 0.15);
@@ -224,46 +226,18 @@ body {
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
+  /* Add a subtle dotted grid that will get beautifully refracted by the liquid glass */
+  background-image: radial-gradient(var(--glass-border) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
-.mesh-bg .orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  will-change: transform;
-  transition: background 1.2s var(--ease-out), opacity var(--dur-slow) var(--ease-out);
+#constellation-canvas {
+  width: 100vw;
+  height: 100vh;
+  display: block;
 }
 
-.mesh-bg .orb-1 {
-  width: 600px; height: 600px;
-  top: -10%; left: -5%;
-  background: var(--page-bg-mesh-1);
-  animation: orbFloat1 20s ease-in-out infinite;
-}
-.mesh-bg .orb-2 {
-  width: 500px; height: 500px;
-  top: 20%; right: -10%;
-  background: var(--page-bg-mesh-2);
-  animation: orbFloat2 25s ease-in-out infinite;
-}
-.mesh-bg .orb-3 {
-  width: 450px; height: 450px;
-  bottom: 10%; left: 30%;
-  background: var(--page-bg-mesh-3);
-  animation: orbFloat3 22s ease-in-out infinite;
-}
-.mesh-bg .orb-4 {
-  width: 350px; height: 350px;
-  bottom: -5%; right: 15%;
-  background: var(--page-bg-mesh-4);
-  animation: orbFloat4 18s ease-in-out infinite;
-}
 
-@keyframes orbFloat1 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(60px, 40px) scale(1.1); }
-  66% { transform: translate(-30px, 60px) scale(0.95); }
-}
 @keyframes orbFloat2 {
   0%, 100% { transform: translate(0, 0) scale(1); }
   33% { transform: translate(-50px, 50px) scale(1.05); }
@@ -299,9 +273,7 @@ body {
 
 /* Base glass panel */
 .glass {
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+  background: transparent;
   border: 1px solid var(--glass-border);
   box-shadow:
     0 1px 1px var(--glass-shadow),
@@ -315,6 +287,21 @@ body {
     transform var(--dur-normal) var(--ease-out);
   position: relative;
   overflow: hidden;
+  z-index: 1;
+}
+
+/* Background Layer for Glass Refraction */
+.glass-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+  filter: url(#liquid-glass);
+  border-radius: inherit;
+  pointer-events: none;
+  transition: background var(--dur-normal) var(--ease-out);
 }
 
 /* Specular highlight — top edge light refraction */
@@ -352,9 +339,7 @@ body {
 
 /* Heavy glass — more opaque, more blur */
 .glass-solid {
-  background: var(--glass-bg-solid);
-  backdrop-filter: blur(var(--glass-blur-heavy)) saturate(var(--glass-saturation));
-  -webkit-backdrop-filter: blur(var(--glass-blur-heavy)) saturate(var(--glass-saturation));
+  background: rgba(255, 255, 255, 0.1);
 }
 
 /* Inner edge glow for cards */
@@ -954,13 +939,20 @@ body {
   max-width: 480px;
   border-radius: var(--radius-2xl);
   overflow: hidden;
-  background: var(--glass-bg-solid);
-  backdrop-filter: blur(var(--glass-blur-heavy)) saturate(200%);
-  -webkit-backdrop-filter: blur(var(--glass-blur-heavy)) saturate(200%);
+  background: transparent;
   border: 1px solid var(--glass-border);
   box-shadow:
     0 24px 80px var(--glass-shadow-lg),
     inset 0 1px 0 var(--specular-top);
+  z-index: 1;
+  position: relative;
+}
+
+.modal-panel .glass-bg {
+  background: var(--glass-bg-solid);
+  backdrop-filter: blur(var(--glass-blur-heavy)) saturate(200%);
+  -webkit-backdrop-filter: blur(var(--glass-blur-heavy)) saturate(200%);
+  filter: url(#liquid-glass-heavy);
 }
 
 .modal-panel.wide { max-width: 560px; }
@@ -1180,14 +1172,22 @@ body {
   font-size: 0.84rem;
   font-weight: 500;
   color: var(--text-primary);
-  background: var(--glass-bg-solid);
+  background: transparent;
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-full);
   box-shadow: 0 12px 40px var(--glass-shadow-lg);
-  backdrop-filter: blur(var(--glass-blur-heavy)) saturate(200%);
-  -webkit-backdrop-filter: blur(var(--glass-blur-heavy)) saturate(200%);
   pointer-events: none;
   transition: all var(--dur-slow) var(--ease-out);
+  z-index: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.toast .glass-bg {
+  background: var(--glass-bg-solid);
+  backdrop-filter: blur(var(--glass-blur-heavy)) saturate(200%);
+  -webkit-backdrop-filter: blur(var(--glass-blur-heavy)) saturate(200%);
+  filter: url(#liquid-glass);
 }
 
 .toast.visible {
@@ -1370,3 +1370,41 @@ body {
     0 0 0 3px var(--accent-active-ring),
     inset 0 1px 0 var(--specular-top);
 }
+
+/* ─────────────────────────────────────────────
+   LITE MODE OVERRIDES
+   ───────────────────────────────────────────── */
+body.lite-mode .mesh-bg {
+  display: none !important;
+}
+
+body.lite-mode .glass,
+body.lite-mode .glass-solid,
+body.lite-mode .modal-panel,
+body.lite-mode .toast {
+  background: var(--lite-card-bg) !important;
+  border-color: var(--glass-border) !important;
+  box-shadow: 0 4px 12px var(--glass-shadow) !important;
+}
+
+body.lite-mode .glass-bg {
+  display: none !important;
+}
+
+body.lite-mode .header-actions .icon-btn.active {
+  color: var(--accent-active);
+  background: color-mix(in srgb, var(--accent-active) 15%, transparent);
+}
+
+/* ─────────────────────────────────────────────
+   EASTER EGG VISUAL REWARD
+   ───────────────────────────────────────────── */
+body.easter-egg .mesh-bg .orb {
+  animation-duration: 4s !important; /* Speed up drastically */
+  opacity: 0.8 !important; /* Make much more vibrant */
+}
+
+body.easter-egg .mesh-bg .orb-1 { background: radial-gradient(circle, #ff0055 0%, transparent 60%) !important; }
+body.easter-egg .mesh-bg .orb-2 { background: radial-gradient(circle, #00ffaa 0%, transparent 60%) !important; }
+body.easter-egg .mesh-bg .orb-3 { background: radial-gradient(circle, #5500ff 0%, transparent 60%) !important; }
+body.easter-egg .mesh-bg .orb-4 { background: radial-gradient(circle, #ffff00 0%, transparent 60%) !important; }
