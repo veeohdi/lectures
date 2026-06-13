@@ -102,15 +102,23 @@ class Constellation {
       let currentRadius = p.baseRadius + (glowFactor * 3.5);
       let dotOpacity = 0.3 + (glowFactor * 0.7);
       
+      // Mix color towards white based on glowFactor
+      let [r, g, b] = colorRGB.split(', ').map(Number);
+      let mixRatio = Math.min(glowFactor * 1.5, 1); // Reaches white faster
+      let mixedR = Math.floor(r + (255 - r) * mixRatio);
+      let mixedG = Math.floor(g + (255 - g) * mixRatio);
+      let mixedB = Math.floor(b + (255 - b) * mixRatio);
+      let currentRGB = `${mixedR}, ${mixedG}, ${mixedB}`;
+      
       // Draw particle
       this.ctx.beginPath();
       this.ctx.arc(p.x, p.y, currentRadius, 0, Math.PI * 2);
-      this.ctx.fillStyle = isLight ? 'rgba(0, 0, 0, ' + dotOpacity + ')' : 'rgba(' + colorRGB + ', ' + dotOpacity + ')';
+      this.ctx.fillStyle = isLight ? 'rgba(0, 0, 0, ' + dotOpacity + ')' : 'rgba(' + currentRGB + ', ' + dotOpacity + ')';
       
       // Add glow effect in dark mode
       if (!isLight && glowFactor > 0.05) {
-        this.ctx.shadowBlur = glowFactor * 20;
-        this.ctx.shadowColor = 'rgba(' + colorRGB + ', ' + (0.4 + glowFactor * 0.6) + ')';
+        this.ctx.shadowBlur = glowFactor * 25;
+        this.ctx.shadowColor = 'rgba(' + currentRGB + ', ' + (0.5 + glowFactor * 0.5) + ')';
       } else {
         this.ctx.shadowBlur = 0;
       }

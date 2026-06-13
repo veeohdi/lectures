@@ -27,9 +27,9 @@
   --glass-tint: transparent;
 
   /* Glass */
-  --glass-bg: rgba(255, 255, 255, 0.35);
-  --glass-bg-hover: rgba(255, 255, 255, 0.50);
-  --glass-bg-solid: rgba(255, 255, 255, 0.65);
+  --glass-bg: rgba(255, 255, 255, 0.20);
+  --glass-bg-hover: rgba(255, 255, 255, 0.35);
+  --glass-bg-solid: rgba(255, 255, 255, 0.50);
   --glass-border: rgba(255, 255, 255, 0.55);
   --glass-border-hover: rgba(255, 255, 255, 0.75);
   --glass-highlight: rgba(255, 255, 255, 0.8);
@@ -123,16 +123,16 @@
   --accent-active-ring: rgba(179, 136, 255, 0.1);
   --glass-tint: transparent;
 
-  --glass-bg: rgba(255, 255, 255, 0.04);
-  --glass-bg-hover: rgba(255, 255, 255, 0.07);
-  --glass-bg-solid: rgba(255, 255, 255, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.02);
+  --glass-bg-hover: rgba(255, 255, 255, 0.05);
+  --glass-bg-solid: rgba(255, 255, 255, 0.06);
   --glass-border: rgba(255, 255, 255, 0.10);
   --glass-border-hover: rgba(255, 255, 255, 0.18);
   --glass-highlight: rgba(255, 255, 255, 0.12);
   --glass-shadow: rgba(0, 0, 0, 0.3);
   --glass-shadow-lg: rgba(0, 0, 0, 0.5);
-  --glass-blur: 10px;
-  --glass-blur-heavy: 20px;
+  --glass-blur: 6px;
+  --glass-blur-heavy: 12px;
   --glass-saturation: 140%;
 
   --text-primary: #f0f0f8;
