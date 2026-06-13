@@ -16,7 +16,7 @@
     <meta name="theme-color" content="#f0f2f7">
     <title>MedVault — Lecture Archive</title>
 
-    <link rel="stylesheet" href="styles.css?v=14">
+    <link rel="stylesheet" href="styles.css?v=15">
 
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -53,23 +53,23 @@
             numOctaves="3" seed="1" result="noise" />
           <feGaussianBlur in="noise" stdDeviation="3" result="softNoise" />
           <feDisplacementMap in="SourceGraphic" in2="softNoise"
-            scale="14" xChannelSelector="R" yChannelSelector="G"
+            scale="5" xChannelSelector="R" yChannelSelector="G"
             result="refracted" />
         </filter>
         <filter id="liquid-glass-heavy" x="-5%" y="-5%" width="110%" height="110%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.01 0.01"
-            numOctaves="3" seed="2" result="noise" />
-          <feGaussianBlur in="noise" stdDeviation="4" result="softNoise" />
-          <feDisplacementMap in="SourceGraphic" in2="softNoise"
-            scale="20" xChannelSelector="R" yChannelSelector="G"
-            result="refracted" />
+          <feTurbulence type="fractalNoise" baseFrequency="0.008 0.008"
+            numOctaves="4" seed="2" result="noiseHeavy" />
+          <feGaussianBlur in="noiseHeavy" stdDeviation="4" result="softNoiseHeavy" />
+          <feDisplacementMap in="SourceGraphic" in2="softNoiseHeavy"
+            scale="8" xChannelSelector="R" yChannelSelector="G"
+            result="refractedHeavy" />
         </filter>
       </defs>
     </svg>
 
     <div id="root"></div>
 
-    <script src="constellation.js?v=1"></script>
+    <script src="constellation.js?v=3"></script>
     <script src="data.js?v=13"></script>
     <script src="app.js?v=15"></script>
 </body>

@@ -35,8 +35,8 @@
   --glass-highlight: rgba(255, 255, 255, 0.8);
   --glass-shadow: rgba(0, 0, 0, 0.06);
   --glass-shadow-lg: rgba(0, 0, 0, 0.10);
-  --glass-blur: 24px;
-  --glass-blur-heavy: 40px;
+  --glass-blur: 8px;
+  --glass-blur-heavy: 16px;
   --glass-saturation: 180%;
 
   /* Text */
@@ -131,8 +131,8 @@
   --glass-highlight: rgba(255, 255, 255, 0.12);
   --glass-shadow: rgba(0, 0, 0, 0.3);
   --glass-shadow-lg: rgba(0, 0, 0, 0.5);
-  --glass-blur: 28px;
-  --glass-blur-heavy: 48px;
+  --glass-blur: 10px;
+  --glass-blur-heavy: 20px;
   --glass-saturation: 140%;
 
   --text-primary: #f0f0f8;

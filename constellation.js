@@ -47,7 +47,8 @@ class Constellation {
         y: Math.random() * this.canvas.height,
         vx: (Math.random() - 0.5) * 0.5,
         vy: (Math.random() - 0.5) * 0.5,
-        radius: Math.random() * 1.5 + 0.5
+        radius: Math.random() * 2.5 + 1.5,
+        baseRadius: Math.random() * 2.5 + 1.5
       });
     }
   }
@@ -57,14 +58,12 @@ class Constellation {
     
     // Check if we are in light mode to adjust color
     const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-    const isLiteMode = document.body.classList.contains('lite-mode'); // Assuming lite mode adds a class, if not we just run it anyway but simpler.
+    const isLiteMode = document.body.classList.contains('lite-mode'); 
     
-    if (isLiteMode) return; // Pause entirely in lite mode if implemented
+    if (isLiteMode) return; 
     
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     
-    // Set colors based on theme
-    const dotColor = isLight ? 'rgba(0, 0, 0, 0.2)' : 'rgba(150, 200, 255, 0.4)';
     const lineColorBase = isLight ? 'rgba(0, 0, 0, ' : 'rgba(150, 200, 255, ';
     
     // Update and draw particles
@@ -78,11 +77,38 @@ class Constellation {
       if (p.x < 0 || p.x > this.canvas.width) p.vx *= -1;
       if (p.y < 0 || p.y > this.canvas.height) p.vy *= -1;
       
+      // Calculate mouse interaction for glowing stars
+      let distToMouse = Infinity;
+      if (this.mouse.x !== null) {
+        let dx = p.x - this.mouse.x;
+        let dy = p.y - this.mouse.y;
+        distToMouse = Math.sqrt(dx * dx + dy * dy);
+      }
+      
+      let glowFactor = 0;
+      if (distToMouse < this.mouseDistance) {
+        glowFactor = 1 - (distToMouse / this.mouseDistance);
+      }
+      
+      // Brighten and slightly enlarge stars near mouse
+      let currentRadius = p.baseRadius + (glowFactor * 1.5);
+      let dotOpacity = 0.3 + (glowFactor * 0.7);
+      
       // Draw particle
       this.ctx.beginPath();
-      this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-      this.ctx.fillStyle = dotColor;
+      this.ctx.arc(p.x, p.y, currentRadius, 0, Math.PI * 2);
+      this.ctx.fillStyle = isLight ? 'rgba(0, 0, 0, ' + dotOpacity + ')' : 'rgba(200, 230, 255, ' + dotOpacity + ')';
+      
+      // Add glow effect in dark mode
+      if (!isLight && glowFactor > 0.1) {
+        this.ctx.shadowBlur = glowFactor * 15;
+        this.ctx.shadowColor = 'rgba(150, 200, 255, 0.8)';
+      } else {
+        this.ctx.shadowBlur = 0;
+      }
+      
       this.ctx.fill();
+      this.ctx.shadowBlur = 0; // reset for lines
       
       // Draw lines between particles
       for (let j = i + 1; j < this.particles.length; j++) {
