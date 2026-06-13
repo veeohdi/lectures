@@ -62,9 +62,17 @@ class Constellation {
     
     if (isLiteMode) return; 
     
+    const subject = document.documentElement.getAttribute('data-subject');
+    let colorRGB = '150, 200, 255'; // default blue
+    if (subject === 'pathology') colorRGB = '66, 165, 245';
+    else if (subject === 'chemistry') colorRGB = '255, 183, 77';
+    else if (subject === 'haematology') colorRGB = '239, 83, 80';
+    else if (subject === 'microbiology') colorRGB = '105, 240, 174';
+    else if (subject === 'pharmacology') colorRGB = '179, 136, 255';
+
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     
-    const lineColorBase = isLight ? 'rgba(0, 0, 0, ' : 'rgba(150, 200, 255, ';
+    const lineColorBase = isLight ? 'rgba(0, 0, 0, ' : 'rgba(' + colorRGB + ', ';
     
     // Update and draw particles
     for (let i = 0; i < this.particles.length; i++) {
@@ -90,19 +98,19 @@ class Constellation {
         glowFactor = 1 - (distToMouse / this.mouseDistance);
       }
       
-      // Brighten and slightly enlarge stars near mouse
-      let currentRadius = p.baseRadius + (glowFactor * 1.5);
+      // Brighten and drastically enlarge stars near mouse
+      let currentRadius = p.baseRadius + (glowFactor * 3.5);
       let dotOpacity = 0.3 + (glowFactor * 0.7);
       
       // Draw particle
       this.ctx.beginPath();
       this.ctx.arc(p.x, p.y, currentRadius, 0, Math.PI * 2);
-      this.ctx.fillStyle = isLight ? 'rgba(0, 0, 0, ' + dotOpacity + ')' : 'rgba(200, 230, 255, ' + dotOpacity + ')';
+      this.ctx.fillStyle = isLight ? 'rgba(0, 0, 0, ' + dotOpacity + ')' : 'rgba(' + colorRGB + ', ' + dotOpacity + ')';
       
       // Add glow effect in dark mode
-      if (!isLight && glowFactor > 0.1) {
-        this.ctx.shadowBlur = glowFactor * 15;
-        this.ctx.shadowColor = 'rgba(150, 200, 255, 0.8)';
+      if (!isLight && glowFactor > 0.05) {
+        this.ctx.shadowBlur = glowFactor * 20;
+        this.ctx.shadowColor = 'rgba(' + colorRGB + ', ' + (0.4 + glowFactor * 0.6) + ')';
       } else {
         this.ctx.shadowBlur = 0;
       }
