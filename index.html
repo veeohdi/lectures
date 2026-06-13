@@ -16,7 +16,7 @@
     <meta name="theme-color" content="#f0f2f7">
     <title>MedVault — Lecture Archive</title>
 
-    <link rel="stylesheet" href="styles.css?v=15">
+    <link rel="stylesheet" href="styles.css?v=16">
 
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -45,27 +45,7 @@
     </div>
     <div class="noise-overlay" aria-hidden="true"></div>
 
-    <!-- Liquid Glass SVG Filters -->
-    <svg width="0" height="0" style="position: absolute;" aria-hidden="true">
-      <defs>
-        <filter id="liquid-glass" x="-5%" y="-5%" width="110%" height="110%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.012 0.012"
-            numOctaves="3" seed="1" result="noise" />
-          <feGaussianBlur in="noise" stdDeviation="3" result="softNoise" />
-          <feDisplacementMap in="SourceGraphic" in2="softNoise"
-            scale="5" xChannelSelector="R" yChannelSelector="G"
-            result="refracted" />
-        </filter>
-        <filter id="liquid-glass-heavy" x="-5%" y="-5%" width="110%" height="110%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.008 0.008"
-            numOctaves="4" seed="2" result="noiseHeavy" />
-          <feGaussianBlur in="noiseHeavy" stdDeviation="4" result="softNoiseHeavy" />
-          <feDisplacementMap in="SourceGraphic" in2="softNoiseHeavy"
-            scale="8" xChannelSelector="R" yChannelSelector="G"
-            result="refractedHeavy" />
-        </filter>
-      </defs>
-    </svg>
+
 
     <div id="root"></div>
 
