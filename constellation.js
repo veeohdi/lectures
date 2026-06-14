@@ -103,21 +103,45 @@ class Constellation {
     this.cardRects = [];
     const cards = document.querySelectorAll('.glass-glow');
     for (let i = 0; i < cards.length; i++) {
-      const r = cards[i].getBoundingClientRect();
-      if (r.width > 0 && r.height > 0) {
+      const el = cards[i];
+      const r = el.getBoundingClientRect();
+      // Only include cards that are visible in the viewport
+      if (r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < window.innerHeight) {
+        // Read computed border-radius
+        const br = parseFloat(getComputedStyle(el).borderRadius) || 0;
+        // Check if the card has actually animated into view (opacity > 0)
+        const op = parseFloat(getComputedStyle(el).opacity);
+        if (op < 0.1) continue;
         this.cardRects.push({
           left: r.left,
           top: r.top,
           right: r.right,
-          bottom: r.bottom
+          bottom: r.bottom,
+          w: r.width,
+          h: r.height,
+          radius: br
         });
       }
     }
-    this.cardRectsStale = false;
+  }
+
+  // Helper: trace a rounded rect path
+  roundedRectPath(ctx, x, y, w, h, r) {
+    r = Math.min(r, w / 2, h / 2);
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.arcTo(x + w, y, x + w, y + r, r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+    ctx.lineTo(x + r, y + h);
+    ctx.arcTo(x, y + h, x, y + h - r, r);
+    ctx.lineTo(x, y + r);
+    ctx.arcTo(x, y, x + r, y, r);
+    ctx.closePath();
   }
 
   drawCardEdgeGlow(mx, my, color) {
-    const glowRange = 200;
+    const glowRange = 220;
     const ctx = this.ctx;
 
     for (let i = 0; i < this.cardRects.length; i++) {
@@ -135,20 +159,20 @@ class Constellation {
       const intensity = 1 - (dist / glowRange);
 
       // Mix towards white for the hot center
-      const mixR = Math.floor(color[0] + (255 - color[0]) * intensity);
-      const mixG = Math.floor(color[1] + (255 - color[1]) * intensity);
-      const mixB = Math.floor(color[2] + (255 - color[2]) * intensity);
+      const mixR = color[0] + (255 - color[0]) * intensity | 0;
+      const mixG = color[1] + (255 - color[1]) * intensity | 0;
+      const mixB = color[2] + (255 - color[2]) * intensity | 0;
 
-      // Draw a soft radial glow clipped to the card's border area
       ctx.save();
 
-      // Create a "border only" clip: outer rect minus inner rect
-      const bw = 1.5; // border width for the glow strip
+      // Create a "border only" clip using rounded rects with evenodd
+      const bw = 1.5; // border glow width
+      const rad = r.radius;
       ctx.beginPath();
-      // Outer path (clockwise)
-      ctx.rect(r.left - 2, r.top - 2, r.right - r.left + 4, r.bottom - r.top + 4);
-      // Inner path (counter-clockwise to cut out)
-      ctx.rect(r.left + bw, r.bottom - bw, r.right - r.left - bw * 2, -(r.bottom - r.top - bw * 2));
+      // Outer rounded rect (clockwise)
+      this.roundedRectPath(ctx, r.left - 1, r.top - 1, r.w + 2, r.h + 2, rad + 1);
+      // Inner rounded rect (counter-clockwise via reversed winding)
+      this.roundedRectPath(ctx, r.left + bw, r.top + bw, r.w - bw * 2, r.h - bw * 2, Math.max(rad - bw, 0));
       ctx.clip('evenodd');
 
       const grad = ctx.createRadialGradient(mx, my, 0, mx, my, glowRange);
@@ -156,7 +180,7 @@ class Constellation {
       grad.addColorStop(0.4, 'rgba(' + color[0] + ',' + color[1] + ',' + color[2] + ',' + (0.5 * intensity) + ')');
       grad.addColorStop(1, 'rgba(' + color[0] + ',' + color[1] + ',' + color[2] + ',0)');
       ctx.fillStyle = grad;
-      ctx.fillRect(r.left - 2, r.top - 2, r.right - r.left + 4, r.bottom - r.top + 4);
+      ctx.fillRect(r.left - 2, r.top - 2, r.w + 4, r.h + 4);
 
       ctx.restore();
     }
@@ -279,7 +303,7 @@ class Constellation {
 
     // --- Draw edge glow on cards (entirely on canvas, zero CSS overhead) ---
     if (mouseActive && !isLight) {
-      if (this.cardRectsStale) this.updateCardRects();
+      this.updateCardRects();
       this.drawCardEdgeGlow(smx, smy, cc);
     }
   }
