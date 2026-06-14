@@ -1841,6 +1841,12 @@ const initialData = [
             "title": "Agents in Renal Failure & Antihelminths",
             "gdoc": "https://docs.google.com/document/d/1VXkLCrupYoEDqpx3p2w53NJc-bxhvWYWDvpGOiBIXtQ/edit?usp=sharing",
             "nlm": "https://notebooklm.google.com/notebook/cd70aea7-5281-468d-b6e3-9bb7fb1bca5a"
+          },
+          {
+            "id": "ph85",
+            "title": "Thyroid & Anti-thyroid drugs",
+            "gdoc": "https://docs.google.com/document/d/1BUfYTsvdlwwUAOBILAzaIWwmjqqge0s9CYqhmtOEtUM/edit?usp=sharing",
+            "nlm": ""
           }
         ]
       },
@@ -1895,12 +1901,6 @@ const initialData = [
             "gdoc": "https://docs.google.com/document/d/1qYJLPxzNyG2xT4G5dVwz9a8SSw9YXG99_sTGiReDG28/edit?usp=sharing",
             "nlm": "https://notebooklm.google.com/notebook/3b8c3f04-4eca-4554-a3b6-d11d35c876f1"
           },
-          {
-            "id": "ph85",
-            "title": "[UPDATE] Thyroid & Anti-thyroid drugs",
-            "gdoc": "https://docs.google.com/document/d/1BUfYTsvdlwwUAOBILAzaIWwmjqqge0s9CYqhmtOEtUM/edit?usp=sharing",
-            "nlm": ""
-          }
         ]
       }
     ]
