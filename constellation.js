@@ -9,6 +9,7 @@ class Constellation {
     this.maxDistance = 120;
     this.mouseDistance = 180;
     this.mouse = { x: null, y: null };
+    this.smoothMouse = { x: null, y: null };
     
     this.baseColor = 'rgba(100, 150, 255, '; // Light blueish
     
@@ -19,8 +20,10 @@ class Constellation {
     window.addEventListener('mousemove', (e) => {
       this.mouse.x = e.clientX;
       this.mouse.y = e.clientY;
-      document.documentElement.style.setProperty('--mouse-x', e.clientX + 'px');
-      document.documentElement.style.setProperty('--mouse-y', e.clientY + 'px');
+      if (this.smoothMouse.x === null) {
+        this.smoothMouse.x = e.clientX;
+        this.smoothMouse.y = e.clientY;
+      }
     });
     window.addEventListener('mouseleave', () => {
       this.mouse.x = null;
@@ -78,6 +81,17 @@ class Constellation {
     
     const lineColorBase = isLight ? 'rgba(0, 0, 0, ' : 'rgba(' + colorRGB + ', ';
     
+    // Smooth mouse interpolation for perfectly fluid rim lighting
+    if (this.mouse.x !== null) {
+      this.smoothMouse.x += (this.mouse.x - this.smoothMouse.x) * 0.15;
+      this.smoothMouse.y += (this.mouse.y - this.smoothMouse.y) * 0.15;
+      document.documentElement.style.setProperty('--mouse-x', this.smoothMouse.x + 'px');
+      document.documentElement.style.setProperty('--mouse-y', this.smoothMouse.y + 'px');
+    } else {
+      this.smoothMouse.x = null;
+      this.smoothMouse.y = null;
+    }
+    
     // Update and draw particles
     for (let i = 0; i < this.particles.length; i++) {
       let p = this.particles[i];
@@ -91,9 +105,9 @@ class Constellation {
       
       // Calculate mouse interaction for glowing stars
       let distToMouse = Infinity;
-      if (this.mouse.x !== null) {
-        let dx = p.x - this.mouse.x;
-        let dy = p.y - this.mouse.y;
+      if (this.smoothMouse.x !== null) {
+        let dx = p.x - this.smoothMouse.x;
+        let dy = p.y - this.smoothMouse.y;
         distToMouse = Math.sqrt(dx * dx + dy * dy);
       }
       
@@ -149,15 +163,15 @@ class Constellation {
       }
       
       // Draw line to mouse
-      if (this.mouse.x !== null) {
-        let dx = p.x - this.mouse.x;
-        let dy = p.y - this.mouse.y;
+      if (this.smoothMouse.x !== null) {
+        let dx = p.x - this.smoothMouse.x;
+        let dy = p.y - this.smoothMouse.y;
         let dist = Math.sqrt(dx * dx + dy * dy);
         
         if (dist < this.mouseDistance) {
           this.ctx.beginPath();
           this.ctx.moveTo(p.x, p.y);
-          this.ctx.lineTo(this.mouse.x, this.mouse.y);
+          this.ctx.lineTo(this.smoothMouse.x, this.smoothMouse.y);
           let opacity = 1 - (dist / this.mouseDistance);
           this.ctx.strokeStyle = lineColorBase + (opacity * 0.4) + ')';
           this.ctx.lineWidth = 0.8;
