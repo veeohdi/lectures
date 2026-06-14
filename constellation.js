@@ -19,10 +19,14 @@ class Constellation {
     window.addEventListener('mousemove', (e) => {
       this.mouse.x = e.clientX;
       this.mouse.y = e.clientY;
+      document.documentElement.style.setProperty('--mouse-x', e.clientX + 'px');
+      document.documentElement.style.setProperty('--mouse-y', e.clientY + 'px');
     });
     window.addEventListener('mouseleave', () => {
       this.mouse.x = null;
       this.mouse.y = null;
+      document.documentElement.style.setProperty('--mouse-x', '-9999px');
+      document.documentElement.style.setProperty('--mouse-y', '-9999px');
     });
   }
 

@@ -341,20 +341,20 @@ body {
   background: rgba(255, 255, 255, 0.1);
 }
 
-/* Inner edge glow for cards */
+/* Edge Illumination matching constellation glow */
 .glass-glow::after {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(
-    135deg,
-    var(--specular-edge) 0%,
-    transparent 40%,
-    transparent 60%,
-    var(--specular-edge) 100%
+  background: radial-gradient(
+    circle 250px at var(--mouse-x, -999px) var(--mouse-y, -999px),
+    rgba(255, 255, 255, 0.8) 0%,
+    var(--accent-active) 30%,
+    transparent 100%
   );
+  background-attachment: fixed;
   -webkit-mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
@@ -362,12 +362,8 @@ body {
   mask-composite: exclude;
   pointer-events: none;
   z-index: 2;
-  opacity: 0;
+  opacity: 1; /* Always active, visible when mouse is near */
   transition: opacity var(--dur-normal) var(--ease-out);
-}
-
-.glass-glow:hover::after {
-  opacity: 1;
 }
 
 /* ─────────────────────────────────────────────
