@@ -28,8 +28,12 @@ class Constellation {
     window.addEventListener('mouseleave', () => {
       this.mouse.x = null;
       this.mouse.y = null;
-      document.documentElement.style.setProperty('--mouse-x', '-9999px');
-      document.documentElement.style.setProperty('--mouse-y', '-9999px');
+      if (this.glowElements) {
+        for (let k = 0; k < this.glowElements.length; k++) {
+          this.glowElements[k].style.setProperty('--mouse-x', '-9999px');
+          this.glowElements[k].style.setProperty('--mouse-y', '-9999px');
+        }
+      }
     });
   }
 
@@ -85,8 +89,16 @@ class Constellation {
     if (this.mouse.x !== null) {
       this.smoothMouse.x += (this.mouse.x - this.smoothMouse.x) * 0.15;
       this.smoothMouse.y += (this.mouse.y - this.smoothMouse.y) * 0.15;
-      document.documentElement.style.setProperty('--mouse-x', this.smoothMouse.x + 'px');
-      document.documentElement.style.setProperty('--mouse-y', this.smoothMouse.y + 'px');
+      
+      // OPTIMIZATION: Update CSS variables directly on the glass elements 
+      // instead of the root document to prevent massive 60fps layout thrashing.
+      if (!this.glowElements || Math.random() < 0.02) {
+        this.glowElements = document.querySelectorAll('.glass-glow');
+      }
+      for (let k = 0; k < this.glowElements.length; k++) {
+        this.glowElements[k].style.setProperty('--mouse-x', this.smoothMouse.x + 'px');
+        this.glowElements[k].style.setProperty('--mouse-y', this.smoothMouse.y + 'px');
+      }
     } else {
       this.smoothMouse.x = null;
       this.smoothMouse.y = null;
