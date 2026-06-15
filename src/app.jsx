@@ -41,11 +41,14 @@
         const getSubjectMeta = (name) =>
           SUBJECT_META[name] || { key: "pathology", icon: IconBookOpen };
 
-        const isFuzzyMatch = (pattern, str) => {
-          if (!pattern) return true;
-          const re = new RegExp(pattern.split('').map(c => c.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('.*'), 'i');
-          return re.test(str);
+        const ANIM_LITE_SEC = { initial: { opacity: 0 }, animate: { opacity: 1 } };
+        const ANIM_FULL_SEC = {
+          initial: { opacity: 0, y: 50, scale: 0.95 },
+          whileInView: { opacity: 1, y: 0, scale: 1 },
+          viewport: { once: true, margin: "0px 0px -40px 0px" }
         };
+        const ANIM_TOPIC = { initial: { opacity: 0, x: -6 }, animate: { opacity: 1, x: 0 }, exit: { opacity: 0 } };
+        const ANIM_EXIT = { opacity: 0, scale: 0.96 };
 
         /* ─── LITE MODE HOOK ─── */
         function useLiteMode() {
@@ -117,6 +120,7 @@
             return () => window.removeEventListener('keydown', handler);
           }, []);
 
+          const clickTimeout = useRef(null);
           const handleLogoClick = useCallback(() => {
             setClickCount(c => {
               const nc = c + 1;
@@ -126,7 +130,8 @@
               }
               return nc;
             });
-            setTimeout(() => setClickCount(0), 2000);
+            clearTimeout(clickTimeout.current);
+            clickTimeout.current = setTimeout(() => setClickCount(0), 2000);
           }, []);
 
           useEffect(() => {
@@ -284,9 +289,11 @@
             return () => { delete document.documentElement.dataset.subject; };
           }, [activeSubject]);
 
+          const toastTimeout = useRef(null);
           const showToast = useCallback((msg) => {
             setToast({ visible: true, message: msg });
-            setTimeout(() => setToast({ visible: false, message: '' }), 3000);
+            clearTimeout(toastTimeout.current);
+            toastTimeout.current = setTimeout(() => setToast({ visible: false, message: '' }), 3000);
           }, []);
 
           const handleSaveLink = useCallback(() => {
@@ -313,19 +320,30 @@
 
 
 
-          const filteredData = useMemo(() => {
-            return data
-              .filter(s => activeSubject === "All" || s.subject === activeSubject)
-              .map(s => ({
-                ...s,
-                sections: s.sections
-                  .map(sec => ({ ...sec, topics: sec.topics.filter(t => t.title.toLowerCase().includes(debouncedSearch.toLowerCase()) || isFuzzyMatch(debouncedSearch, t.title)) }))
-                  .filter(sec => sec.topics.length > 0)
-              }))
-              .filter(s => s.sections.length > 0);
-          }, [data, debouncedSearch, activeSubject]);
+          const { filteredData, totalTopics } = useMemo(() => {
+            const query = (debouncedSearch || '').toLowerCase();
+            const fuzzyRe = debouncedSearch ? new RegExp(debouncedSearch.split('').map(c => c.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('.*'), 'i') : null;
 
-          const totalTopics = filteredData.reduce((a, s) => a + s.sections.reduce((b, sec) => b + sec.topics.length, 0), 0);
+            let total = 0;
+            const filtered = data
+              .filter(s => activeSubject === "All" || s.subject === activeSubject)
+              .map(s => {
+                const mappedSections = s.sections
+                  .map(sec => {
+                    const filteredTopics = sec.topics.filter(t => {
+                      if (!query) return true;
+                      return t.title.toLowerCase().includes(query) || (fuzzyRe && fuzzyRe.test(t.title));
+                    });
+                    total += filteredTopics.length;
+                    return { ...sec, topics: filteredTopics };
+                  })
+                  .filter(sec => sec.topics.length > 0);
+                return { ...s, sections: mappedSections };
+              })
+              .filter(s => s.sections.length > 0);
+
+            return { filteredData: filtered, totalTopics: total };
+          }, [data, debouncedSearch, activeSubject]);
 
           return (
             <div className="app-container">
@@ -449,19 +467,16 @@
                           <div className="cards-grid">
                             <AnimatePresence>
                               {subject.sections.map((section, secIdx) => {
-                                const animProps = isLite
-                                  ? { initial: { opacity: 0 }, animate: { opacity: 1 } }
-                                  : { 
-                                      initial: { opacity: 0, y: 50, scale: 0.95 },
-                                      whileInView: { opacity: 1, y: 0, scale: 1 },
-                                      viewport: { once: true, margin: "0px 0px -40px 0px" }
-                                    };
+                                const realSubjectIdx = data.findIndex(d => d.subject === subject.subject);
+                                const realSectionIdx = realSubjectIdx > -1 ? data[realSubjectIdx].sections.findIndex(s => s.instructor === section.instructor) : -1;
+                                const animProps = isLite ? ANIM_LITE_SEC : ANIM_FULL_SEC;
+
                                 return (
                                   <motion.div
                                     key={section.instructor}
                                     layout
                                     {...animProps}
-                                    exit={{ opacity: 0, scale: 0.96 }}
+                                    exit={ANIM_EXIT}
                                     transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: isLite ? 0 : secIdx * 0.05 }}
                                     className="instructor-card glass glass-glow"
                                   >
@@ -482,9 +497,7 @@
                                           <motion.div
                                             key={topic.id}
                                             layout
-                                            initial={{ opacity: 0, x: -6 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            exit={{ opacity: 0 }}
+                                            {...ANIM_TOPIC}
                                             className="topic-item"
                                           >
                                             <div className="topic-title">
@@ -504,8 +517,8 @@
                                               ) : (
                                                 <button className="add-link-btn gdoc" onClick={() => setLinkModal({
                                                   isOpen: true, topicId: topic.id, type: 'gdoc',
-                                                  subjectIdx: data.findIndex(d => d.subject === subject.subject),
-                                                  sectionIdx: data[data.findIndex(d => d.subject === subject.subject)].sections.findIndex(s => s.instructor === section.instructor)
+                                                  subjectIdx: realSubjectIdx,
+                                                  sectionIdx: realSectionIdx
                                                 })}><IconPlus size={13} /> Add Docs</button>
                                               )}
 
@@ -522,8 +535,8 @@
                                                 topic.nlm !== undefined && (
                                                   <button className="add-link-btn nlm" onClick={() => setLinkModal({
                                                     isOpen: true, topicId: topic.id, type: 'nlm',
-                                                    subjectIdx: data.findIndex(d => d.subject === subject.subject),
-                                                    sectionIdx: data[data.findIndex(d => d.subject === subject.subject)].sections.findIndex(s => s.instructor === section.instructor)
+                                                    subjectIdx: realSubjectIdx,
+                                                    sectionIdx: realSectionIdx
                                                   })}><IconPlus size={13} /> Add Notebook</button>
                                                 )
                                               )}

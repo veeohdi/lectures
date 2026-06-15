@@ -27,6 +27,11 @@ class Constellation {
     this.cardRects = [];
     this.cardRectsStale = true;
 
+    // Cache DOM attributes to avoid querying every frame
+    this.isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    this.isLiteMode = document.body.classList.contains('lite-mode');
+    this.subject = document.documentElement.getAttribute('data-subject') || '';
+
     this.init();
     this._boundAnimate = this.animate.bind(this);
     requestAnimationFrame(this._boundAnimate);
@@ -61,7 +66,15 @@ class Constellation {
     }, { passive: true });
 
     // Observe DOM changes (subject filter changes card count)
-    this._mutObs = new MutationObserver(() => { this.cardRectsStale = true; });
+    this._mutObs = new MutationObserver(() => { 
+      this.cardRectsStale = true; 
+      this.isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      this.isLiteMode = document.body.classList.contains('lite-mode');
+      this.subject = document.documentElement.getAttribute('data-subject') || '';
+    });
+    this._mutObs.observe(document.documentElement, {
+      attributes: true, attributeFilter: ['data-theme', 'data-subject', 'class']
+    });
     this._mutObs.observe(document.getElementById('root') || document.body, {
       childList: true, subtree: true
     });
@@ -107,10 +120,10 @@ class Constellation {
       const r = el.getBoundingClientRect();
       // Only include cards that are visible in the viewport
       if (r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < window.innerHeight) {
-        // Read computed border-radius
-        const br = parseFloat(getComputedStyle(el).borderRadius) || 0;
-        // Check if the card has actually animated into view (opacity > 0)
-        const op = parseFloat(getComputedStyle(el).opacity);
+        // Hardcoded border-radius for extreme performance (avoids getComputedStyle thrashing)
+        const br = 26;
+        // Check if the card has actually animated into view via inline style
+        const op = parseFloat(el.style.opacity || 1);
         if (op < 0.1) continue;
         this.cardRects.push({
           left: r.left,
@@ -189,12 +202,11 @@ class Constellation {
   animate() {
     requestAnimationFrame(this._boundAnimate);
 
-    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-    const isLiteMode = document.body.classList.contains('lite-mode');
-    if (isLiteMode) return;
+    if (this.isLiteMode) return;
+    const isLight = this.isLight;
 
     // Update subject color (cheap string lookup, no parsing)
-    const subject = document.documentElement.getAttribute('data-subject') || '';
+    const subject = this.subject;
     this.currentColor = this.colorMap[subject] || this.colorMap[''];
     const cc = this.currentColor;
 
@@ -303,7 +315,10 @@ class Constellation {
 
     // --- Draw edge glow on cards (entirely on canvas, zero CSS overhead) ---
     if (mouseActive && !isLight) {
-      this.updateCardRects();
+      if (this.cardRectsStale) {
+        this.updateCardRects();
+        this.cardRectsStale = false;
+      }
       this.drawCardEdgeGlow(smx, smy, cc);
     }
   }
