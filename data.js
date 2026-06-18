@@ -1493,21 +1493,9 @@ const initialData = [
           },
           {
             "id": "ph16",
-            "title": "CVS: Anti-diuretics, Antihypertensives",
-            "gdoc": "",
-            "nlm": ""
-          },
-          {
-            "id": "ph17",
-            "title": "CVS Contd.: Antihypertensive, Antianginal, Antiarrhythmic drugs",
-            "gdoc": "",
-            "nlm": ""
-          },
-          {
-            "id": "ph18",
-            "title": "CVS Contd.: Antiarrhythmic drugs, Drugs used in Heart Failure",
-            "gdoc": "",
-            "nlm": ""
+            "title": "Cardiovascular System Pharmacology",
+            "gdoc": "https://docs.google.com/document/d/1liy8KpniE5zAUdohpM5TuOT7I-K0ZqxmrFmHMFO_MEk/edit?usp=sharing",
+            "nlm": "https://notebooklm.google.com/notebook/da62c51c-1a23-4446-95fb-314b49c27fcf"
           },
           {
             "id": "ph19",
