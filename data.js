@@ -994,7 +994,13 @@ const initialData = [
             "title": "Urinary Tract Infections",
             "gdoc": "https://docs.google.com/document/d/1_q-vdfvR6EiJgDPXdMrBhdtmNg1hNnh-xfXTzVHWWsA/edit?usp=sharing",
             "nlm": "https://notebooklm.google.com/notebook/81a29b24-de96-4af1-8cc6-1c3692b11d0e"
-          }
+          },
+            {
+            "id": "mm8b",
+            "title": "Anaerobic Infections",
+            "gdoc": "https://docs.google.com/document/d/1PFsF-U-sMnX4-Ey9e9tvru57wIPKYvXgSpdytL0vnI0/edit?usp=sharing",
+            "nlm": "https://notebooklm.google.com/notebook/e20db15e-682a-4081-bff9-282161929eb7"
+          },
         ]
       },
       {
