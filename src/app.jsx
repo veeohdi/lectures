@@ -15,6 +15,7 @@
         const IconCopy = (p) => <Icon {...p}><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></Icon>;
         const IconCheck = (p) => <Icon {...p}><polyline points="20 6 9 17 4 12"/></Icon>;
         const IconHistory = (p) => <Icon {...p}><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></Icon>;
+        const IconMessageCircle = (p) => <Icon {...p}><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></Icon>;
 
         // Sun icon for light mode
         const IconSun = (p) => <Icon {...p}><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></Icon>;
@@ -199,6 +200,128 @@
           );
         }
 
+        /* ─── REQUEST UPDATE MODAL ─── */
+        function RequestUpdateModal({ onClose, showToast }) {
+          const [name, setName] = useState('');
+          const [reqType, setReqType] = useState('new_topic');
+          const [message, setMessage] = useState('');
+          const [status, setStatus] = useState('');
+
+          const reqTypes = [
+            { value: 'new_topic', label: '📚 Request a new topic' },
+            { value: 'update_existing', label: '🔄 Update an existing topic' },
+            { value: 'add_notebook', label: '📓 Add NotebookLM link' },
+            { value: 'report_issue', label: '🐛 Report an issue' },
+            { value: 'other', label: '💬 Other feedback' },
+          ];
+
+          const handleSubmit = async (e) => {
+            e.preventDefault();
+            if (!message.trim()) return;
+            setStatus('Sending...');
+            try {
+              const response = await fetch("https://formspree.io/f/xqeogvan", {
+                method: "POST",
+                headers: { "Accept": "application/json", "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  Name: name || 'Anonymous',
+                  type: reqTypes.find(r => r.value === reqType)?.label || reqType,
+                  message: message.trim(),
+                  source: 'MedVault Request Form'
+                })
+              });
+              if (response.ok) {
+                setStatus('sent');
+                showToast('Request submitted! 🎉');
+                setTimeout(() => onClose(), 1200);
+              } else {
+                setStatus('Error — please try again.');
+              }
+            } catch (err) {
+              setStatus('Error — please try again.');
+            }
+          };
+
+          return (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+              <motion.div initial={{ scale: 0.94, y: 12 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.94, y: 12 }} transition={{ type: "spring", damping: 28, stiffness: 380 }} className="modal-panel wide">
+                <div className="glass-bg" aria-hidden="true"></div>
+                <div className="modal-header">
+                  <h2 className="modal-title"><IconMessageCircle size={18} style={{ color: 'var(--accent-active)' }} /> Request an Update</h2>
+                  <button className="modal-close" onClick={onClose} aria-label="Close"><IconX size={15} /></button>
+                </div>
+                <div className="modal-body">
+                  {status === 'sent' ? (
+                    <div className="request-success">
+                      <div className="request-success-icon">✅</div>
+                      <h3 className="request-success-title">Request Received!</h3>
+                      <p className="request-success-text">We'll review your request and work on it soon.</p>
+                    </div>
+                  ) : (
+                    <form onSubmit={handleSubmit} className="request-form">
+                      <p className="request-form-desc">Missing a lecture or topic? Let us know what you'd like added or updated.</p>
+                      
+                      <div className="request-field">
+                        <label className="request-label" htmlFor="req-name">Your name <span className="request-optional">(optional)</span></label>
+                        <input
+                          id="req-name"
+                          type="text"
+                          className="link-input"
+                          placeholder="e.g. John"
+                          value={name}
+                          onChange={e => setName(e.target.value)}
+                          disabled={!!status}
+                          style={{ marginBottom: 0 }}
+                        />
+                      </div>
+
+                      <div className="request-field">
+                        <label className="request-label">What would you like?</label>
+                        <div className="request-type-grid">
+                          {reqTypes.map(rt => (
+                            <button
+                              key={rt.value}
+                              type="button"
+                              className={`request-type-btn ${reqType === rt.value ? 'active' : ''}`}
+                              onClick={() => setReqType(rt.value)}
+                              disabled={!!status}
+                            >
+                              {rt.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="request-field">
+                        <label className="request-label" htmlFor="req-message">Details</label>
+                        <textarea
+                          id="req-message"
+                          className="request-textarea"
+                          placeholder={reqType === 'new_topic' ? 'e.g. "Antifungal drugs" under Pharmacology, Prof. Adu'
+                            : reqType === 'update_existing' ? 'e.g. The Haematology lecture on Anaemias needs the Google Docs link'
+                            : reqType === 'report_issue' ? 'Describe the issue you encountered...'
+                            : 'Tell us more...'}
+                          value={message}
+                          onChange={e => setMessage(e.target.value)}
+                          disabled={!!status}
+                          rows={3}
+                        />
+                      </div>
+
+                      <div className="modal-actions">
+                        <button type="button" className="btn btn-ghost" onClick={onClose} disabled={!!status}>Cancel</button>
+                        <button type="submit" className="btn btn-primary" disabled={!!status || !message.trim()}>
+                          {status || 'Submit Request'}
+                        </button>
+                      </div>
+                    </form>
+                  )}
+                </div>
+              </motion.div>
+            </motion.div>
+          );
+        }
+
         /* ============================================
            MAIN APP
            ============================================ */
@@ -212,6 +335,7 @@
           const [linkModal, setLinkModal] = useState({ isOpen: false });
           const [newUrlInput, setNewUrlInput] = useState("");
           const [isChangelogOpen, setIsChangelogOpen] = useState(false);
+          const [isRequestOpen, setIsRequestOpen] = useState(false);
           const [apiCommits, setApiCommits] = useState([]);
           const [isLoadingCommits, setIsLoadingCommits] = useState(false);
           const [commitError, setCommitError] = useState(null);
@@ -368,6 +492,9 @@
                         aria-label="Toggle Lite Mode"
                       >
                         ⚡ {isLite ? 'Lite Mode On' : 'Lite Mode Off'}
+                      </button>
+                      <button id="request-update-btn" className="icon-btn request-btn" onClick={() => setIsRequestOpen(true)}>
+                        <IconMessageCircle size={14} /> Request Update
                       </button>
                       <button id="changelog-btn" className="icon-btn" onClick={() => setIsChangelogOpen(true)}>
                         <IconHistory size={14} /> Changelog
@@ -612,6 +739,11 @@
                     </motion.div>
                   </motion.div>
                 )}
+              </AnimatePresence>
+
+              {/* ─── REQUEST UPDATE MODAL ─── */}
+              <AnimatePresence>
+                {isRequestOpen && <RequestUpdateModal onClose={() => setIsRequestOpen(false)} showToast={showToast} />}
               </AnimatePresence>
 
               {/* ─── EASTER EGG MODAL ─── */}

@@ -227,6 +227,11 @@ class Constellation {
     const mouseDist = this.mouseDistance;
 
     // --- Draw particles ---
+    // First pass: batch non-glowing particles into a single path
+    const baseAlpha = 0.3;
+    this.ctx.beginPath();
+    const glowParticles = [];
+    
     for (let i = 0; i < this.particles.length; i++) {
       const p = this.particles[i];
 
@@ -251,19 +256,37 @@ class Constellation {
         }
       }
 
+      if (glowFactor > 0.05) {
+        // Save for individual draw (needs unique color/glow)
+        glowParticles.push({ p, glowFactor, idx: i });
+      } else {
+        // Batch into single path
+        this.ctx.moveTo(p.x + p.baseRadius, p.y);
+        this.ctx.arc(p.x, p.y, p.baseRadius, 0, 6.2832);
+      }
+    }
+
+    // Fill all non-glowing particles at once
+    this.ctx.fillStyle = isLight
+      ? 'rgba(0,0,0,' + baseAlpha + ')'
+      : 'rgba(' + cc[0] + ',' + cc[1] + ',' + cc[2] + ',' + baseAlpha + ')';
+    this.ctx.fill();
+
+    // Second pass: draw glowing particles individually (they need unique styles)
+    for (let g = 0; g < glowParticles.length; g++) {
+      const { p, glowFactor } = glowParticles[g];
       const radius = p.baseRadius + glowFactor * 3.5;
       const opacity = 0.3 + glowFactor * 0.7;
 
-      // Color mix towards white
       const mix = Math.min(glowFactor * 1.5, 1);
       const mr = cc[0] + (255 - cc[0]) * mix | 0;
       const mg = cc[1] + (255 - cc[1]) * mix | 0;
       const mb = cc[2] + (255 - cc[2]) * mix | 0;
 
       this.ctx.beginPath();
-      this.ctx.arc(p.x, p.y, radius, 0, 6.2832); // 2*PI
+      this.ctx.arc(p.x, p.y, radius, 0, 6.2832);
 
-      if (!isLight && glowFactor > 0.05) {
+      if (!isLight) {
         this.ctx.shadowBlur = glowFactor * 25;
         this.ctx.shadowColor = 'rgba(' + mr + ',' + mg + ',' + mb + ',' + (0.5 + glowFactor * 0.5) + ')';
       }
@@ -273,6 +296,11 @@ class Constellation {
         : 'rgba(' + mr + ',' + mg + ',' + mb + ',' + opacity + ')';
       this.ctx.fill();
       this.ctx.shadowBlur = 0;
+    }
+
+    // Third pass: draw inter-particle lines and mouse lines
+    for (let i = 0; i < this.particles.length; i++) {
+      const p = this.particles[i];
 
       // Inter-particle lines
       for (let j = i + 1; j < this.particles.length; j++) {

@@ -114,6 +114,9 @@ const IconHistory = p => /*#__PURE__*/React.createElement(Icon, p, /*#__PURE__*/
 }), /*#__PURE__*/React.createElement("path", {
   d: "M12 7v5l4 2"
 }));
+const IconMessageCircle = p => /*#__PURE__*/React.createElement(Icon, p, /*#__PURE__*/React.createElement("path", {
+  d: "M7.9 20A9 9 0 1 0 4 16.1L2 22Z"
+}));
 
 // Sun icon for light mode
 const IconSun = p => /*#__PURE__*/React.createElement(Icon, p, /*#__PURE__*/React.createElement("circle", {
@@ -445,6 +448,181 @@ function EasterEggModal({
   }, status || 'Let them know!')))));
 }
 
+/* ─── REQUEST UPDATE MODAL ─── */
+function RequestUpdateModal({
+  onClose,
+  showToast
+}) {
+  const [name, setName] = useState('');
+  const [reqType, setReqType] = useState('new_topic');
+  const [message, setMessage] = useState('');
+  const [status, setStatus] = useState('');
+  const reqTypes = [{
+    value: 'new_topic',
+    label: '📚 Request a new topic'
+  }, {
+    value: 'update_existing',
+    label: '🔄 Update an existing topic'
+  }, {
+    value: 'add_notebook',
+    label: '📓 Add NotebookLM link'
+  }, {
+    value: 'report_issue',
+    label: '🐛 Report an issue'
+  }, {
+    value: 'other',
+    label: '💬 Other feedback'
+  }];
+  const handleSubmit = async e => {
+    e.preventDefault();
+    if (!message.trim()) return;
+    setStatus('Sending...');
+    try {
+      const response = await fetch("https://formspree.io/f/xqeogvan", {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          Name: name || 'Anonymous',
+          type: reqTypes.find(r => r.value === reqType)?.label || reqType,
+          message: message.trim(),
+          source: 'MedVault Request Form'
+        })
+      });
+      if (response.ok) {
+        setStatus('sent');
+        showToast('Request submitted! 🎉');
+        setTimeout(() => onClose(), 1200);
+      } else {
+        setStatus('Error — please try again.');
+      }
+    } catch (err) {
+      setStatus('Error — please try again.');
+    }
+  };
+  return /*#__PURE__*/React.createElement(motion.div, {
+    initial: {
+      opacity: 0
+    },
+    animate: {
+      opacity: 1
+    },
+    exit: {
+      opacity: 0
+    },
+    className: "modal-overlay",
+    onClick: e => e.target === e.currentTarget && onClose()
+  }, /*#__PURE__*/React.createElement(motion.div, {
+    initial: {
+      scale: 0.94,
+      y: 12
+    },
+    animate: {
+      scale: 1,
+      y: 0
+    },
+    exit: {
+      scale: 0.94,
+      y: 12
+    },
+    transition: {
+      type: "spring",
+      damping: 28,
+      stiffness: 380
+    },
+    className: "modal-panel wide"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "glass-bg",
+    "aria-hidden": "true"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "modal-header"
+  }, /*#__PURE__*/React.createElement("h2", {
+    className: "modal-title"
+  }, /*#__PURE__*/React.createElement(IconMessageCircle, {
+    size: 18,
+    style: {
+      color: 'var(--accent-active)'
+    }
+  }), " Request an Update"), /*#__PURE__*/React.createElement("button", {
+    className: "modal-close",
+    onClick: onClose,
+    "aria-label": "Close"
+  }, /*#__PURE__*/React.createElement(IconX, {
+    size: 15
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "modal-body"
+  }, status === 'sent' ? /*#__PURE__*/React.createElement("div", {
+    className: "request-success"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "request-success-icon"
+  }, "\u2705"), /*#__PURE__*/React.createElement("h3", {
+    className: "request-success-title"
+  }, "Request Received!"), /*#__PURE__*/React.createElement("p", {
+    className: "request-success-text"
+  }, "We'll review your request and work on it soon.")) : /*#__PURE__*/React.createElement("form", {
+    onSubmit: handleSubmit,
+    className: "request-form"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "request-form-desc"
+  }, "Missing a lecture or topic? Let us know what you'd like added or updated."), /*#__PURE__*/React.createElement("div", {
+    className: "request-field"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "request-label",
+    htmlFor: "req-name"
+  }, "Your name ", /*#__PURE__*/React.createElement("span", {
+    className: "request-optional"
+  }, "(optional)")), /*#__PURE__*/React.createElement("input", {
+    id: "req-name",
+    type: "text",
+    className: "link-input",
+    placeholder: "e.g. John",
+    value: name,
+    onChange: e => setName(e.target.value),
+    disabled: !!status,
+    style: {
+      marginBottom: 0
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "request-field"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "request-label"
+  }, "What would you like?"), /*#__PURE__*/React.createElement("div", {
+    className: "request-type-grid"
+  }, reqTypes.map(rt => /*#__PURE__*/React.createElement("button", {
+    key: rt.value,
+    type: "button",
+    className: `request-type-btn ${reqType === rt.value ? 'active' : ''}`,
+    onClick: () => setReqType(rt.value),
+    disabled: !!status
+  }, rt.label)))), /*#__PURE__*/React.createElement("div", {
+    className: "request-field"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "request-label",
+    htmlFor: "req-message"
+  }, "Details"), /*#__PURE__*/React.createElement("textarea", {
+    id: "req-message",
+    className: "request-textarea",
+    placeholder: reqType === 'new_topic' ? 'e.g. "Antifungal drugs" under Pharmacology, Prof. Adu' : reqType === 'update_existing' ? 'e.g. The Haematology lecture on Anaemias needs the Google Docs link' : reqType === 'report_issue' ? 'Describe the issue you encountered...' : 'Tell us more...',
+    value: message,
+    onChange: e => setMessage(e.target.value),
+    disabled: !!status,
+    rows: 3
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "modal-actions"
+  }, /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "btn btn-ghost",
+    onClick: onClose,
+    disabled: !!status
+  }, "Cancel"), /*#__PURE__*/React.createElement("button", {
+    type: "submit",
+    className: "btn btn-primary",
+    disabled: !!status || !message.trim()
+  }, status || 'Submit Request'))))));
+}
+
 /* ============================================
    MAIN APP
    ============================================ */
@@ -463,6 +641,7 @@ function App() {
   });
   const [newUrlInput, setNewUrlInput] = useState("");
   const [isChangelogOpen, setIsChangelogOpen] = useState(false);
+  const [isRequestOpen, setIsRequestOpen] = useState(false);
   const [apiCommits, setApiCommits] = useState([]);
   const [isLoadingCommits, setIsLoadingCommits] = useState(false);
   const [commitError, setCommitError] = useState(null);
@@ -652,6 +831,12 @@ function App() {
     title: isLite ? "Switch to Full Experience" : "Switch to Lite Mode (Faster)",
     "aria-label": "Toggle Lite Mode"
   }, "\u26A1 ", isLite ? 'Lite Mode On' : 'Lite Mode Off'), /*#__PURE__*/React.createElement("button", {
+    id: "request-update-btn",
+    className: "icon-btn request-btn",
+    onClick: () => setIsRequestOpen(true)
+  }, /*#__PURE__*/React.createElement(IconMessageCircle, {
+    size: 14
+  }), " Request Update"), /*#__PURE__*/React.createElement("button", {
     id: "changelog-btn",
     className: "icon-btn",
     onClick: () => setIsChangelogOpen(true)
@@ -1026,7 +1211,10 @@ function App() {
   }, log.changes.map((c, i) => /*#__PURE__*/React.createElement("li", {
     key: i,
     className: "timeline-change"
-  }, c)))))))))), /*#__PURE__*/React.createElement(AnimatePresence, null, easterEggFound && /*#__PURE__*/React.createElement(EasterEggModal, {
+  }, c)))))))))), /*#__PURE__*/React.createElement(AnimatePresence, null, isRequestOpen && /*#__PURE__*/React.createElement(RequestUpdateModal, {
+    onClose: () => setIsRequestOpen(false),
+    showToast: showToast
+  })), /*#__PURE__*/React.createElement(AnimatePresence, null, easterEggFound && /*#__PURE__*/React.createElement(EasterEggModal, {
     onClose: () => setEasterEggFound(false)
   })), /*#__PURE__*/React.createElement("div", {
     className: `toast ${toast.visible ? 'visible' : 'hidden'}`,
