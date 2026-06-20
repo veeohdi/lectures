@@ -1841,6 +1841,12 @@ const initialData = [
             "title": "Thyroid & Anti-thyroid drugs",
             "gdoc": "https://docs.google.com/document/d/1BUfYTsvdlwwUAOBILAzaIWwmjqqge0s9CYqhmtOEtUM/edit?usp=sharing",
             "nlm": ""
+          },
+          {
+            "id": "ph85",
+            "title": "Antimanic Agents",
+            "gdoc": "https://docs.google.com/document/d/1c2PV_a_0ZQrbumWlEyQ2XoawGDwdHqo8u5e7-KQtn8Q/edit?usp=sharing",
+            "nlm": "https://notebooklm.google.com/notebook/e20db15e-682a-4081-bff9-282161929eb7"
           }
         ]
       },
