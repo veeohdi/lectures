@@ -507,14 +507,13 @@ const initialData = [
               {
                 instructor: "Mr. Eric O. Irinmwinuwa",
                 topics: [
-                  { id: 'ph62', title: "Endocrine Pharmacology", gdoc: "", nlm: "" },
                   { id: 'ph63', title: "Immunopharmacology", gdoc: "https://docs.google.com/document/d/16HOJPuxKY_ZUK8mHtDLH434vzmSy-0odqsb6SQgBeVA/edit?usp=sharing", nlm: "" },
                   { id: 'ph66', title: "Minerals", gdoc: "https://docs.google.com/document/d/1zSewvCAJEB_fsnI4nRm2n4MGvoaVGPmfjPG2xM05ENc/edit?usp=sharing", nlm: "" },
                   { id: 'ph67', title: "Agents that affect Calcification", gdoc: "", nlm: "" },
                   { id: 'ph68', title: "Anti-coagulants, Fibrinolytics, Antifibrinolytics and Antiplatelet Agents", gdoc: "https://docs.google.com/document/d/1aHsvb6BgzL5vRRBvKkHma2NqVLb-Df30OZLMPJlIQFI/edit", nlm: "" },
                   { id: 'ph73', title: "Lipid Lowering Agents", gdoc: "https://docs.google.com/document/d/1i7qn2PrOOk7XaOLNoc4T1cEEP6EUdgD-EUHvFLHEAgU/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/9ec9fa2c-313d-4cf6-93e8-b504bd24baff" },
-                  { id: 'ph73a', title: "Endocrine Drugs", gdoc: "", nlm: "" },
                   { id: 'ph73b', title: "Androgens & Steroids", gdoc: "", nlm: "" },
+                  { id: 'ph73ba', title: "Growth Hormone Pharmacology", gdoc: "https://docs.google.com/document/d/1zTzRiRm-zQ98w1E-wLU0_Nn3wHGx09vTLEXmF-dsRm4/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/2e0e1a63-201a-430a-8d94-23706cad0ce9" },
                   { id: 'ph73c', title: "Agents in Renal Failure & Antihelminths", gdoc: "https://docs.google.com/document/d/1VXkLCrupYoEDqpx3p2w53NJc-bxhvWYWDvpGOiBIXtQ/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/cd70aea7-5281-468d-b6e3-9bb7fb1bca5a" },
                   { id: 'ph85', title: "Thyroid & Anti-thyroid drugs", gdoc: "https://docs.google.com/document/d/1BUfYTsvdlwwUAOBILAzaIWwmjqqge0s9CYqhmtOEtUM/edit?usp=sharing", nlm: "" },
                   { id: 'ph85', title: "Antimanic Agents", gdoc: "https://docs.google.com/document/d/1c2PV_a_0ZQrbumWlEyQ2XoawGDwdHqo8u5e7-KQtn8Q/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/e20db15e-682a-4081-bff9-282161929eb7" },
