@@ -61,6 +61,7 @@ const initialData = [
                   { id: 'ap34', title: "Diseases of Infancy and Childhood 1", gdoc: "https://docs.google.com/document/d/1sSElVYEoWmSfT--Hj65EUKTqPP1bEHoCmzP9Fj83v4A/edit", nlm: "https://notebooklm.google.com/notebook/6218a5a1-2340-40c5-8436-0b0e8b0d6a14" },
                   { id: 'ap34a', title: "Diseases of Infancy and Childhood 2", gdoc: "https://docs.google.com/document/d/1rkWiji4F8YDwNIIjLwflMWZb4783nIBvGa337fel1c8/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/a8ba9768-636b-439b-8bc7-3380ea4f7af3" },
                   { id: 'ap34b', title: "Endocrine Pathology", gdoc: "https://docs.google.com/document/d/13e1IqxJa9hwSBhQOJZyYiQOnD-jxg8K-nhlmQQkq33s/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/ad36ca80-14e2-4c10-a1f7-5245b2796373" },
+                  { id: 'ap34c', title: "Forensic Pathology", gdoc: "https://docs.google.com/document/d/1TTwWEF83lazfN7DO-hPYIkxfKdhOMehJc6PvyRFINm8/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/3d41a8ec-edad-4d6b-90f1-100df18540c9" },
                      // ADD YOUR NEW TOPIC RIGHT HERE:
                 //{ id: 'cp11', title: "My Brand New Topic", gdoc: "https://...", nlm: "https://..." },
                 ]
