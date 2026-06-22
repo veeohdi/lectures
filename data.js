@@ -515,8 +515,8 @@ const initialData = [
                   { id: 'ph73b', title: "Androgens & Steroids", gdoc: "", nlm: "" },
                   { id: 'ph73ba', title: "Growth Hormone & Prolactin Pharmacology", gdoc: "https://docs.google.com/document/d/1zTzRiRm-zQ98w1E-wLU0_Nn3wHGx09vTLEXmF-dsRm4/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/2e0e1a63-201a-430a-8d94-23706cad0ce9" },
                   { id: 'ph73c', title: "Agents in Renal Failure & Antihelminths", gdoc: "https://docs.google.com/document/d/1VXkLCrupYoEDqpx3p2w53NJc-bxhvWYWDvpGOiBIXtQ/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/cd70aea7-5281-468d-b6e3-9bb7fb1bca5a" },
-                  { id: 'ph85', title: "Thyroid & Anti-thyroid drugs", gdoc: "https://docs.google.com/document/d/1BUfYTsvdlwwUAOBILAzaIWwmjqqge0s9CYqhmtOEtUM/edit?usp=sharing", nlm: "" },
-                  { id: 'ph85', title: "Antimanic Agents", gdoc: "https://docs.google.com/document/d/1c2PV_a_0ZQrbumWlEyQ2XoawGDwdHqo8u5e7-KQtn8Q/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/e20db15e-682a-4081-bff9-282161929eb7" },
+                  { id: 'ph73d', title: "Thyroid & Anti-thyroid drugs", gdoc: "https://docs.google.com/document/d/1BUfYTsvdlwwUAOBILAzaIWwmjqqge0s9CYqhmtOEtUM/edit?usp=sharing", nlm: "" },
+                  { id: 'ph73e', title: "Antimanic Agents", gdoc: "https://docs.google.com/document/d/1c2PV_a_0ZQrbumWlEyQ2XoawGDwdHqo8u5e7-KQtn8Q/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/e20db15e-682a-4081-bff9-282161929eb7" },
                      // ADD YOUR NEW TOPIC RIGHT HERE:
                 //{ id: 'cp11', title: "My Brand New Topic", gdoc: "https://...", nlm: "https://..." },
                 ]
@@ -524,13 +524,13 @@ const initialData = [
               {
                 instructor: "Mrs Ezinne C. Okoroafor",
                 topics: [
-                  { id: 'ph74', title: "Antifungal Agents", gdoc: "https://docs.google.com/document/d/1tredmXB38sFNCmeKsag5A1kZc_lRJ-jo8oPcZ9AJklY/edit?usp=sharing", nlm: "" },
-                  { id: 'ph75', title: "Drug Treatment of Malaria", gdoc: "https://docs.google.com/document/d/1K2yg2K8lPOdacTBvjb96kNSA1Jnd8T8X7LBgSK_nrYw/edit?usp=sharing", nlm: "" },
-                  { id: 'ph76', title: "Amoebiasis", gdoc: "", nlm: "" },
-                  { id: 'ph77', title: "Chemotherapy of Tuberculosis & Leprosy", gdoc: "https://docs.google.com/document/d/1Bhx4m3Vnl1_JkJfLRkIuuTNm8FAXo5O9W_WM2NyEv6c/edit?usp=sharing", nlm: "" },
-                  { id: 'ph80', title: "Drugs active on skin and mucous membranes", gdoc: "https://docs.google.com/document/d/1SnaF00ottANS4DKg66Ftnjk-19sNU85-HizEey3439A/edit", nlm: "" },
-                  { id: 'ph81', title: "GIT Pharmacology", gdoc: "https://docs.google.com/document/d/1lQwmgxmfMWVDNX9JkV3nC8rrWsL0k-pQNGRQrGWheag/edit", nlm: "" },
-                  { id: 'ph83', title: "Renal Systemic Pharmacology", gdoc: "https://docs.google.com/document/d/1M5QsCOafxhFDijqt9iThH5ymcFDX1uipINaHGCMW_VQ/edit", nlm: "" },
+                  { id: 'ph74', title: "Antifungal Agents", gdoc: "https://docs.google.com/document/d/1tredmXB38sFNCmeKsag5A1kZc_lRJ-jo8oPcZ9AJklY/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/631782dd-9df6-4d53-b7a1-01513fbccdcf" },
+                  { id: 'ph75', title: "Drug Treatment of Malaria", gdoc: "https://docs.google.com/document/d/1K2yg2K8lPOdacTBvjb96kNSA1Jnd8T8X7LBgSK_nrYw/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/82ecafc0-a2a0-462e-9cc6-15575e3d5966" },
+                  { id: 'ph76', title: "Amoebiasis", gdoc: "https://docs.google.com/document/d/1etPCDrHgojF5TltQQ5XGcF1BJtBfopBMLYU74VrvhIc/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/f6d9e015-22d1-4b72-99c0-d42d99945650" },
+                  { id: 'ph77', title: "Chemotherapy of Tuberculosis & Leprosy", gdoc: "https://docs.google.com/document/d/1Bhx4m3Vnl1_JkJfLRkIuuTNm8FAXo5O9W_WM2NyEv6c/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/3e317448-ab3a-4b10-890a-130b8abde06f" },
+                  { id: 'ph80', title: "Drugs active on skin and mucous membranes", gdoc: "https://docs.google.com/document/d/1SnaF00ottANS4DKg66Ftnjk-19sNU85-HizEey3439A/edit", nlm: "https://notebooklm.google.com/notebook/026ce241-d7c4-42d9-9e4b-f8851ca4b567" },
+                  { id: 'ph81', title: "GIT Pharmacology", gdoc: "https://docs.google.com/document/d/1lQwmgxmfMWVDNX9JkV3nC8rrWsL0k-pQNGRQrGWheag/edit", nlm: "https://notebooklm.google.com/notebook/e7aacc5a-ee4a-41a9-a3cc-c4567dbbd4f6" },
+                  { id: 'ph83', title: "Renal Systemic Pharmacology", gdoc: "https://docs.google.com/document/d/1M5QsCOafxhFDijqt9iThH5ymcFDX1uipINaHGCMW_VQ/edit", nlm: "https://notebooklm.google.com/notebook/0c92108c-2ce0-4693-be80-6f4660f83242" },
                   { id: 'ph84', title: "CNS Pharmacology: CNS Stimulants, Psychomimetic Agents, Anti-epileptic Drugs", gdoc: "https://docs.google.com/document/d/1qYJLPxzNyG2xT4G5dVwz9a8SSw9YXG99_sTGiReDG28/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/3b8c3f04-4eca-4554-a3b6-d11d35c876f1" },
                      // ADD YOUR NEW TOPIC RIGHT HERE:
                 //{ id: 'cp11', title: "My Brand New Topic", gdoc: "https://...", nlm: "https://..." },
