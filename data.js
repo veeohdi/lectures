@@ -516,7 +516,7 @@ const initialData = [
                   { id: 'ph73ba', title: "Growth Hormone & Prolactin Pharmacology", gdoc: "https://docs.google.com/document/d/1zTzRiRm-zQ98w1E-wLU0_Nn3wHGx09vTLEXmF-dsRm4/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/2e0e1a63-201a-430a-8d94-23706cad0ce9" },
                   { id: 'ph73c', title: "Agents in Renal Failure & Antihelminths", gdoc: "https://docs.google.com/document/d/1VXkLCrupYoEDqpx3p2w53NJc-bxhvWYWDvpGOiBIXtQ/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/cd70aea7-5281-468d-b6e3-9bb7fb1bca5a" },
                   { id: 'ph73d', title: "Thyroid & Anti-thyroid drugs", gdoc: "https://docs.google.com/document/d/1BUfYTsvdlwwUAOBILAzaIWwmjqqge0s9CYqhmtOEtUM/edit?usp=sharing", nlm: "" },
-                  { id: 'ph73e', title: "Antimanic Agents", gdoc: "https://docs.google.com/document/d/1c2PV_a_0ZQrbumWlEyQ2XoawGDwdHqo8u5e7-KQtn8Q/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/e20db15e-682a-4081-bff9-282161929eb7" },
+                  { id: 'ph73e', title: "Antimanic Agents", gdoc: "https://docs.google.com/document/d/1c2PV_a_0ZQrbumWlEyQ2XoawGDwdHqo8u5e7-KQtn8Q/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/5452fda3-cd4b-4096-9fd4-e2ae0a9ac661" },
                      // ADD YOUR NEW TOPIC RIGHT HERE:
                 //{ id: 'cp11', title: "My Brand New Topic", gdoc: "https://...", nlm: "https://..." },
                 ]
