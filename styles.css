@@ -854,6 +854,15 @@ body {
 .add-link-btn.gdoc:hover { color: var(--color-success); border-color: var(--color-success); background: var(--color-success-bg); }
 .add-link-btn.nlm:hover { color: var(--color-info); border-color: var(--color-info); background: var(--color-info-bg); }
 
+/* ── Mobile: compact resource buttons so Docs + NotebookLM fit on one row ── */
+@media (max-width: 480px) {
+  .topic-item { padding: 12px 14px; }
+  .resource-buttons { margin-left: 10px; gap: 6px; }
+  .resource-link { padding: 4px 8px; font-size: 0.68rem; gap: 4px; }
+  .copy-btn { padding: 4px 6px; }
+  .add-link-btn { padding: 4px 8px; font-size: 0.68rem; gap: 4px; }
+}
+
 /* ─────────────────────────────────────────────
    EMPTY STATE
    ───────────────────────────────────────────── */
