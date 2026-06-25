@@ -436,17 +436,16 @@ const initialData = [
               {
                 instructor: "Prof. L.U. Amazu",
                 topics: [
-                  { id: 'ph12', title: "New Drug Development: Drug Discovery", gdoc: "https://docs.google.com/document/d/1uoabF1DCN6b4Tq_lLu6T9-0BBePWZ9I1OF1_kQYwTrA/edit?usp=sharing", nlm: "" },
-                  { id: 'ph13', title: "Adverse drug effects", gdoc: "https://docs.google.com/document/d/1UQfTXPE2XFCX3KZOLpToaL5MSLO-SmWZ8JYnywMX_0c/edit?usp=sharing", nlm: "" },
-                  { id: 'ph14', title: "Drug Interactions", gdoc: "https://docs.google.com/document/d/1-UZ-i8NOlzkYaxBDOyf9aPZXHCOR6Rtjjfxu4gEvVCQ/edit?usp=sharing", nlm: "" },
+                  { id: 'ph12', title: "New Drug Development: Drug Discovery", gdoc: "https://docs.google.com/document/d/1uoabF1DCN6b4Tq_lLu6T9-0BBePWZ9I1OF1_kQYwTrA/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/7d85324a-3cac-4b52-a8b7-e711d04dfe66" },
+                  { id: 'ph13', title: "Adverse drug effects", gdoc: "https://docs.google.com/document/d/1UQfTXPE2XFCX3KZOLpToaL5MSLO-SmWZ8JYnywMX_0c/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/fc8dfba0-6ea2-49de-ad2d-4607a3892684" },
+                  { id: 'ph14', title: "Drug Interactions", gdoc: "https://docs.google.com/document/d/1-UZ-i8NOlzkYaxBDOyf9aPZXHCOR6Rtjjfxu4gEvVCQ/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/ad4caa2e-a839-4f7f-8bf4-9bad1b4e857e" },
                   { id: 'ph15', title: "Adrenoceptor Agonists & Sympathomimetic Drugs - (ANS 4)", gdoc: "https://docs.google.com/document/d/17g8vrhiVhd0AcK0CPg3Rdnq1qrKOgncawfcLwGkFCEg/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/306d7438-79ca-4da4-9654-6033f4199ea7" },
                   { id: 'ph15a', title: "Adrenoceptor Antagonists - (ANS 5)", gdoc: "https://docs.google.com/document/d/19ciSjlTt-4IfPT9EJqyT4ZyPl0M2e3eu2RxpRV7-lQ8/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/6016b073-13a1-4f97-b52a-33ad5665c3df" },
                   { id: 'ph16', title: "Cardiovascular System Pharmacology", gdoc: "https://docs.google.com/document/d/1liy8KpniE5zAUdohpM5TuOT7I-K0ZqxmrFmHMFO_MEk/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/da62c51c-1a23-4446-95fb-314b49c27fcf" },
                   { id: 'ph19', title: "Antiviral Agents", gdoc: "https://docs.google.com/document/d/13JWOGJyEcnSlomDYbB84r8iroXy7f6a0nq0Tg2kRANs/edit?usp=drivesdk", nlm: "https://notebooklm.google.com/notebook/63c8756c-ab2c-4ac2-b5ac-08ba785705e0" },
-                  { id: 'ph20', title: "Drugs of Abuse", gdoc: "https://docs.google.com/document/d/1hq-7MOPRXHI4-BiGpLzW1LrNmxg0qyNSAeEOcm-XK9c/edit?usp=sharing", nlm: "" },
-                  { id: 'ph21', title: "Autacoids & Ergots Alkaloids", gdoc: "https://docs.google.com/document/d/1AyLuQAbPy_SKGJuacRFNfiCo_ZaAOLyTJw5xLEsFD0M/edit", nlm: "" },
-                  { id: 'ph22', title: "Adrenocorticoids", gdoc: "https://docs.google.com/document/d/12TJn9VzvONqu6XC-zVsxoGOWTeQZNoXxHTrSHodQEIQ/edit", nlm: "" },
-                  { id: 'ph23', title: "Corticosteroids cont'd: Mechanism of Action of Glucocorticoids", gdoc: "", nlm: "" },
+                  { id: 'ph20', title: "Drug abuse and dependence", gdoc: "https://docs.google.com/document/d/1hq-7MOPRXHI4-BiGpLzW1LrNmxg0qyNSAeEOcm-XK9c/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/c5a62ad3-d1cb-4fa9-b2f5-68d43217399a" },
+                  { id: 'ph21', title: "Autacoids & Ergots Alkaloids", gdoc: "https://docs.google.com/document/d/1AyLuQAbPy_SKGJuacRFNfiCo_ZaAOLyTJw5xLEsFD0M/edit", nlm: "https://notebooklm.google.com/notebook/5231efbc-f8fe-45af-a9a9-bc799710077c" },
+                  { id: 'ph22', title: "Adrenocorticoids", gdoc: "https://docs.google.com/document/d/12TJn9VzvONqu6XC-zVsxoGOWTeQZNoXxHTrSHodQEIQ/edit", nlm: "https://notebooklm.google.com/notebook/5c434683-1fae-462f-9a0a-6a96821549fa" },
                      // ADD YOUR NEW TOPIC RIGHT HERE:
                 //{ id: 'cp11', title: "My Brand New Topic", gdoc: "https://...", nlm: "https://..." },
                 ]
