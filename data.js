@@ -351,6 +351,7 @@ const initialData = [
                   { id: 'mm44e', title: "Mycoplasma", gdoc: "https://docs.google.com/document/d/1Gk_ut2YLlQJm4Ma4oXnQYQfYnsNYzf6fYkDBlz6fuNo/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/450fd00d-4a89-4c7c-8783-a2767df98b29", slide: "https://drive.google.com/file/d/1tJn4dkSC8RiOtklOBdU3Ibq3czjbFR3Q/view" },
                   { id: 'mm44f', title: "Chlamydia", gdoc: "https://docs.google.com/document/d/1MbxPqhDV_F7YBrLEVjIIT-rdIMNIYT9H80p2qkj8f1s/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/9fee8aac-a17b-4f12-ae36-e0690248dff8", slide: "https://drive.google.com/file/d/1SEMr8Z_sy_IqEvJu97hgmb7WlQ9ZDDtO/view" },
                   { id: 'mm44g', title: "Rickettsiae", gdoc: "https://docs.google.com/document/d/1kuc_IKA7qmH1ibiOFC4hJpo5-c7K8SvPaLiSxAF5gqA/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/141b0a18-9aff-4cbb-b34b-7328f475ee9f", slide: "https://drive.google.com/file/d/1KJQp6fTYXI7u4K5jhPV9g6gnrNoAmx7R/view" },
+                  { id: 'mm44h', title: "Propionibacterium (Cutibacterium)", gdoc: "https://...", nlm: "https://notebooklm.google.com/notebook/22b57807-23de-49a4-b6ad-8c0b571d9c3f" },
                      // ADD YOUR NEW TOPIC RIGHT HERE:
                 //{ id: 'cp11', title: "My Brand New Topic", gdoc: "https://...", nlm: "https://..." },
                 ]
