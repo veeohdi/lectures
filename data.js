@@ -303,6 +303,7 @@ const initialData = [
                   { id: 'mm8', title: "SSTIs", gdoc: "https://docs.google.com/document/d/1RHYxoIcNUS-NVqVjAVee9C49-dkqAxpDk3-u9tZwq40/edit", nlm: "https://notebooklm.google.com/notebook/41bd223b-739b-499d-bad3-5091d2983758" },
                   { id: 'mm8a', title: "Urinary Tract Infections", gdoc: "https://docs.google.com/document/d/1_q-vdfvR6EiJgDPXdMrBhdtmNg1hNnh-xfXTzVHWWsA/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/81a29b24-de96-4af1-8cc6-1c3692b11d0e", slide: "https://drive.google.com/file/d/1bJSnHaEgAJHwZT90pOGyrf-X4Z1gKoUO/view" },
                   { id: 'mm8b', title: "Anaerobic Infections", gdoc: "https://docs.google.com/document/d/1PFsF-U-sMnX4-Ey9e9tvru57wIPKYvXgSpdytL0vnI0/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/e20db15e-682a-4081-bff9-282161929eb7", slide: "https://drive.google.com/file/d/1Or1fq_3ZMeiuLybp3ksT_TjwrL_xRiQt/view" },
+                  { id: 'mm8c', title: "Reproductive Tract and Sexually Transmitted Infections", gdoc: "https://...", nlm: "https://notebooklm.google.com/notebook/d47e5750-1a1e-4188-92c1-e5bd49b0622f" },
                      // ADD YOUR NEW TOPIC RIGHT HERE:
                 //{ id: 'cp11', title: "My Brand New Topic", gdoc: "https://...", nlm: "https://..." },
                 ]
