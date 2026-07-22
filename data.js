@@ -102,6 +102,9 @@ const initialData = [
                   { id: 'cp6', title: "Potassium Homeostasis", gdoc: "https://docs.google.com/document/d/1yjaxk_gx0NEPLWKvTc0Fs_OvCBD2Gm4tAIzE6znT7SA/edit", nlm: "https://notebooklm.google.com/notebook/67fea190-8b0a-4b4c-ae2a-e732a7e274b4" },
                   { id: 'cp8', title: "Urinalysis", gdoc: "https://docs.google.com/document/d/1UlyntXi_Evp3n8f1kA-rdVUqeIY8K3JIUc8P_nbZZRo/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/508bb26a-1dd0-4574-8820-13c6bf14c15b" },
                   { id: 'cp9', title: "Chemical and Microscopic Examination of Urine", gdoc: "https://docs.google.com/document/d/1oxmMFBAGlMsaAutgbBamAo7XuOHd4XkXV33WMtgLVVY/edit?usp=sharing", nlm: "" },
+                  { id: 'cp9a', title: "Lipids", gdoc: "https://docs.google.com/document/d/1o89h0sJKEKjdKJk-A5_19c3MJJTuhmLHT7bmkgnun34/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/80654b94-151e-445c-abb4-900344ee0f00" },
+                  { id: 'cp9b', title: "Endocrinology", gdoc: "https://docs.google.com/document/d/19jR9U_lBQIAhs_u22WXmGzII5mCQ1RKCItdPdsccjcI/edit?usp=sharing", nlm: "https://..." },
+                    
                      // ADD YOUR NEW TOPIC RIGHT HERE:
                 //{ id: 'cp11', title: "My Brand New Topic", gdoc: "https://...", nlm: "https://..." },
                 ]
