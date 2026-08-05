@@ -1,55 +1,48 @@
 # MedVault
 
-MedVault is a beautifully curated, high-performance archive of medical lecture notes covering Pathology, Pharmacology, Haematology, and Microbiology. Built for medical students, it provides instant access to study resources and summaries.
+MedVault is a web-based archive of medical lecture notes covering Pathology, Pharmacology, Haematology, and Microbiology. It provides study resources and outlines for medical students.
 
 ---
 
-## 🎧 Optimal Study Workflow: The "Deep Dive" Method
-
-For the best learning experience, try this combined study method:
-1. **Open the Google Docs note** from MedVault on one half of your screen to read through the detailed lecture outlines and slides.
-2. **Launch the NotebookLM link** on the other half of your screen.
-3. **Listen to the AI-generated Deep Dive audio podcast** while reading along with the source material. This multi-sensory approach dramatically improves retention and helps clarify complex medical pathways!
+## 📖 Study Workflow
+The interface links study notes alongside audio tools:
+1. **Google Docs notes** are linked for reading detailed lecture outlines and slides.
+2. **NotebookLM links** are provided to listen to AI-generated audio summaries alongside the source material.
 
 ---
 
-## ✨ Features
-
-- ☀️🌙 **Liquid Glass Design System:** Fully immersive, premium theme with frosted glass panels, interactive edge glows, floating background mesh orbs, and organic grain overlays.
-- 🎨 **Light & Dark Modes:** Toggles instantly with automatic theme preference persistence via `localStorage`.
-- 🔍 **Fuzzy Search & Navigation:** Instantly search through topics using fuzzy matching. Press `Cmd + K` or `Ctrl + K` to jump straight to the search box, and `Esc` to clear.
-- 📂 **Subject Atmosphere Filters:** Clean subject pills that dynamically shift the color palette and atmosphere of the entire site based on your current focus.
-- 🔗 **Interactive Link Tool:** Add new Google Docs or NotebookLM links on the fly using the built-in modal panels.
-- 📈 **GitHub Changelog API:** Live display of the latest updates pulled directly from the repository's commit history.
+## 🛠️ Features
+- **Light & Dark Mode**: Theme preferences persist via `localStorage`.
+- **Fuzzy Search**: Filter lecture topics. Jump directly to search with `Cmd + K` or `Ctrl + K`, and clear with `Esc`.
+- **Subject Filters**: Quick-filtering links by Pathology, Pharmacology, Haematology, and Microbiology.
+- **Link Builder**: A modal interface to add new Google Docs or NotebookLM links to the index.
+- **GitHub Commit Feed**: Displays recent repository updates using the GitHub commits API.
 
 ---
 
-## 🛠️ Development & Building
+## 💻 Development & Local Setup
 
-The application uses **Babel pre-compilation** to avoid slow translation steps in the browser, enabling lightning-fast loading speeds on mobile devices.
-
-### Prerequisites
-Make sure you have Node.js and npm installed.
+The project uses Babel to compile React code before rendering in the browser.
 
 ### Setup
-1. Clone the repository.
-2. Install the compilation dependencies:
+1. Clone this repository.
+2. Install compilation dependencies:
    ```bash
    npm install
    ```
 
 ### Running Locally
-To run a local server and test changes:
+To serve the files locally:
 ```bash
 python3 -m http.server 8080
 ```
-Then visit `http://localhost:8080` in your browser.
+Then open `http://localhost:8080` in your web browser.
 
-### Building / Compiling Changes
-If you edit the React source code inside [`src/app.jsx`](src/app.jsx), you must compile it into plain JavaScript ([`app.js`](app.js)) so the browser can read it:
+### Building
+If you modify the React codebase in [`src/app.jsx`](src/app.jsx), compile it to static JavaScript ([`app.js`](app.js)):
 ```bash
 npm run build
 ```
 
 > [!NOTE]
-> **Lecture Data Updates:** If you are only updating the lecture data inside [`data.js`](data.js), **you do not need to rebuild the project**. The pre-compiled app will automatically read and render any data additions.
+> **Data Updates**: If you only update lecture links or metadata in [`data.js`](data.js), **you do not need to rebuild the project**. The page reads modifications directly from this file.
