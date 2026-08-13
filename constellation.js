@@ -341,14 +341,7 @@ class Constellation {
       }
     }
 
-    // --- Draw edge glow on cards (entirely on canvas, zero CSS overhead) ---
-    if (mouseActive && !isLight) {
-      if (this.cardRectsStale) {
-        this.updateCardRects();
-        this.cardRectsStale = false;
-      }
-      this.drawCardEdgeGlow(smx, smy, cc);
-    }
+    // --- Edge glow on cards removed ---
   }
 }
 
