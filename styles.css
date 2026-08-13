@@ -666,11 +666,16 @@ body {
   border-radius: var(--radius-xl);
   display: flex;
   flex-direction: column;
+  box-shadow: 0 1px 1px var(--glass-shadow), 0 8px 24px var(--glass-shadow);
 }
 
-/* Remove the glass::before overlay only on non-hover for cards to keep them subtle */
+.instructor-card:hover {
+  box-shadow: 0 2px 4px var(--glass-shadow), 0 12px 40px var(--glass-shadow-lg);
+}
+
+/* Remove the glass::before overlay completely for cards to disable edge lighting */
 .instructor-card::before {
-  opacity: 0.15;
+  display: none;
 }
 
 .card-header {

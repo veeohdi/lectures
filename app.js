@@ -34,8 +34,11 @@ const IconSearch = p => /*#__PURE__*/React.createElement(Icon, p, /*#__PURE__*/R
   cx: "11",
   cy: "11",
   r: "8"
-}), /*#__PURE__*/React.createElement("path", {
-  d: "m21 21-4.3-4.3"
+}), /*#__PURE__*/React.createElement("line", {
+  x1: "21",
+  y1: "21",
+  x2: "16.65",
+  y2: "16.65"
 }));
 const IconFileText = p => /*#__PURE__*/React.createElement(Icon, p, /*#__PURE__*/React.createElement("path", {
   d: "M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"
