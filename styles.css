@@ -486,6 +486,7 @@ body {
   transform: translateY(-50%);
   color: var(--text-muted);
   pointer-events: none;
+  z-index: 1;
   transition: color var(--dur-normal) var(--ease-out);
 }
 
@@ -1480,30 +1481,7 @@ body {
     inset 0 1px 0 var(--specular-top);
 }
 
-/* ─────────────────────────────────────────────
-   LITE MODE OVERRIDES
-   ───────────────────────────────────────────── */
-body.lite-mode .mesh-bg {
-  display: none !important;
-}
 
-body.lite-mode .glass,
-body.lite-mode .glass-solid,
-body.lite-mode .modal-panel,
-body.lite-mode .toast {
-  background: var(--lite-card-bg) !important;
-  border-color: var(--glass-border) !important;
-  box-shadow: 0 4px 12px var(--glass-shadow) !important;
-}
-
-body.lite-mode .glass-bg {
-  display: none !important;
-}
-
-body.lite-mode .header-actions .icon-btn.active {
-  color: var(--accent-active);
-  background: color-mix(in srgb, var(--accent-active) 15%, transparent);
-}
 
 /* ─────────────────────────────────────────────
    EASTER EGG VISUAL REWARD

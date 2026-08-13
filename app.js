@@ -219,14 +219,6 @@ const getSubjectMeta = name => SUBJECT_META[name] || {
   key: "pathology",
   icon: IconBookOpen
 };
-const ANIM_LITE_SEC = {
-  initial: {
-    opacity: 0
-  },
-  animate: {
-    opacity: 1
-  }
-};
 const ANIM_FULL_SEC = {
   initial: {
     opacity: 0,
@@ -260,35 +252,6 @@ const ANIM_EXIT = {
   opacity: 0,
   scale: 0.96
 };
-
-/* ─── LITE MODE HOOK ─── */
-function useLiteMode() {
-  const [isLite, setIsLite] = useState(() => {
-    const saved = localStorage.getItem('medvault-lite');
-    if (saved !== null) return saved === 'true';
-
-    // Auto-detect struggling hardware
-    let isStruggling = false;
-    if (navigator.deviceMemory && navigator.deviceMemory <= 4) isStruggling = true;
-    if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) isStruggling = true;
-    if (navigator.connection && navigator.connection.saveData) isStruggling = true;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) isStruggling = true;
-    return isStruggling;
-  });
-  useEffect(() => {
-    localStorage.setItem('medvault-lite', isLite);
-    if (isLite) {
-      document.body.classList.add('lite-mode');
-    } else {
-      document.body.classList.remove('lite-mode');
-    }
-  }, [isLite]);
-  const toggleLite = useCallback(() => setIsLite(p => !p), []);
-  return {
-    isLite,
-    toggleLite
-  };
-}
 
 /* ─── THEME HOOK ─── */
 function useTheme() {
@@ -654,10 +617,6 @@ function App() {
     toggle: toggleTheme
   } = useTheme();
   const {
-    isLite,
-    toggleLite
-  } = useLiteMode();
-  const {
     easterEggFound,
     setEasterEggFound,
     handleLogoClick
@@ -837,12 +796,6 @@ function App() {
   }), totalTopics, " Topics")), /*#__PURE__*/React.createElement("div", {
     className: "header-actions"
   }, /*#__PURE__*/React.createElement("button", {
-    id: "lite-toggle",
-    className: `icon-btn ${isLite ? 'active' : ''}`,
-    onClick: toggleLite,
-    title: isLite ? "Switch to Full Experience" : "Switch to Lite Mode (Faster)",
-    "aria-label": "Toggle Lite Mode"
-  }, "\u26A1 ", isLite ? 'Lite Mode On' : 'Lite Mode Off'), /*#__PURE__*/React.createElement("button", {
     id: "request-update-btn",
     className: "icon-btn request-btn",
     onClick: () => setIsRequestOpen(true)
@@ -936,9 +889,7 @@ function App() {
     return /*#__PURE__*/React.createElement(motion.section, {
       key: subject.subject,
       layout: true,
-      initial: isLite ? {
-        opacity: 0
-      } : {
+      initial: {
         opacity: 0,
         y: 30
       },
@@ -972,7 +923,7 @@ function App() {
     }, /*#__PURE__*/React.createElement(AnimatePresence, null, subject.sections.map((section, secIdx) => {
       const realSubjectIdx = data.findIndex(d => d.subject === subject.subject);
       const realSectionIdx = realSubjectIdx > -1 ? data[realSubjectIdx].sections.findIndex(s => s.instructor === section.instructor) : -1;
-      const animProps = isLite ? ANIM_LITE_SEC : ANIM_FULL_SEC;
+      const animProps = ANIM_FULL_SEC;
       return /*#__PURE__*/React.createElement(motion.div, _extends({
         key: section.instructor,
         layout: true
@@ -981,7 +932,7 @@ function App() {
         transition: {
           duration: 0.5,
           ease: [0.22, 1, 0.36, 1],
-          delay: isLite ? 0 : secIdx * 0.05
+          delay: secIdx * 0.05
         },
         className: "instructor-card glass glass-glow"
       }), /*#__PURE__*/React.createElement("div", {
