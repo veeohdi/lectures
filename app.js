@@ -769,6 +769,15 @@ function App() {
     showToast("Link copied!");
     setTimeout(() => setCopiedId(null), 2000);
   }, [showToast]);
+  const handleResourceClick = useCallback((type, title, id) => {
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'open_resource', {
+        resource_type: type,
+        topic_title: title,
+        topic_id: id
+      });
+    }
+  }, []);
   const {
     filteredData,
     totalTopics
@@ -1006,7 +1015,8 @@ function App() {
           href: topic.gdoc,
           target: "_blank",
           rel: "noopener noreferrer",
-          className: "resource-link gdoc"
+          className: "resource-link gdoc",
+          onClick: () => handleResourceClick('gdoc', topic.title, topic.id)
         }, /*#__PURE__*/React.createElement(IconFileText, {
           size: 13
         }), " Docs ", /*#__PURE__*/React.createElement(IconExternalLink, {
@@ -1036,7 +1046,8 @@ function App() {
           href: topic.nlm,
           target: "_blank",
           rel: "noopener noreferrer",
-          className: "resource-link nlm"
+          className: "resource-link nlm",
+          onClick: () => handleResourceClick('notebook_lm', topic.title, topic.id)
         }, /*#__PURE__*/React.createElement(IconBookOpen, {
           size: 13
         }), " NotebookLM ", /*#__PURE__*/React.createElement(IconExternalLink, {

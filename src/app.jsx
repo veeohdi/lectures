@@ -442,6 +442,16 @@
             setTimeout(() => setCopiedId(null), 2000);
           }, [showToast]);
 
+          const handleResourceClick = useCallback((type, title, id) => {
+            if (typeof window !== 'undefined' && window.gtag) {
+              window.gtag('event', 'open_resource', {
+                resource_type: type,
+                topic_title: title,
+                topic_id: id
+              });
+            }
+          }, []);
+
 
 
           const { filteredData, totalTopics } = useMemo(() => {
@@ -634,7 +644,7 @@
                                             <div className="resource-buttons">
                                               {hasG ? (
                                                 <div className="resource-btn-group">
-                                                  <a href={topic.gdoc} target="_blank" rel="noopener noreferrer" className="resource-link gdoc">
+                                                  <a href={topic.gdoc} target="_blank" rel="noopener noreferrer" className="resource-link gdoc" onClick={() => handleResourceClick('gdoc', topic.title, topic.id)}>
                                                     <IconFileText size={13} /> Docs <IconExternalLink size={10} />
                                                   </a>
                                                   <button className="copy-btn gdoc" onClick={() => handleCopy(topic.gdoc, `${topic.id}-g`)} aria-label="Copy link">
@@ -651,7 +661,7 @@
 
                                               {hasN ? (
                                                 <div className="resource-btn-group">
-                                                  <a href={topic.nlm} target="_blank" rel="noopener noreferrer" className="resource-link nlm">
+                                                  <a href={topic.nlm} target="_blank" rel="noopener noreferrer" className="resource-link nlm" onClick={() => handleResourceClick('notebook_lm', topic.title, topic.id)}>
                                                     <IconBookOpen size={13} /> NotebookLM <IconExternalLink size={10} />
                                                   </a>
                                                   <button className="copy-btn nlm" onClick={() => handleCopy(topic.nlm, `${topic.id}-n`)} aria-label="Copy link">
