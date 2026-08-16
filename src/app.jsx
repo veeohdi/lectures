@@ -22,6 +22,7 @@
         const IconSearch = (p) => <Icon {...p}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></Icon>;
         const IconFileText = (p) => <Icon {...p}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></Icon>;
         const IconBookOpen = (p) => <Icon {...p}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></Icon>;
+        const IconPresentation = (p) => <Icon {...p}><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></Icon>;
         const IconPlus = (p) => <Icon {...p}><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></Icon>;
         const IconExternalLink = (p) => <Icon {...p}><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></Icon>;
         const IconX = (p) => <Icon {...p}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></Icon>;
@@ -497,7 +498,8 @@
               if (ti > -1) {
                 d[subjectIdx].sections[sectionIdx].topics[ti][type] = newUrlInput;
                 setData(d);
-                showToast(`Linked to ${type === 'gdoc' ? 'Google Docs' : 'NotebookLM'}!`);
+                const label = type === 'gdoc' ? 'Google Docs' : type === 'slide' ? 'Google Slides' : 'NotebookLM';
+                showToast(`Linked to ${label}!`);
               }
             }
             setLinkModal({ isOpen: false });
@@ -701,7 +703,9 @@
                                           {section.topics.map(topic => {
                                             const hasG = !!(topic.gdoc && topic.gdoc.trim());
                                             const hasN = !!(topic.nlm && topic.nlm.trim());
-                                            const dot = hasG && hasN ? 'full' : (hasG || hasN ? 'partial' : 'none');
+                                            const hasS = !!(topic.slide && topic.slide.trim());
+                                            const dot = (hasG && hasN && hasS) ? 'full' : ((hasG || hasN || hasS) ? 'partial' : 'none');
+                                            const dotTitle = (hasG && hasN && hasS) ? 'All resources' : ((hasG || hasN || hasS) ? 'Partial resources' : 'No resources');
 
                                             return (
                                               <motion.div
@@ -711,7 +715,7 @@
                                                 className="topic-item"
                                               >
                                                 <div className="topic-title">
-                                                  <span className={`status-dot ${dot}`} title={hasG && hasN ? 'All resources' : hasG || hasN ? 'Partial' : 'No resources'} aria-hidden="true"></span>
+                                                  <span className={`status-dot ${dot}`} title={dotTitle} aria-hidden="true"></span>
                                                   <span>{topic.title}</span>
                                                 </div>
                                                 <div className="resource-buttons">
@@ -730,6 +734,25 @@
                                                       subjectIdx: realSubjectIdx,
                                                       sectionIdx: realSectionIdx
                                                     })}><IconPlus size={13} /> Add Docs</button>
+                                                  )}
+
+                                                  {hasS ? (
+                                                    <div className="resource-btn-group">
+                                                      <a href={topic.slide} target="_blank" rel="noopener noreferrer" className="resource-link slide" onClick={() => handleResourceClick('google_slides', topic.title, topic.id)}>
+                                                        <IconPresentation size={13} /> Slides <IconExternalLink size={10} />
+                                                      </a>
+                                                      <button className="copy-btn slide" onClick={() => handleCopy(topic.slide, `${topic.id}-s`)} aria-label="Copy link">
+                                                        {copiedId === `${topic.id}-s` ? <IconCheck size={13} /> : <IconCopy size={13} />}
+                                                      </button>
+                                                    </div>
+                                                  ) : (
+                                                    topic.slide !== undefined && (
+                                                      <button className="add-link-btn slide" onClick={() => setLinkModal({
+                                                        isOpen: true, topicId: topic.id, type: 'slide',
+                                                        subjectIdx: realSubjectIdx,
+                                                        sectionIdx: realSectionIdx
+                                                      })}><IconPlus size={13} /> Add Slides</button>
+                                                    )
                                                   )}
 
                                                   {hasN ? (
@@ -775,7 +798,7 @@
                     <motion.div initial={{ scale: 0.94, y: 12 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.94, y: 12 }} transition={{ type: "spring", damping: 28, stiffness: 380 }} className="modal-panel">
                       <div className="glass-bg" aria-hidden="true"></div>
                       <div className="modal-body">
-                        <h3 className="link-modal-title">Add {linkModal.type === 'gdoc' ? 'Google Docs' : 'NotebookLM'} Link</h3>
+                        <h3 className="link-modal-title">Add {linkModal.type === 'gdoc' ? 'Google Docs' : linkModal.type === 'slide' ? 'Google Slides' : 'NotebookLM'} Link</h3>
                         <p className="link-modal-desc">Paste the document URL below to link it to this topic.</p>
                         <input autoFocus type="url" value={newUrlInput} onChange={e => setNewUrlInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSaveLink()} className="link-input" placeholder="https://…" id="link-url-input" />
                         <div className="modal-actions">

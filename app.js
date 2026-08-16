@@ -90,6 +90,23 @@ const IconBookOpen = p => /*#__PURE__*/React.createElement(Icon, p, /*#__PURE__*
 }), /*#__PURE__*/React.createElement("path", {
   d: "M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"
 }));
+const IconPresentation = p => /*#__PURE__*/React.createElement(Icon, p, /*#__PURE__*/React.createElement("rect", {
+  x: "2",
+  y: "3",
+  width: "20",
+  height: "14",
+  rx: "2"
+}), /*#__PURE__*/React.createElement("line", {
+  x1: "8",
+  y1: "21",
+  x2: "16",
+  y2: "21"
+}), /*#__PURE__*/React.createElement("line", {
+  x1: "12",
+  y1: "17",
+  x2: "12",
+  y2: "21"
+}));
 const IconPlus = p => /*#__PURE__*/React.createElement(Icon, p, /*#__PURE__*/React.createElement("line", {
   x1: "12",
   y1: "5",
@@ -830,7 +847,8 @@ function App() {
       if (ti > -1) {
         d[subjectIdx].sections[sectionIdx].topics[ti][type] = newUrlInput;
         setData(d);
-        showToast(`Linked to ${type === 'gdoc' ? 'Google Docs' : 'NotebookLM'}!`);
+        const label = type === 'gdoc' ? 'Google Docs' : type === 'slide' ? 'Google Slides' : 'NotebookLM';
+        showToast(`Linked to ${label}!`);
       }
     }
     setLinkModal({
@@ -1071,7 +1089,9 @@ function App() {
       }, /*#__PURE__*/React.createElement(AnimatePresence, null, section.topics.map(topic => {
         const hasG = !!(topic.gdoc && topic.gdoc.trim());
         const hasN = !!(topic.nlm && topic.nlm.trim());
-        const dot = hasG && hasN ? 'full' : hasG || hasN ? 'partial' : 'none';
+        const hasS = !!(topic.slide && topic.slide.trim());
+        const dot = hasG && hasN && hasS ? 'full' : hasG || hasN || hasS ? 'partial' : 'none';
+        const dotTitle = hasG && hasN && hasS ? 'All resources' : hasG || hasN || hasS ? 'Partial resources' : 'No resources';
         return /*#__PURE__*/React.createElement(motion.div, _extends({
           key: topic.id,
           layout: true
@@ -1081,7 +1101,7 @@ function App() {
           className: "topic-title"
         }, /*#__PURE__*/React.createElement("span", {
           className: `status-dot ${dot}`,
-          title: hasG && hasN ? 'All resources' : hasG || hasN ? 'Partial' : 'No resources',
+          title: dotTitle,
           "aria-hidden": "true"
         }), /*#__PURE__*/React.createElement("span", null, topic.title)), /*#__PURE__*/React.createElement("div", {
           className: "resource-buttons"
@@ -1116,7 +1136,38 @@ function App() {
           })
         }, /*#__PURE__*/React.createElement(IconPlus, {
           size: 13
-        }), " Add Docs"), hasN ? /*#__PURE__*/React.createElement("div", {
+        }), " Add Docs"), hasS ? /*#__PURE__*/React.createElement("div", {
+          className: "resource-btn-group"
+        }, /*#__PURE__*/React.createElement("a", {
+          href: topic.slide,
+          target: "_blank",
+          rel: "noopener noreferrer",
+          className: "resource-link slide",
+          onClick: () => handleResourceClick('google_slides', topic.title, topic.id)
+        }, /*#__PURE__*/React.createElement(IconPresentation, {
+          size: 13
+        }), " Slides ", /*#__PURE__*/React.createElement(IconExternalLink, {
+          size: 10
+        })), /*#__PURE__*/React.createElement("button", {
+          className: "copy-btn slide",
+          onClick: () => handleCopy(topic.slide, `${topic.id}-s`),
+          "aria-label": "Copy link"
+        }, copiedId === `${topic.id}-s` ? /*#__PURE__*/React.createElement(IconCheck, {
+          size: 13
+        }) : /*#__PURE__*/React.createElement(IconCopy, {
+          size: 13
+        }))) : topic.slide !== undefined && /*#__PURE__*/React.createElement("button", {
+          className: "add-link-btn slide",
+          onClick: () => setLinkModal({
+            isOpen: true,
+            topicId: topic.id,
+            type: 'slide',
+            subjectIdx: realSubjectIdx,
+            sectionIdx: realSectionIdx
+          })
+        }, /*#__PURE__*/React.createElement(IconPlus, {
+          size: 13
+        }), " Add Slides"), hasN ? /*#__PURE__*/React.createElement("div", {
           className: "resource-btn-group"
         }, /*#__PURE__*/React.createElement("a", {
           href: topic.nlm,
@@ -1190,7 +1241,7 @@ function App() {
     className: "modal-body"
   }, /*#__PURE__*/React.createElement("h3", {
     className: "link-modal-title"
-  }, "Add ", linkModal.type === 'gdoc' ? 'Google Docs' : 'NotebookLM', " Link"), /*#__PURE__*/React.createElement("p", {
+  }, "Add ", linkModal.type === 'gdoc' ? 'Google Docs' : linkModal.type === 'slide' ? 'Google Slides' : 'NotebookLM', " Link"), /*#__PURE__*/React.createElement("p", {
     className: "link-modal-desc"
   }, "Paste the document URL below to link it to this topic."), /*#__PURE__*/React.createElement("input", {
     autoFocus: true,

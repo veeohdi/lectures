@@ -868,6 +868,8 @@ body {
 
 .resource-link.gdoc { color: var(--color-success); }
 .resource-link.gdoc:hover { background: var(--color-success-bg); }
+.resource-link.slide { color: var(--accent-chemistry); }
+.resource-link.slide:hover { background: var(--accent-chemistry-soft); }
 .resource-link.nlm { color: var(--color-info); }
 .resource-link.nlm:hover { background: var(--color-info-bg); }
 
@@ -885,6 +887,8 @@ body {
 }
 .copy-btn.gdoc { color: var(--color-success); }
 .copy-btn.gdoc:hover { background: var(--color-success-bg); }
+.copy-btn.slide { color: var(--accent-chemistry); }
+.copy-btn.slide:hover { background: var(--accent-chemistry-soft); }
 .copy-btn.nlm { color: var(--color-info); }
 .copy-btn.nlm:hover { background: var(--color-info-bg); }
 .copy-btn:active { transform: scale(0.88); }
@@ -913,6 +917,7 @@ body {
 }
 
 .add-link-btn.gdoc:hover { color: var(--color-success); border-color: var(--color-success); background: var(--color-success-bg); }
+.add-link-btn.slide:hover { color: var(--accent-chemistry); border-color: var(--accent-chemistry); background: var(--accent-chemistry-soft); }
 .add-link-btn.nlm:hover { color: var(--color-info); border-color: var(--color-info); background: var(--color-info-bg); }
 
 /* ── Mobile: compact resource buttons so Docs + NotebookLM fit on one row ── */
