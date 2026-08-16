@@ -1106,7 +1106,7 @@ function App() {
         }), /*#__PURE__*/React.createElement("span", null, topic.title)), /*#__PURE__*/React.createElement("div", {
           className: "resource-buttons"
         }, hasG ? /*#__PURE__*/React.createElement("div", {
-          className: "resource-btn-group"
+          className: "resource-btn-group gdoc"
         }, /*#__PURE__*/React.createElement("a", {
           href: topic.gdoc,
           target: "_blank",
@@ -1137,7 +1137,7 @@ function App() {
         }, /*#__PURE__*/React.createElement(IconPlus, {
           size: 13
         }), " Add Docs"), hasS ? /*#__PURE__*/React.createElement("div", {
-          className: "resource-btn-group"
+          className: "resource-btn-group slide"
         }, /*#__PURE__*/React.createElement("a", {
           href: topic.slide,
           target: "_blank",
@@ -1168,7 +1168,7 @@ function App() {
         }, /*#__PURE__*/React.createElement(IconPlus, {
           size: 13
         }), " Add Slides"), hasN ? /*#__PURE__*/React.createElement("div", {
-          className: "resource-btn-group"
+          className: "resource-btn-group nlm"
         }, /*#__PURE__*/React.createElement("a", {
           href: topic.nlm,
           target: "_blank",

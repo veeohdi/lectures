@@ -1,8 +1,8 @@
 /**
- * High-Fidelity Physics-Based Liquid Glass Tabs Engine
+ * High-Fidelity Physics-Based Liquid Glass Tabs & Search Engine
  * - Snell's Law Refraction Profile
  * - Pill-shaped Squircle Bezel Displacement Maps & Dynamic Specular Sheen
- * - Applied exclusively to Course Filter Tabs
+ * - Applied to Course Filter Tabs and Search Bar
  */
 (function (global) {
   'use strict';
@@ -177,7 +177,7 @@
     const h = Math.round(rect.height);
     if (w < 10 || h < 10) return;
 
-    const radius = Math.min(Math.round(h / 2), 24);
+    const radius = options?.borderRadius != null ? options.borderRadius : Math.min(Math.round(h / 2), 24);
     const opts = Object.assign({
       surfaceKey: 'convex_squircle',
       glassThickness: 32,
@@ -202,7 +202,7 @@
 
     let filterId = elementsMap.get(el);
     if (!filterId) {
-      filterId = 'lg-tab-filter-' + (++filterIdCounter);
+      filterId = 'lg-lens-filter-' + (++filterIdCounter);
       elementsMap.set(el, filterId);
     }
 
@@ -238,21 +238,45 @@
     el.style.webkitBackdropFilter = val;
   }
 
-  function refreshTabs() {
+  function refreshElements() {
     const pills = document.querySelectorAll('.filter-pill');
     pills.forEach((pill) => {
       buildFilterForElement(pill);
     });
+
+    const searchInputs = document.querySelectorAll('.search-input');
+    searchInputs.forEach((searchInput) => {
+      buildFilterForElement(searchInput, {
+        borderRadius: 20,
+        bezelWidth: 14,
+        glassThickness: 34,
+        ior: 2.3
+      });
+    });
   }
 
-  // Pointer glare on course filter tabs only
-  function initTabInteractions() {
+  // Pointer glare on course filter tabs and search bar
+  function initInteractions() {
     document.addEventListener('pointermove', (e) => {
       const pill = e.target.closest('.filter-pill');
       if (pill) {
         const rect = pill.getBoundingClientRect();
         const angle = Math.atan2(e.clientY - (rect.top + rect.height / 2), e.clientX - (rect.left + rect.width / 2));
         buildFilterForElement(pill, { specularAngle: angle });
+        return;
+      }
+
+      const searchInput = e.target.closest('.search-input');
+      if (searchInput) {
+        const rect = searchInput.getBoundingClientRect();
+        const angle = Math.atan2(e.clientY - (rect.top + rect.height / 2), e.clientX - (rect.left + rect.width / 2));
+        buildFilterForElement(searchInput, {
+          borderRadius: 20,
+          bezelWidth: 14,
+          glassThickness: 34,
+          ior: 2.3,
+          specularAngle: angle
+        });
       }
     }, { passive: true });
   }
@@ -260,22 +284,22 @@
   let resizeTimer;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(refreshTabs, 120);
+    resizeTimer = setTimeout(refreshElements, 120);
   });
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-      setTimeout(refreshTabs, 100);
-      initTabInteractions();
+      setTimeout(refreshElements, 100);
+      initInteractions();
     });
   } else {
-    setTimeout(refreshTabs, 100);
-    initTabInteractions();
+    setTimeout(refreshElements, 100);
+    initInteractions();
   }
 
   global.LiquidGlassTabs = {
     apply: buildFilterForElement,
-    refresh: refreshTabs
+    refresh: refreshElements
   };
 
 })(typeof window !== 'undefined' ? window : this);

@@ -720,7 +720,7 @@
                                                 </div>
                                                 <div className="resource-buttons">
                                                   {hasG ? (
-                                                    <div className="resource-btn-group">
+                                                    <div className="resource-btn-group gdoc">
                                                       <a href={topic.gdoc} target="_blank" rel="noopener noreferrer" className="resource-link gdoc" onClick={() => handleResourceClick('gdoc', topic.title, topic.id)}>
                                                         <IconFileText size={13} /> Docs <IconExternalLink size={10} />
                                                       </a>
@@ -737,7 +737,7 @@
                                                   )}
 
                                                   {hasS ? (
-                                                    <div className="resource-btn-group">
+                                                    <div className="resource-btn-group slide">
                                                       <a href={topic.slide} target="_blank" rel="noopener noreferrer" className="resource-link slide" onClick={() => handleResourceClick('google_slides', topic.title, topic.id)}>
                                                         <IconPresentation size={13} /> Slides <IconExternalLink size={10} />
                                                       </a>
@@ -756,7 +756,7 @@
                                                   )}
 
                                                   {hasN ? (
-                                                    <div className="resource-btn-group">
+                                                    <div className="resource-btn-group nlm">
                                                       <a href={topic.nlm} target="_blank" rel="noopener noreferrer" className="resource-link nlm" onClick={() => handleResourceClick('notebook_lm', topic.title, topic.id)}>
                                                         <IconBookOpen size={13} /> NotebookLM <IconExternalLink size={10} />
                                                       </a>
