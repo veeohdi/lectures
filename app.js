@@ -11,6 +11,31 @@ const {
   AnimatePresence
 } = window.Motion;
 
+/* ─── SAM ASANTE LIQUID GLASS COMPONENT ─── */
+const Glass = ({
+  children,
+  className = '',
+  style,
+  optics,
+  ...rest
+}) => {
+  const LG = typeof window !== 'undefined' && window.LiquidGlass ? window.LiquidGlass.Glass || window.LiquidGlass.GlassMaterial : null;
+  if (LG) {
+    return /*#__PURE__*/React.createElement(LG, _extends({
+      className: className,
+      style: {
+        width: '100%',
+        ...style
+      },
+      optics: optics
+    }, rest), children);
+  }
+  return /*#__PURE__*/React.createElement("div", _extends({
+    className: className,
+    style: style
+  }, rest), children);
+};
+
 /* ─── SVG ICONS ─── */
 const Icon = ({
   children,
@@ -271,10 +296,63 @@ function useTheme() {
   };
 }
 
-/* ─── EASTER EGG HOOK ─── */
-function useEasterEggs() {
-  const [easterEggFound, setEasterEggFound] = useState(false);
+/* ─── LIQUID GLASS EASTER EGG HOOK ─── */
+function useLiquidGlass() {
+  const [isUnlocked, setIsUnlocked] = useState(() => {
+    return localStorage.getItem('medvault-liquid-glass-unlocked') === 'true';
+  });
+  const [isLiquidActive, setIsLiquidActive] = useState(() => {
+    return localStorage.getItem('medvault-liquid-glass-active') === 'true';
+  });
+  const [showUnlockModal, setShowUnlockModal] = useState(false);
   const [clickCount, setClickCount] = useState(0);
+  const unlockAndActivate = useCallback((modal = true) => {
+    setIsUnlocked(true);
+    setIsLiquidActive(true);
+    localStorage.setItem('medvault-liquid-glass-unlocked', 'true');
+    localStorage.setItem('medvault-liquid-glass-active', 'true');
+    if (modal) setShowUnlockModal(true);
+    if (window.LiquidGlassEngine?.setActive) {
+      window.LiquidGlassEngine.setActive(true);
+    }
+    if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+  }, []);
+  const toggleLiquidActive = useCallback(() => {
+    setIsLiquidActive(prev => {
+      const next = !prev;
+      localStorage.setItem('medvault-liquid-glass-active', next ? 'true' : 'false');
+      if (window.LiquidGlassEngine?.setActive) {
+        window.LiquidGlassEngine.setActive(next);
+      }
+      return next;
+    });
+  }, []);
+
+  // Sync body class on load and state change
+  useEffect(() => {
+    if (isLiquidActive) {
+      document.body.classList.add('liquid-glass-active');
+      if (window.LiquidGlassETA?.setActive) {
+        window.LiquidGlassETA.setActive(true);
+      }
+    } else {
+      document.body.classList.remove('liquid-glass-active');
+      if (window.LiquidGlassETA?.setActive) {
+        window.LiquidGlassETA.setActive(false);
+      }
+    }
+  }, [isLiquidActive]);
+
+  // URL hash check (#liquidglass) or query parameter (?liquid=1)
+  useEffect(() => {
+    if (window.location.hash.toLowerCase() === '#liquidglass') {
+      unlockAndActivate(true);
+    } else if (new URLSearchParams(window.location.search).get('liquid') === '1') {
+      unlockAndActivate(false);
+    }
+  }, [unlockAndActivate]);
+
+  // Konami code listener
   useEffect(() => {
     const konami = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
     let idx = 0;
@@ -282,7 +360,7 @@ function useEasterEggs() {
       if (e.key === konami[idx]) {
         idx++;
         if (idx === konami.length) {
-          setEasterEggFound(true);
+          unlockAndActivate(true);
           idx = 0;
         }
       } else {
@@ -291,36 +369,35 @@ function useEasterEggs() {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, []);
+  }, [unlockAndActivate]);
+
+  // 5-click logo trigger
   const clickTimeout = useRef(null);
   const handleLogoClick = useCallback(() => {
     setClickCount(c => {
       const nc = c + 1;
       if (nc >= 5) {
-        setEasterEggFound(true);
+        unlockAndActivate(true);
         return 0;
       }
       return nc;
     });
     clearTimeout(clickTimeout.current);
     clickTimeout.current = setTimeout(() => setClickCount(0), 2000);
-  }, []);
-  useEffect(() => {
-    if (easterEggFound) {
-      document.body.classList.add('easter-egg');
-      // Play a fun little haptic if on mobile
-      if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
-    }
-  }, [easterEggFound]);
+  }, [unlockAndActivate]);
   return {
-    easterEggFound,
-    setEasterEggFound,
+    isUnlocked,
+    isLiquidActive,
+    showUnlockModal,
+    setShowUnlockModal,
+    unlockAndActivate,
+    toggleLiquidActive,
     handleLogoClick
   };
 }
 
-/* ─── EASTER EGG MODAL ─── */
-function EasterEggModal({
+/* ─── LIQUID GLASS UNLOCK MODAL ─── */
+function LiquidGlassUnlockModal({
   onClose
 }) {
   const [name, setName] = useState('');
@@ -337,7 +414,7 @@ function EasterEggModal({
         },
         body: JSON.stringify({
           Name: name || 'Anonymous',
-          message: "I found the MedVault Easter Egg!"
+          message: "I unlocked Aave Liquid Glass Mode in MedVault!"
         })
       });
       if (response.ok) {
@@ -375,7 +452,7 @@ function EasterEggModal({
     className: "modal-header"
   }, /*#__PURE__*/React.createElement("h2", {
     className: "modal-title"
-  }, "\uD83C\uDF89 You found a secret!"), /*#__PURE__*/React.createElement("button", {
+  }, "\u2728 Liquid Glass Unlocked!"), /*#__PURE__*/React.createElement("button", {
     className: "modal-close",
     onClick: onClose
   }, /*#__PURE__*/React.createElement(IconX, {
@@ -387,31 +464,51 @@ function EasterEggModal({
     }
   }, /*#__PURE__*/React.createElement("p", {
     style: {
-      marginBottom: '16px',
+      marginBottom: '14px',
+      lineHeight: 1.55
+    }
+  }, "You've discovered the hidden ", /*#__PURE__*/React.createElement("strong", null, "Aave Labs Liquid Glass mode"), "!"), /*#__PURE__*/React.createElement("p", {
+    style: {
+      fontSize: '0.85rem',
+      color: 'var(--text-secondary)',
+      marginBottom: '18px',
       lineHeight: 1.5
     }
-  }, "You've uncovered one of the hidden Easter Eggs! If you'd like to let the creator know you found it, enter your name below."), /*#__PURE__*/React.createElement("form", {
+  }, "The site now features dynamic chromatic refraction, iridescent specular sheen, and an enhanced liquid mesh background. You can toggle this mode anytime from the button in the header."), /*#__PURE__*/React.createElement("form", {
     onSubmit: handleSubmit,
     style: {
       display: 'flex',
       flexDirection: 'column',
-      gap: '12px'
+      gap: '10px'
     }
   }, /*#__PURE__*/React.createElement("input", {
     type: "text",
     className: "search-input",
-    placeholder: "Your name (optional)",
+    placeholder: "Your name for the hall of fame (optional)",
     value: name,
     onChange: e => setName(e.target.value),
     disabled: !!status
-  }), /*#__PURE__*/React.createElement("button", {
-    type: "submit",
-    className: "resource-link gdoc",
+  }), /*#__PURE__*/React.createElement("div", {
     style: {
-      justifyContent: 'center'
+      display: 'flex',
+      gap: '10px',
+      marginTop: '6px'
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "btn btn-ghost",
+    style: {
+      flex: 1
+    },
+    onClick: onClose
+  }, "Close"), /*#__PURE__*/React.createElement("button", {
+    type: "submit",
+    className: "btn btn-primary",
+    style: {
+      flex: 1.5
     },
     disabled: !!status
-  }, status || 'Let them know!')))));
+  }, status || 'Claim Discovery ✨'))))));
 }
 
 /* ─── REQUEST UPDATE MODAL ─── */
@@ -616,23 +713,41 @@ function App() {
     theme,
     toggle: toggleTheme
   } = useTheme();
+  const toastTimeout = useRef(null);
+  const showToast = useCallback(msg => {
+    setToast({
+      visible: true,
+      message: msg
+    });
+    clearTimeout(toastTimeout.current);
+    toastTimeout.current = setTimeout(() => setToast({
+      visible: false,
+      message: ''
+    }), 3000);
+  }, []);
   const {
-    easterEggFound,
-    setEasterEggFound,
+    isUnlocked,
+    isLiquidActive,
+    showUnlockModal,
+    setShowUnlockModal,
+    unlockAndActivate,
+    toggleLiquidActive,
     handleLogoClick
-  } = useEasterEggs();
+  } = useLiquidGlass();
 
-  // Debounce
+  // Debounce & Secret Keyword Detection
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (searchTerm.toLowerCase() === 'liquidglass') {
-        setEasterEggFound(true);
+      const cleaned = searchTerm.toLowerCase().replace(/\s+/g, '');
+      if (cleaned === 'liquidglass') {
+        unlockAndActivate(true);
         setSearchTerm("");
+        showToast("Liquid Glass Mode Activated! 💧");
       }
       setDebouncedSearch(searchTerm);
     }, 300);
     return () => clearTimeout(timer);
-  }, [searchTerm, setEasterEggFound]);
+  }, [searchTerm, unlockAndActivate, showToast]);
 
   // Cmd/Ctrl+K
   useEffect(() => {
@@ -692,18 +807,16 @@ function App() {
       delete document.documentElement.dataset.subject;
     };
   }, [activeSubject]);
-  const toastTimeout = useRef(null);
-  const showToast = useCallback(msg => {
-    setToast({
-      visible: true,
-      message: msg
-    });
-    clearTimeout(toastTimeout.current);
-    toastTimeout.current = setTimeout(() => setToast({
-      visible: false,
-      message: ''
-    }), 3000);
-  }, []);
+
+  // Refresh liquid glass filters on subject/search changes
+  useEffect(() => {
+    if (isLiquidActive && window.LiquidGlassETA?.refresh) {
+      const raf = requestAnimationFrame(() => {
+        window.LiquidGlassETA.refresh();
+      });
+      return () => cancelAnimationFrame(raf);
+    }
+  }, [isLiquidActive, activeSubject, debouncedSearch]);
   const handleSaveLink = useCallback(() => {
     if (newUrlInput.trim()) {
       const d = [...data];
@@ -795,7 +908,16 @@ function App() {
     "aria-hidden": "true"
   }), totalTopics, " Topics")), /*#__PURE__*/React.createElement("div", {
     className: "header-actions"
-  }, /*#__PURE__*/React.createElement("button", {
+  }, isUnlocked && /*#__PURE__*/React.createElement("button", {
+    id: "liquid-glass-toggle",
+    className: `liquid-toggle-btn ${isLiquidActive ? 'active' : ''}`,
+    onClick: toggleLiquidActive,
+    title: isLiquidActive ? "Turn off Liquid Glass Mode" : "Turn on Liquid Glass Mode",
+    "aria-label": "Toggle Liquid Glass Mode"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "liquid-toggle-dot",
+    "aria-hidden": "true"
+  }), /*#__PURE__*/React.createElement("span", null, isLiquidActive ? "Liquid Glass: ON" : "Liquid Glass: OFF")), /*#__PURE__*/React.createElement("button", {
     id: "request-update-btn",
     className: "icon-btn request-btn",
     onClick: () => setIsRequestOpen(true)
@@ -1179,8 +1301,8 @@ function App() {
   }, c)))))))))), /*#__PURE__*/React.createElement(AnimatePresence, null, isRequestOpen && /*#__PURE__*/React.createElement(RequestUpdateModal, {
     onClose: () => setIsRequestOpen(false),
     showToast: showToast
-  })), /*#__PURE__*/React.createElement(AnimatePresence, null, easterEggFound && /*#__PURE__*/React.createElement(EasterEggModal, {
-    onClose: () => setEasterEggFound(false)
+  })), /*#__PURE__*/React.createElement(AnimatePresence, null, showUnlockModal && /*#__PURE__*/React.createElement(LiquidGlassUnlockModal, {
+    onClose: () => setShowUnlockModal(false)
   })), /*#__PURE__*/React.createElement("div", {
     className: `toast ${toast.visible ? 'visible' : 'hidden'}`,
     role: "status",

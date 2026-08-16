@@ -1,6 +1,19 @@
         const { useState, useMemo, useEffect, useRef, useCallback } = React;
         const { motion, AnimatePresence } = window.Motion;
 
+        /* ─── SAM ASANTE LIQUID GLASS COMPONENT ─── */
+        const Glass = ({ children, className = '', style, optics, ...rest }) => {
+          const LG = typeof window !== 'undefined' && window.LiquidGlass ? (window.LiquidGlass.Glass || window.LiquidGlass.GlassMaterial) : null;
+          if (LG) {
+            return (
+              <LG className={className} style={{ width: '100%', ...style }} optics={optics} {...rest}>
+                {children}
+              </LG>
+            );
+          }
+          return <div className={className} style={style} {...rest}>{children}</div>;
+        };
+
         /* ─── SVG ICONS ─── */
         const Icon = ({ children, size = 24, className = "", style }) => (
           <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}>{children}</svg>
@@ -69,11 +82,65 @@
           return { theme, toggle };
         }
 
-        /* ─── EASTER EGG HOOK ─── */
-        function useEasterEggs() {
-          const [easterEggFound, setEasterEggFound] = useState(false);
+        /* ─── LIQUID GLASS EASTER EGG HOOK ─── */
+        function useLiquidGlass() {
+          const [isUnlocked, setIsUnlocked] = useState(() => {
+            return localStorage.getItem('medvault-liquid-glass-unlocked') === 'true';
+          });
+          const [isLiquidActive, setIsLiquidActive] = useState(() => {
+            return localStorage.getItem('medvault-liquid-glass-active') === 'true';
+          });
+          const [showUnlockModal, setShowUnlockModal] = useState(false);
           const [clickCount, setClickCount] = useState(0);
 
+          const unlockAndActivate = useCallback((modal = true) => {
+            setIsUnlocked(true);
+            setIsLiquidActive(true);
+            localStorage.setItem('medvault-liquid-glass-unlocked', 'true');
+            localStorage.setItem('medvault-liquid-glass-active', 'true');
+            if (modal) setShowUnlockModal(true);
+            if (window.LiquidGlassEngine?.setActive) {
+              window.LiquidGlassEngine.setActive(true);
+            }
+            if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+          }, []);
+
+          const toggleLiquidActive = useCallback(() => {
+            setIsLiquidActive(prev => {
+              const next = !prev;
+              localStorage.setItem('medvault-liquid-glass-active', next ? 'true' : 'false');
+              if (window.LiquidGlassEngine?.setActive) {
+                window.LiquidGlassEngine.setActive(next);
+              }
+              return next;
+            });
+          }, []);
+
+          // Sync body class on load and state change
+          useEffect(() => {
+            if (isLiquidActive) {
+              document.body.classList.add('liquid-glass-active');
+              if (window.LiquidGlassETA?.setActive) {
+                window.LiquidGlassETA.setActive(true);
+              }
+            } else {
+              document.body.classList.remove('liquid-glass-active');
+              if (window.LiquidGlassETA?.setActive) {
+                window.LiquidGlassETA.setActive(false);
+              }
+            }
+          }, [isLiquidActive]);
+
+          // URL hash check (#liquidglass) or query parameter (?liquid=1)
+          useEffect(() => {
+            if (window.location.hash.toLowerCase() === '#liquidglass') {
+              unlockAndActivate(true);
+            } else if (new URLSearchParams(window.location.search).get('liquid') === '1') {
+              unlockAndActivate(false);
+            }
+          }, [unlockAndActivate]);
+
+          // Konami code listener
           useEffect(() => {
             const konami = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
             let idx = 0;
@@ -81,7 +148,7 @@
               if (e.key === konami[idx]) {
                 idx++;
                 if (idx === konami.length) {
-                  setEasterEggFound(true);
+                  unlockAndActivate(true);
                   idx = 0;
                 }
               } else {
@@ -90,35 +157,36 @@
             };
             window.addEventListener('keydown', handler);
             return () => window.removeEventListener('keydown', handler);
-          }, []);
+          }, [unlockAndActivate]);
 
+          // 5-click logo trigger
           const clickTimeout = useRef(null);
           const handleLogoClick = useCallback(() => {
             setClickCount(c => {
               const nc = c + 1;
               if (nc >= 5) {
-                setEasterEggFound(true);
+                unlockAndActivate(true);
                 return 0;
               }
               return nc;
             });
             clearTimeout(clickTimeout.current);
             clickTimeout.current = setTimeout(() => setClickCount(0), 2000);
-          }, []);
+          }, [unlockAndActivate]);
 
-          useEffect(() => {
-            if (easterEggFound) {
-              document.body.classList.add('easter-egg');
-              // Play a fun little haptic if on mobile
-              if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
-            }
-          }, [easterEggFound]);
-
-          return { easterEggFound, setEasterEggFound, handleLogoClick };
+          return {
+            isUnlocked,
+            isLiquidActive,
+            showUnlockModal,
+            setShowUnlockModal,
+            unlockAndActivate,
+            toggleLiquidActive,
+            handleLogoClick
+          };
         }
 
-        /* ─── EASTER EGG MODAL ─── */
-        function EasterEggModal({ onClose }) {
+        /* ─── LIQUID GLASS UNLOCK MODAL ─── */
+        function LiquidGlassUnlockModal({ onClose }) {
           const [name, setName] = useState('');
           const [status, setStatus] = useState('');
           
@@ -129,7 +197,7 @@
               const response = await fetch("https://formspree.io/f/xqeogvan", {
                 method: "POST",
                 headers: { "Accept": "application/json", "Content-Type": "application/json" },
-                body: JSON.stringify({ Name: name || 'Anonymous', message: "I found the MedVault Easter Egg!" })
+                body: JSON.stringify({ Name: name || 'Anonymous', message: "I unlocked Aave Liquid Glass Mode in MedVault!" })
               });
               if (response.ok) {
                 setStatus('Sent! 🎉');
@@ -147,23 +215,33 @@
               <motion.div initial={{ scale: 0.94, y: 12 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.94, y: 12 }} className="modal-panel" onClick={e => e.stopPropagation()}>
                 <div className="glass-bg" aria-hidden="true"></div>
                 <div className="modal-header">
-                  <h2 className="modal-title">🎉 You found a secret!</h2>
+                  <h2 className="modal-title">✨ Liquid Glass Unlocked!</h2>
                   <button className="modal-close" onClick={onClose}><IconX size={15} /></button>
                 </div>
                 <div className="modal-body" style={{ textAlign: 'center' }}>
-                  <p style={{ marginBottom: '16px', lineHeight: 1.5 }}>You've uncovered one of the hidden Easter Eggs! If you'd like to let the creator know you found it, enter your name below.</p>
-                  <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <p style={{ marginBottom: '14px', lineHeight: 1.55 }}>
+                    You've discovered the hidden <strong>Aave Labs Liquid Glass mode</strong>!
+                  </p>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '18px', lineHeight: 1.5 }}>
+                    The site now features dynamic chromatic refraction, iridescent specular sheen, and an enhanced liquid mesh background. You can toggle this mode anytime from the button in the header.
+                  </p>
+                  <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <input 
                       type="text" 
                       className="search-input" 
-                      placeholder="Your name (optional)" 
+                      placeholder="Your name for the hall of fame (optional)" 
                       value={name} 
                       onChange={e => setName(e.target.value)} 
                       disabled={!!status}
                     />
-                    <button type="submit" className="resource-link gdoc" style={{ justifyContent: 'center' }} disabled={!!status}>
-                      {status || 'Let them know!'}
-                    </button>
+                    <div style={{ display: 'flex', gap: '10px', marginTop: '6px' }}>
+                      <button type="button" className="btn btn-ghost" style={{ flex: 1 }} onClick={onClose}>
+                        Close
+                      </button>
+                      <button type="submit" className="btn btn-primary" style={{ flex: 1.5 }} disabled={!!status}>
+                        {status || 'Claim Discovery ✨'}
+                      </button>
+                    </div>
                   </form>
                 </div>
               </motion.div>
@@ -314,19 +392,36 @@
           const searchRef = useRef(null);
           const { theme, toggle: toggleTheme } = useTheme();
 
-          const { easterEggFound, setEasterEggFound, handleLogoClick } = useEasterEggs();
+          const toastTimeout = useRef(null);
+          const showToast = useCallback((msg) => {
+            setToast({ visible: true, message: msg });
+            clearTimeout(toastTimeout.current);
+            toastTimeout.current = setTimeout(() => setToast({ visible: false, message: '' }), 3000);
+          }, []);
 
-          // Debounce
+          const {
+            isUnlocked,
+            isLiquidActive,
+            showUnlockModal,
+            setShowUnlockModal,
+            unlockAndActivate,
+            toggleLiquidActive,
+            handleLogoClick
+          } = useLiquidGlass();
+
+          // Debounce & Secret Keyword Detection
           useEffect(() => {
             const timer = setTimeout(() => {
-              if (searchTerm.toLowerCase() === 'liquidglass') {
-                setEasterEggFound(true);
+              const cleaned = searchTerm.toLowerCase().replace(/\s+/g, '');
+              if (cleaned === 'liquidglass') {
+                unlockAndActivate(true);
                 setSearchTerm("");
+                showToast("Liquid Glass Mode Activated! 💧");
               }
               setDebouncedSearch(searchTerm);
             }, 300);
             return () => clearTimeout(timer);
-          }, [searchTerm, setEasterEggFound]);
+          }, [searchTerm, unlockAndActivate, showToast]);
 
           // Cmd/Ctrl+K
           useEffect(() => {
@@ -384,12 +479,15 @@
             return () => { delete document.documentElement.dataset.subject; };
           }, [activeSubject]);
 
-          const toastTimeout = useRef(null);
-          const showToast = useCallback((msg) => {
-            setToast({ visible: true, message: msg });
-            clearTimeout(toastTimeout.current);
-            toastTimeout.current = setTimeout(() => setToast({ visible: false, message: '' }), 3000);
-          }, []);
+          // Refresh liquid glass filters on subject/search changes
+          useEffect(() => {
+            if (isLiquidActive && window.LiquidGlassETA?.refresh) {
+              const raf = requestAnimationFrame(() => {
+                window.LiquidGlassETA.refresh();
+              });
+              return () => cancelAnimationFrame(raf);
+            }
+          }, [isLiquidActive, activeSubject, debouncedSearch]);
 
           const handleSaveLink = useCallback(() => {
             if (newUrlInput.trim()) {
@@ -465,6 +563,18 @@
                       </span>
                     </div>
                     <div className="header-actions">
+                      {isUnlocked && (
+                        <button
+                          id="liquid-glass-toggle"
+                          className={`liquid-toggle-btn ${isLiquidActive ? 'active' : ''}`}
+                          onClick={toggleLiquidActive}
+                          title={isLiquidActive ? "Turn off Liquid Glass Mode" : "Turn on Liquid Glass Mode"}
+                          aria-label="Toggle Liquid Glass Mode"
+                        >
+                          <span className="liquid-toggle-dot" aria-hidden="true"></span>
+                          <span>{isLiquidActive ? "Liquid Glass: ON" : "Liquid Glass: OFF"}</span>
+                        </button>
+                      )}
 
                       <button id="request-update-btn" className="icon-btn request-btn" onClick={() => setIsRequestOpen(true)}>
                         <IconMessageCircle size={14} /> Request Update
@@ -580,76 +690,76 @@
                                     transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: secIdx * 0.05 }}
                                     className="instructor-card glass glass-glow"
                                   >
-                                  <div className="glass-bg" aria-hidden="true"></div>
-                                  <div className="card-header">
-                                    <h3 className="card-instructor">{section.instructor}</h3>
-                                    <span className="card-count">{section.topics.length}</span>
-                                  </div>
+                                    <div className="glass-bg" aria-hidden="true"></div>
+                                    <div className="card-header">
+                                      <h3 className="card-instructor">{section.instructor}</h3>
+                                      <span className="card-count">{section.topics.length}</span>
+                                    </div>
 
-                                  <div className="topic-list">
-                                    <AnimatePresence>
-                                      {section.topics.map(topic => {
-                                        const hasG = !!(topic.gdoc && topic.gdoc.trim());
-                                        const hasN = !!(topic.nlm && topic.nlm.trim());
-                                        const dot = hasG && hasN ? 'full' : (hasG || hasN ? 'partial' : 'none');
+                                      <div className="topic-list">
+                                        <AnimatePresence>
+                                          {section.topics.map(topic => {
+                                            const hasG = !!(topic.gdoc && topic.gdoc.trim());
+                                            const hasN = !!(topic.nlm && topic.nlm.trim());
+                                            const dot = hasG && hasN ? 'full' : (hasG || hasN ? 'partial' : 'none');
 
-                                        return (
-                                          <motion.div
-                                            key={topic.id}
-                                            layout
-                                            {...ANIM_TOPIC}
-                                            className="topic-item"
-                                          >
-                                            <div className="topic-title">
-                                              <span className={`status-dot ${dot}`} title={hasG && hasN ? 'All resources' : hasG || hasN ? 'Partial' : 'No resources'} aria-hidden="true"></span>
-                                              <span>{topic.title}</span>
-                                            </div>
-                                            <div className="resource-buttons">
-                                              {hasG ? (
-                                                <div className="resource-btn-group">
-                                                  <a href={topic.gdoc} target="_blank" rel="noopener noreferrer" className="resource-link gdoc" onClick={() => handleResourceClick('gdoc', topic.title, topic.id)}>
-                                                    <IconFileText size={13} /> Docs <IconExternalLink size={10} />
-                                                  </a>
-                                                  <button className="copy-btn gdoc" onClick={() => handleCopy(topic.gdoc, `${topic.id}-g`)} aria-label="Copy link">
-                                                    {copiedId === `${topic.id}-g` ? <IconCheck size={13} /> : <IconCopy size={13} />}
-                                                  </button>
+                                            return (
+                                              <motion.div
+                                                key={topic.id}
+                                                layout
+                                                {...ANIM_TOPIC}
+                                                className="topic-item"
+                                              >
+                                                <div className="topic-title">
+                                                  <span className={`status-dot ${dot}`} title={hasG && hasN ? 'All resources' : hasG || hasN ? 'Partial' : 'No resources'} aria-hidden="true"></span>
+                                                  <span>{topic.title}</span>
                                                 </div>
-                                              ) : (
-                                                <button className="add-link-btn gdoc" onClick={() => setLinkModal({
-                                                  isOpen: true, topicId: topic.id, type: 'gdoc',
-                                                  subjectIdx: realSubjectIdx,
-                                                  sectionIdx: realSectionIdx
-                                                })}><IconPlus size={13} /> Add Docs</button>
-                                              )}
+                                                <div className="resource-buttons">
+                                                  {hasG ? (
+                                                    <div className="resource-btn-group">
+                                                      <a href={topic.gdoc} target="_blank" rel="noopener noreferrer" className="resource-link gdoc" onClick={() => handleResourceClick('gdoc', topic.title, topic.id)}>
+                                                        <IconFileText size={13} /> Docs <IconExternalLink size={10} />
+                                                      </a>
+                                                      <button className="copy-btn gdoc" onClick={() => handleCopy(topic.gdoc, `${topic.id}-g`)} aria-label="Copy link">
+                                                        {copiedId === `${topic.id}-g` ? <IconCheck size={13} /> : <IconCopy size={13} />}
+                                                      </button>
+                                                    </div>
+                                                  ) : (
+                                                    <button className="add-link-btn gdoc" onClick={() => setLinkModal({
+                                                      isOpen: true, topicId: topic.id, type: 'gdoc',
+                                                      subjectIdx: realSubjectIdx,
+                                                      sectionIdx: realSectionIdx
+                                                    })}><IconPlus size={13} /> Add Docs</button>
+                                                  )}
 
-                                              {hasN ? (
-                                                <div className="resource-btn-group">
-                                                  <a href={topic.nlm} target="_blank" rel="noopener noreferrer" className="resource-link nlm" onClick={() => handleResourceClick('notebook_lm', topic.title, topic.id)}>
-                                                    <IconBookOpen size={13} /> NotebookLM <IconExternalLink size={10} />
-                                                  </a>
-                                                  <button className="copy-btn nlm" onClick={() => handleCopy(topic.nlm, `${topic.id}-n`)} aria-label="Copy link">
-                                                    {copiedId === `${topic.id}-n` ? <IconCheck size={13} /> : <IconCopy size={13} />}
-                                                  </button>
+                                                  {hasN ? (
+                                                    <div className="resource-btn-group">
+                                                      <a href={topic.nlm} target="_blank" rel="noopener noreferrer" className="resource-link nlm" onClick={() => handleResourceClick('notebook_lm', topic.title, topic.id)}>
+                                                        <IconBookOpen size={13} /> NotebookLM <IconExternalLink size={10} />
+                                                      </a>
+                                                      <button className="copy-btn nlm" onClick={() => handleCopy(topic.nlm, `${topic.id}-n`)} aria-label="Copy link">
+                                                        {copiedId === `${topic.id}-n` ? <IconCheck size={13} /> : <IconCopy size={13} />}
+                                                      </button>
+                                                    </div>
+                                                  ) : (
+                                                    topic.nlm !== undefined && (
+                                                      <button className="add-link-btn nlm" onClick={() => setLinkModal({
+                                                        isOpen: true, topicId: topic.id, type: 'nlm',
+                                                        subjectIdx: realSubjectIdx,
+                                                        sectionIdx: realSectionIdx
+                                                      })}><IconPlus size={13} /> Add Notebook</button>
+                                                    )
+                                                  )}
                                                 </div>
-                                              ) : (
-                                                topic.nlm !== undefined && (
-                                                  <button className="add-link-btn nlm" onClick={() => setLinkModal({
-                                                    isOpen: true, topicId: topic.id, type: 'nlm',
-                                                    subjectIdx: realSubjectIdx,
-                                                    sectionIdx: realSectionIdx
-                                                  })}><IconPlus size={13} /> Add Notebook</button>
-                                                )
-                                              )}
-                                            </div>
-                                          </motion.div>
-                                        );
-                                      })}
-                                    </AnimatePresence>
-                                  </div>
-                                </motion.div>
-                              );
-                            })}
-                          </AnimatePresence>
+                                              </motion.div>
+                                            );
+                                          })}
+                                        </AnimatePresence>
+                                      </div>
+                                  </motion.div>
+                                );
+                              })}
+                            </AnimatePresence>
                           </div>
                         </motion.section>
                       );
@@ -719,9 +829,9 @@
                 {isRequestOpen && <RequestUpdateModal onClose={() => setIsRequestOpen(false)} showToast={showToast} />}
               </AnimatePresence>
 
-              {/* ─── EASTER EGG MODAL ─── */}
+              {/* ─── LIQUID GLASS UNLOCK MODAL ─── */}
               <AnimatePresence>
-                {easterEggFound && <EasterEggModal onClose={() => setEasterEggFound(false)} />}
+                {showUnlockModal && <LiquidGlassUnlockModal onClose={() => setShowUnlockModal(false)} />}
               </AnimatePresence>
 
               {/* ─── TOAST ─── */}

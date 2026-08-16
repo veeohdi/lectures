@@ -282,7 +282,7 @@ body {
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
   border-radius: inherit;
   pointer-events: none;
-  transition: background var(--dur-normal) var(--ease-out);
+  transition: opacity var(--dur-normal) var(--ease-out), background var(--dur-normal) var(--ease-out);
 }
 
 /* Specular highlight — top edge light refraction */
@@ -549,9 +549,10 @@ body {
    ───────────────────────────────────────────── */
 .filters {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   overflow-x: auto;
-  padding-bottom: 20px;
+  padding: 8px 12px 20px;
+  margin: 0 -12px;
   border-bottom: 1px solid var(--border-subtle);
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -566,15 +567,24 @@ body {
   white-space: nowrap;
   padding: 8px 18px;
   font-family: var(--font-body);
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 500;
-  border-radius: var(--radius-full);
+  border-radius: 9999px;
   border: 1px solid var(--glass-border);
   background: var(--glass-bg);
   color: var(--text-secondary);
   cursor: pointer;
+  box-shadow:
+    0 1px 2px var(--glass-shadow),
+    0 4px 12px var(--glass-shadow),
+    inset 0 1px 0 var(--specular-top),
+    inset 0 -1px 0 var(--specular-bottom);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
   transition: background-color var(--dur-normal) var(--ease-out), border-color var(--dur-normal) var(--ease-out), color var(--dur-normal) var(--ease-out), transform var(--dur-normal) var(--ease-out), box-shadow var(--dur-normal) var(--ease-out);
   flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
 }
 
 .filter-pill:hover {
@@ -582,18 +592,28 @@ body {
   border-color: var(--glass-border-hover);
   color: var(--text-primary);
   transform: translateY(-1px);
+  box-shadow:
+    0 2px 4px var(--glass-shadow),
+    0 8px 20px var(--glass-shadow-lg),
+    inset 0 1px 0 var(--specular-top),
+    inset 0 -1px 0 var(--specular-bottom);
 }
 .filter-pill:active { transform: scale(0.96); }
 
 .filter-pill.active {
-  border-color: transparent;
   font-weight: 600;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 2px 8px var(--glass-shadow),
+    0 8px 20px var(--glass-shadow-lg),
+    inset 0 1px 0 var(--specular-top);
 }
 
 .filter-pill.active-all {
   background: var(--text-primary);
   color: var(--page-bg);
+  border-color: transparent;
+  box-shadow:
+    0 4px 16px var(--glass-shadow-lg);
 }
 
 .pill-dot {
@@ -602,11 +622,41 @@ body {
   flex-shrink: 0;
 }
 
-.filter-pill.active-pathology { background: var(--accent-pathology); color: #fff; }
-.filter-pill.active-chemistry { background: var(--accent-chemistry); color: #1a1a2e; }
-.filter-pill.active-haematology { background: var(--accent-haematology); color: #fff; }
-.filter-pill.active-microbiology { background: var(--accent-microbiology); color: #1a1a2e; }
-.filter-pill.active-pharmacology { background: var(--accent-pharmacology); color: #fff; }
+.filter-pill.active-pathology {
+  background: var(--accent-pathology);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow:
+    0 4px 16px rgba(79, 156, 249, 0.35);
+}
+.filter-pill.active-chemistry {
+  background: var(--accent-chemistry);
+  color: #1a1a2e;
+  border-color: transparent;
+  box-shadow:
+    0 4px 16px rgba(245, 158, 11, 0.35);
+}
+.filter-pill.active-haematology {
+  background: var(--accent-haematology);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow:
+    0 4px 16px rgba(244, 63, 94, 0.35);
+}
+.filter-pill.active-microbiology {
+  background: var(--accent-microbiology);
+  color: #1a1a2e;
+  border-color: transparent;
+  box-shadow:
+    0 4px 16px rgba(16, 185, 129, 0.35);
+}
+.filter-pill.active-pharmacology {
+  background: var(--accent-pharmacology);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow:
+    0 4px 16px rgba(168, 85, 247, 0.35);
+}
 
 /* ─────────────────────────────────────────────
    CONTENT
@@ -661,20 +711,25 @@ body {
 }
 
 /* ─────────────────────────────────────────────
-   INSTRUCTOR CARD — LIQUID GLASS
+   INSTRUCTOR CARD
    ───────────────────────────────────────────── */
 .instructor-card {
   border-radius: var(--radius-xl);
   display: flex;
   flex-direction: column;
+  position: relative;
+  overflow: hidden;
   box-shadow: 0 1px 1px var(--glass-shadow), 0 8px 24px var(--glass-shadow);
+  transition: transform var(--dur-normal) var(--ease-out), box-shadow var(--dur-normal) var(--ease-out), border-color var(--dur-normal) var(--ease-out);
 }
 
 .instructor-card:hover {
-  box-shadow: 0 2px 4px var(--glass-shadow), 0 12px 40px var(--glass-shadow-lg);
+  transform: translateY(-2px);
+  border-color: var(--glass-border-hover);
+  box-shadow: 0 2px 4px var(--glass-shadow), 0 12px 32px var(--glass-shadow-lg);
 }
 
-/* Remove the glass::before overlay completely for cards to disable edge lighting */
+/* Remove the glass::before overlay completely for cards to disable static edge lighting */
 .instructor-card::before {
   display: none;
 }
@@ -1484,14 +1539,98 @@ body {
 
 
 /* ─────────────────────────────────────────────
-   EASTER EGG VISUAL REWARD
+   PHYSICS-BASED LIQUID GLASS TABS
    ───────────────────────────────────────────── */
-body.easter-egg .mesh-bg .orb {
-  animation-duration: 4s !important; /* Speed up drastically */
-  opacity: 0.8 !important; /* Make much more vibrant */
+
+/* Physics-Based Liquid Glass Tabs Only */
+
+body.liquid-glass-active .search-input {
+  border-color: var(--glass-border);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), inset 0 1px 0 var(--specular-top);
 }
 
-body.easter-egg .mesh-bg .orb-1 { background: radial-gradient(circle, #ff0055 0%, transparent 60%) !important; }
-body.easter-egg .mesh-bg .orb-2 { background: radial-gradient(circle, #00ffaa 0%, transparent 60%) !important; }
-body.easter-egg .mesh-bg .orb-3 { background: radial-gradient(circle, #5500ff 0%, transparent 60%) !important; }
-body.easter-egg .mesh-bg .orb-4 { background: radial-gradient(circle, #ffff00 0%, transparent 60%) !important; }
+body.liquid-glass-active .search-input:focus {
+  border-color: var(--accent-active);
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow:
+    0 0 0 3px var(--accent-active-ring),
+    0 0 20px var(--accent-active-glow),
+    inset 0 1px 0 var(--specular-top);
+}
+
+/* Liquid Glass Modals */
+body.liquid-glass-active .modal-panel {
+  border-color: var(--glass-border-hover);
+  box-shadow:
+    0 35px 80px -15px rgba(0, 0, 0, 0.7),
+    0 0 35px rgba(124, 77, 255, 0.25),
+    inset 0 2px 2px 0 var(--specular-top),
+    inset 0 -1.5px 1px 0 var(--specular-bottom);
+  backdrop-filter: blur(var(--glass-blur-heavy)) saturate(240%);
+  -webkit-backdrop-filter: blur(var(--glass-blur-heavy)) saturate(240%);
+}
+
+/* Liquid Mode Toggle Button */
+.liquid-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 13px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  font-family: var(--font-display);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px var(--glass-shadow), inset 0 1px 0 var(--specular-top);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.liquid-toggle-btn:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px var(--glass-shadow-lg), inset 0 1px 0 var(--specular-top);
+}
+
+.liquid-toggle-btn.active {
+  background: linear-gradient(135deg, rgba(124, 77, 255, 0.3) 0%, rgba(0, 229, 255, 0.25) 100%);
+  border-color: rgba(179, 136, 255, 0.5);
+  color: #ffffff;
+  box-shadow:
+    0 0 15px rgba(124, 77, 255, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.7);
+}
+
+.liquid-toggle-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--text-tertiary);
+  transition: all 0.25s ease;
+}
+
+.liquid-toggle-btn.active .liquid-toggle-dot {
+  background: #00ffaa;
+  box-shadow: 0 0 8px #00ffaa;
+  animation: pulse-glow 2s infinite ease-in-out;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.25); }
+}
+
+/* Gelatinous Feedback on Buttons */
+body.liquid-glass-active .resource-link:hover,
+body.liquid-glass-active .copy-btn:hover,
+body.liquid-glass-active .filter-pill:hover {
+  transform: translateY(-1.5px) scale(1.02);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+}
+
