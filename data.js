@@ -176,7 +176,7 @@ const initialData = [
                 instructor: "Dr. Opara HOD",
                 topics: [
                   { id: 'ha1', title: "Introduction to Immunology, Lymph node Structure and Immune Function Overview", gdoc: "https://docs.google.com/document/d/1AMSzFe2kXiYuEuEBw6_ZN-BgqX2NR4edHSahm11Z7i0/edit", nlm: "https://notebooklm.google.com/notebook/f5ada1dd-0539-4eff-a5c0-fe69947e14e5" },
-                  { id: 'ha2', title: "Lymphopoiesis and Types of Lymphocytes", gdoc: "", nlm: "", slide: "https://drive.google.com/file/d/1tuelYy9hECnd_CByPoxjk8pyBVFyN5bt/view" },
+                  { id: 'ha2', title: "Lymphopoiesis and Types of Lymphocytes", gdoc: "https://docs.google.com/document/d/1nAurg0lPqG-G_lTe8fZjibz9vtTibNAFIUIJMh3ZWxE/edit?usp=sharing", nlm: "", slide: "" },
                   { id: 'ha3', title: "Anemia: Definition, Classification, Assessment, Physiologic Adaptations", gdoc: "https://docs.google.com/document/d/1iNlbuJpq-uaI6_kZCIaIFsKrPFo2dt7Gpev3xFLTtk4/edit?usp=sharing", nlm: "https://notebooklm.google.com/notebook/b8172c22-537d-4fcd-ae2c-1091f05a3dbd" },
                   { id: 'ha4', title: "Benign Disorders of WBC's", gdoc: "", nlm: "" },
                   { id: 'ha6', title: "Iron Metabolism", gdoc: "https://docs.google.com/document/d/1A3drOW34eLhmFYPpxT7m2d9bcZBfEHKMIcvj7_oud_U/edit", nlm: "https://notebooklm.google.com/notebook/b8e6176a-49ee-4c23-ac04-32052d90fc8e", slide: "https://drive.google.com/file/d/1giWHsm0Jo4kNYtWTG5PGCAQKpm3QGVjS/view" },
