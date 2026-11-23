@@ -1650,3 +1650,139 @@ body.liquid-glass-active .filter-pill:hover {
   transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
 }
 
+/* ─────────────────────────────────────────────
+   VIEW MODE SEGMENTED CONTROL (Departments vs Systems)
+   ───────────────────────────────────────────── */
+.view-mode-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 18px;
+  margin-bottom: 6px;
+}
+
+.view-mode-toggle {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-full);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  box-shadow: 0 2px 8px var(--glass-shadow), inset 0 1px 0 var(--specular-top);
+  gap: 4px;
+}
+
+.view-mode-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--dur-normal) var(--ease-out);
+}
+
+.view-mode-btn:hover {
+  color: var(--text-primary);
+  background: var(--glass-bg-hover);
+}
+
+.view-mode-btn.active {
+  color: var(--text-primary);
+  background: var(--glass-bg-solid);
+  border-color: var(--border-subtle);
+  box-shadow: 0 1px 4px var(--glass-shadow), inset 0 1px 0 var(--specular-top);
+  font-weight: 600;
+}
+
+/* Active System Filter Pill */
+.filter-pill.active-system {
+  background: var(--glass-bg-solid);
+  border-color: var(--accent-active);
+  color: var(--text-primary);
+  box-shadow: 0 0 12px var(--accent-active-ring), inset 0 1px 0 var(--specular-top);
+}
+
+/* System Header & Description */
+.system-section .cards-grid {
+  grid-template-columns: 1fr;
+  max-width: 980px;
+}
+
+.system-icon-wrap {
+  background: rgba(124, 77, 255, 0.12) !important;
+  color: #b388ff !important;
+  border-color: rgba(179, 136, 255, 0.25) !important;
+}
+
+.system-description {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  max-width: 680px;
+  line-height: 1.4;
+}
+
+/* System Topic Badges */
+.topic-title-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.topic-meta-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.subject-badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.subject-badge.pathology {
+  background: var(--accent-pathology-soft);
+  color: var(--accent-pathology);
+  border: 1px solid rgba(33, 150, 243, 0.25);
+}
+.subject-badge.chemistry {
+  background: var(--accent-chemistry-soft);
+  color: var(--accent-chemistry);
+  border: 1px solid rgba(255, 152, 0, 0.25);
+}
+.subject-badge.haematology {
+  background: var(--accent-haematology-soft);
+  color: var(--accent-haematology);
+  border: 1px solid rgba(244, 67, 54, 0.25);
+}
+.subject-badge.microbiology {
+  background: var(--accent-microbiology-soft);
+  color: var(--accent-microbiology);
+  border: 1px solid rgba(76, 175, 80, 0.25);
+}
+.subject-badge.pharmacology {
+  background: var(--accent-pharmacology-soft);
+  color: var(--accent-pharmacology);
+  border: 1px solid rgba(156, 39, 176, 0.25);
+}
+
+.instructor-badge {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+

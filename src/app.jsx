@@ -37,12 +37,18 @@
         // Moon icon for dark mode
         const IconMoon = (p) => <Icon {...p}><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></Icon>;
 
-        // Subject icons
+        // Subject & System icons
         const IconMicroscope = (p) => <Icon {...p}><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></Icon>;
         const IconBeaker = (p) => <Icon {...p}><path d="M4.5 3h15"/><path d="M6 3v16a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V3"/><path d="M6 14h12"/></Icon>;
         const IconDroplet = (p) => <Icon {...p}><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></Icon>;
         const IconShieldAlert = (p) => <Icon {...p}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></Icon>;
         const IconPill = (p) => <Icon {...p}><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></Icon>;
+        const IconBuilding = (p) => <Icon {...p}><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="9" y1="22" x2="9" y2="18"/><line x1="15" y1="22" x2="15" y2="18"/><line x1="9" y1="6" x2="9" y2="6.01"/><line x1="15" y1="6" x2="15" y2="6.01"/><line x1="9" y1="10" x2="9" y2="10.01"/><line x1="15" y1="10" x2="15" y2="10.01"/><line x1="9" y1="14" x2="9" y2="14.01"/><line x1="15" y1="14" x2="15" y2="14.01"/></Icon>;
+        const IconActivity = (p) => <Icon {...p}><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></Icon>;
+        const IconWind = (p) => <Icon {...p}><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></Icon>;
+        const IconZap = (p) => <Icon {...p}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></Icon>;
+        const IconShield = (p) => <Icon {...p}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></Icon>;
+        const IconLayers = (p) => <Icon {...p}><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></Icon>;
 
         /* ─── SUBJECT METADATA ─── */
         const SUBJECT_META = {
@@ -377,9 +383,19 @@
            ============================================ */
         function App() {
           const [data, setData] = useState(typeof initialData !== 'undefined' ? initialData : []);
+          const [viewMode, setViewMode] = useState(() => {
+            try {
+              const param = new URLSearchParams(window.location.search).get('view');
+              if (param === 'systems' || param === 'departments') return param;
+              return localStorage.getItem('medvault-view-mode') || 'departments';
+            } catch (e) {
+              return 'departments';
+            }
+          });
           const [searchTerm, setSearchTerm] = useState("");
           const [debouncedSearch, setDebouncedSearch] = useState("");
           const [activeSubject, setActiveSubject] = useState("All");
+          const [activeSystem, setActiveSystem] = useState("All");
           const [copiedId, setCopiedId] = useState(null);
           const [toast, setToast] = useState({ visible: false, message: '' });
           const [linkModal, setLinkModal] = useState({ isOpen: false });
@@ -480,23 +496,49 @@
             return () => { delete document.documentElement.dataset.subject; };
           }, [activeSubject]);
 
-          // Refresh liquid glass filters on subject/search changes
+          // Refresh liquid glass filters on viewMode, subject, system, or search changes
           useEffect(() => {
-            if (isLiquidActive && window.LiquidGlassETA?.refresh) {
-              const raf = requestAnimationFrame(() => {
-                window.LiquidGlassETA.refresh();
-              });
-              return () => cancelAnimationFrame(raf);
+            const timer = setTimeout(() => {
+              if (typeof window !== 'undefined' && window.LiquidGlassTabs && window.LiquidGlassTabs.refresh) {
+                window.LiquidGlassTabs.refresh();
+              }
+            }, 100);
+            return () => clearTimeout(timer);
+          }, [viewMode, activeSubject, activeSystem, debouncedSearch]);
+
+          const hydratedBlocks = useMemo(() => {
+            if (typeof window !== 'undefined' && window.getHydratedStudyBlocks && window.studyBlocks) {
+              return window.getHydratedStudyBlocks(data, window.studyBlocks);
             }
-          }, [isLiquidActive, activeSubject, debouncedSearch]);
+            return [];
+          }, [data]);
 
           const handleSaveLink = useCallback(() => {
             if (newUrlInput.trim()) {
               const d = [...data];
               const { subjectIdx, sectionIdx, topicId, type } = linkModal;
-              const ti = d[subjectIdx].sections[sectionIdx].topics.findIndex(t => t.id === topicId);
-              if (ti > -1) {
-                d[subjectIdx].sections[sectionIdx].topics[ti][type] = newUrlInput;
+              let found = false;
+              if (subjectIdx !== undefined && sectionIdx !== undefined && subjectIdx > -1 && sectionIdx > -1 && d[subjectIdx]?.sections?.[sectionIdx]) {
+                const ti = d[subjectIdx].sections[sectionIdx].topics.findIndex(t => t.id === topicId);
+                if (ti > -1) {
+                  d[subjectIdx].sections[sectionIdx].topics[ti][type] = newUrlInput;
+                  found = true;
+                }
+              }
+              if (!found) {
+                for (let si = 0; si < d.length; si++) {
+                  for (let seci = 0; seci < d[si].sections.length; seci++) {
+                    const ti = d[si].sections[seci].topics.findIndex(t => t.id === topicId);
+                    if (ti > -1) {
+                      d[si].sections[seci].topics[ti][type] = newUrlInput;
+                      found = true;
+                      break;
+                    }
+                  }
+                  if (found) break;
+                }
+              }
+              if (found) {
                 setData(d);
                 const label = type === 'gdoc' ? 'Google Docs' : type === 'slide' ? 'Google Slides' : 'NotebookLM';
                 showToast(`Linked to ${label}!`);
@@ -523,32 +565,46 @@
             }
           }, []);
 
-
-
-          const { filteredData, totalTopics } = useMemo(() => {
+          const { filteredData, filteredSystems, totalTopics } = useMemo(() => {
             const query = (debouncedSearch || '').toLowerCase();
             const fuzzyRe = debouncedSearch ? new RegExp(debouncedSearch.split('').map(c => c.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('.*'), 'i') : null;
 
-            let total = 0;
-            const filtered = data
-              .filter(s => activeSubject === "All" || s.subject === activeSubject)
-              .map(s => {
-                const mappedSections = s.sections
-                  .map(sec => {
-                    const filteredTopics = sec.topics.filter(t => {
-                      if (!query) return true;
-                      return t.title.toLowerCase().includes(query) || (fuzzyRe && fuzzyRe.test(t.title));
-                    });
-                    total += filteredTopics.length;
-                    return { ...sec, topics: filteredTopics };
-                  })
-                  .filter(sec => sec.topics.length > 0);
-                return { ...s, sections: mappedSections };
-              })
-              .filter(s => s.sections.length > 0);
+            const matchesTopic = (t) => {
+              if (!query) return true;
+              return t.title.toLowerCase().includes(query) || (fuzzyRe && fuzzyRe.test(t.title));
+            };
 
-            return { filteredData: filtered, totalTopics: total };
-          }, [data, debouncedSearch, activeSubject]);
+            if (viewMode === 'departments') {
+              let total = 0;
+              const filtered = data
+                .filter(s => activeSubject === "All" || s.subject === activeSubject)
+                .map(s => {
+                  const mappedSections = s.sections
+                    .map(sec => {
+                      const filteredTopics = sec.topics.filter(matchesTopic);
+                      total += filteredTopics.length;
+                      return { ...sec, topics: filteredTopics };
+                    })
+                    .filter(sec => sec.topics.length > 0);
+                  return { ...s, sections: mappedSections };
+                })
+                .filter(s => s.sections.length > 0);
+
+              return { filteredData: filtered, filteredSystems: [], totalTopics: total };
+            } else {
+              let total = 0;
+              const filtered = hydratedBlocks
+                .filter(b => activeSystem === "All" || b.id === activeSystem)
+                .map(b => {
+                  const filteredTopics = b.topics.filter(matchesTopic);
+                  total += filteredTopics.length;
+                  return { ...b, topics: filteredTopics };
+                })
+                .filter(b => b.topics.length > 0);
+
+              return { filteredData: [], filteredSystems: filtered, totalTopics: total };
+            }
+          }, [data, hydratedBlocks, viewMode, debouncedSearch, activeSubject, activeSystem]);
 
           return (
             <div className="app-container">
@@ -614,34 +670,86 @@
                   </div>
                 </div>
 
-                <nav className="filters" aria-label="Filter by subject">
-                  <button
-                    id="filter-all"
-                    className={`filter-pill ${activeSubject === "All" ? "active active-all" : ""}`}
-                    onClick={() => setActiveSubject("All")}
-                  >All Subjects</button>
-                  {data.map(subj => {
-                    const m = getSubjectMeta(subj.subject);
-                    const on = activeSubject === subj.subject;
-                    return (
-                      <button
-                        key={subj.subject}
-                        id={`filter-${m.key}`}
-                        className={`filter-pill ${on ? `active active-${m.key}` : ""}`}
-                        onClick={() => setActiveSubject(subj.subject)}
-                      >
-                        <span className="pill-dot" style={{ background: on ? 'currentColor' : `var(--accent-${m.key})` }} aria-hidden="true"></span>
-                        {subj.subject}
-                      </button>
-                    );
-                  })}
-                </nav>
+                <div className="view-mode-bar">
+                  <div className="view-mode-toggle" role="tablist" aria-label="Organization format">
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={viewMode === 'departments'}
+                      className={`view-mode-btn ${viewMode === 'departments' ? 'active' : ''}`}
+                      onClick={() => {
+                        setViewMode('departments');
+                        try { localStorage.setItem('medvault-view-mode', 'departments'); } catch(e){}
+                      }}
+                    >
+                      <IconBuilding size={14} /> By Department
+                    </button>
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={viewMode === 'systems'}
+                      className={`view-mode-btn ${viewMode === 'systems' ? 'active' : ''}`}
+                      onClick={() => {
+                        setViewMode('systems');
+                        try { localStorage.setItem('medvault-view-mode', 'systems'); } catch(e){}
+                      }}
+                    >
+                      <IconActivity size={14} /> By Organ System
+                    </button>
+                  </div>
+                </div>
+
+                {viewMode === 'departments' ? (
+                  <nav className="filters" aria-label="Filter by department">
+                    <button
+                      id="filter-all"
+                      className={`filter-pill ${activeSubject === "All" ? "active active-all" : ""}`}
+                      onClick={() => setActiveSubject("All")}
+                    >All Subjects</button>
+                    {data.map(subj => {
+                      const m = getSubjectMeta(subj.subject);
+                      const on = activeSubject === subj.subject;
+                      return (
+                        <button
+                          key={subj.subject}
+                          id={`filter-${m.key}`}
+                          className={`filter-pill ${on ? `active active-${m.key}` : ""}`}
+                          onClick={() => setActiveSubject(subj.subject)}
+                        >
+                          <span className="pill-dot" style={{ background: on ? 'currentColor' : `var(--accent-${m.key})` }} aria-hidden="true"></span>
+                          {subj.subject}
+                        </button>
+                      );
+                    })}
+                  </nav>
+                ) : (
+                  <nav className="filters" aria-label="Filter by organ system">
+                    <button
+                      id="filter-all-systems"
+                      className={`filter-pill ${activeSystem === "All" ? "active active-all" : ""}`}
+                      onClick={() => setActiveSystem("All")}
+                    >All Systems</button>
+                    {(typeof window !== 'undefined' && window.studyBlocks ? window.studyBlocks : []).map(block => {
+                      const on = activeSystem === block.id;
+                      return (
+                        <button
+                          key={block.id}
+                          id={`filter-system-${block.id}`}
+                          className={`filter-pill ${on ? "active active-system" : ""}`}
+                          onClick={() => setActiveSystem(block.id)}
+                        >
+                          {block.shortName || block.name}
+                        </button>
+                      );
+                    })}
+                  </nav>
+                )}
               </header>
 
               {/* ─── CONTENT ─── */}
               <main className="content-area">
                 <AnimatePresence mode="popLayout">
-                  {filteredData.length === 0 ? (
+                  {((viewMode === 'departments' && filteredData.length === 0) || (viewMode === 'systems' && filteredSystems.length === 0)) ? (
                     <motion.div
                       key="empty"
                       initial={{ opacity: 0, scale: 0.96 }}
@@ -654,7 +762,7 @@
                       <h3>No topics found</h3>
                       <p>Try adjusting your search or filters.</p>
                     </motion.div>
-                  ) : (
+                  ) : viewMode === 'departments' ? (
                     filteredData.map(subject => {
                       const meta = getSubjectMeta(subject.subject);
                       const SubjectIcon = meta.icon;
@@ -783,6 +891,138 @@
                                 );
                               })}
                             </AnimatePresence>
+                          </div>
+                        </motion.section>
+                      );
+                    })
+                  ) : (
+                    filteredSystems.map(system => {
+                      return (
+                        <motion.section
+                          key={system.id}
+                          layout
+                          initial={{ opacity: 0, y: 30 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true, margin: "-50px" }}
+                          exit={{ opacity: 0, scale: 0.97 }}
+                          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                          className="subject-section system-section"
+                        >
+                          <div className="subject-header">
+                            <div className="subject-icon-wrap system-icon-wrap">
+                              <IconActivity size={22} />
+                            </div>
+                            <div>
+                              <h2 className="subject-title">{system.name}</h2>
+                              {system.description && (
+                                <p className="system-description">{system.description}</p>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="cards-grid">
+                            <motion.div
+                              layout
+                              {...ANIM_FULL_SEC}
+                              exit={ANIM_EXIT}
+                              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                              className="instructor-card glass glass-glow"
+                            >
+                              <div className="glass-bg" aria-hidden="true"></div>
+                              <div className="card-header">
+                                <h3 className="card-instructor">Core Clinical Lectures</h3>
+                                <span className="card-count">{system.topics.length}</span>
+                              </div>
+
+                              <div className="topic-list">
+                                <AnimatePresence>
+                                  {system.topics.map(topic => {
+                                    const hasG = !!(topic.gdoc && topic.gdoc.trim());
+                                    const hasN = !!(topic.nlm && topic.nlm.trim());
+                                    const hasS = !!(topic.slide && topic.slide.trim());
+                                    const dot = (hasG && hasN && hasS) ? 'full' : ((hasG || hasN || hasS) ? 'partial' : 'none');
+                                    const dotTitle = (hasG && hasN && hasS) ? 'All resources' : ((hasG || hasN || hasS) ? 'Partial resources' : 'No resources');
+                                    const meta = getSubjectMeta(topic.subject);
+
+                                    return (
+                                      <motion.div
+                                        key={topic.id}
+                                        layout
+                                        {...ANIM_TOPIC}
+                                        className="topic-item"
+                                      >
+                                        <div className="topic-title">
+                                          <span className={`status-dot ${dot}`} title={dotTitle} aria-hidden="true"></span>
+                                          <div className="topic-title-content">
+                                            <span>{topic.title}</span>
+                                            <div className="topic-meta-badges">
+                                              <span className={`subject-badge ${meta.key}`}>
+                                                {topic.subject}
+                                              </span>
+                                              {topic.instructor && (
+                                                <span className="instructor-badge">
+                                                  {topic.instructor}
+                                                </span>
+                                              )}
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div className="resource-buttons">
+                                          {hasG ? (
+                                            <div className="resource-btn-group gdoc">
+                                              <a href={topic.gdoc} target="_blank" rel="noopener noreferrer" className="resource-link gdoc" onClick={() => handleResourceClick('gdoc', topic.title, topic.id)}>
+                                                <IconFileText size={13} /> Docs <IconExternalLink size={10} />
+                                              </a>
+                                              <button className="copy-btn gdoc" onClick={() => handleCopy(topic.gdoc, `${topic.id}-g`)} aria-label="Copy link">
+                                                {copiedId === `${topic.id}-g` ? <IconCheck size={13} /> : <IconCopy size={13} />}
+                                              </button>
+                                            </div>
+                                          ) : (
+                                            <button className="add-link-btn gdoc" onClick={() => setLinkModal({
+                                              isOpen: true, topicId: topic.id, type: 'gdoc'
+                                            })}><IconPlus size={13} /> Add Docs</button>
+                                          )}
+
+                                          {hasS ? (
+                                            <div className="resource-btn-group slide">
+                                              <a href={topic.slide} target="_blank" rel="noopener noreferrer" className="resource-link slide" onClick={() => handleResourceClick('google_slides', topic.title, topic.id)}>
+                                                <IconPresentation size={13} /> Slides <IconExternalLink size={10} />
+                                              </a>
+                                              <button className="copy-btn slide" onClick={() => handleCopy(topic.slide, `${topic.id}-s`)} aria-label="Copy link">
+                                                {copiedId === `${topic.id}-s` ? <IconCheck size={13} /> : <IconCopy size={13} />}
+                                              </button>
+                                            </div>
+                                          ) : (
+                                            topic.slide !== undefined && (
+                                              <button className="add-link-btn slide" onClick={() => setLinkModal({
+                                                isOpen: true, topicId: topic.id, type: 'slide'
+                                              })}><IconPlus size={13} /> Add Slides</button>
+                                            )
+                                          )}
+
+                                          {hasN ? (
+                                            <div className="resource-btn-group nlm">
+                                              <a href={topic.nlm} target="_blank" rel="noopener noreferrer" className="resource-link nlm" onClick={() => handleResourceClick('notebook_lm', topic.title, topic.id)}>
+                                                <IconBookOpen size={13} /> NotebookLM <IconExternalLink size={10} />
+                                              </a>
+                                              <button className="copy-btn nlm" onClick={() => handleCopy(topic.nlm, `${topic.id}-n`)} aria-label="Copy link">
+                                                {copiedId === `${topic.id}-n` ? <IconCheck size={13} /> : <IconCopy size={13} />}
+                                              </button>
+                                            </div>
+                                          ) : (
+                                            topic.nlm !== undefined && (
+                                              <button className="add-link-btn nlm" onClick={() => setLinkModal({
+                                                isOpen: true, topicId: topic.id, type: 'nlm'
+                                              })}><IconPlus size={13} /> Add Notebook</button>
+                                            )
+                                          )}
+                                        </div>
+                                      </motion.div>
+                                    );
+                                  })}
+                                </AnimatePresence>
+                              </div>
+                            </motion.div>
                           </div>
                         </motion.section>
                       );

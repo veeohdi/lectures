@@ -191,7 +191,7 @@ const IconMoon = p => /*#__PURE__*/React.createElement(Icon, p, /*#__PURE__*/Rea
   d: "M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"
 }));
 
-// Subject icons
+// Subject & System icons
 const IconMicroscope = p => /*#__PURE__*/React.createElement(Icon, p, /*#__PURE__*/React.createElement("path", {
   d: "M6 18h8"
 }), /*#__PURE__*/React.createElement("path", {
@@ -232,6 +232,77 @@ const IconPill = p => /*#__PURE__*/React.createElement(Icon, p, /*#__PURE__*/Rea
   d: "m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"
 }), /*#__PURE__*/React.createElement("path", {
   d: "m8.5 8.5 7 7"
+}));
+const IconBuilding = p => /*#__PURE__*/React.createElement(Icon, p, /*#__PURE__*/React.createElement("rect", {
+  x: "4",
+  y: "2",
+  width: "16",
+  height: "20",
+  rx: "2",
+  ry: "2"
+}), /*#__PURE__*/React.createElement("line", {
+  x1: "9",
+  y1: "22",
+  x2: "9",
+  y2: "18"
+}), /*#__PURE__*/React.createElement("line", {
+  x1: "15",
+  y1: "22",
+  x2: "15",
+  y2: "18"
+}), /*#__PURE__*/React.createElement("line", {
+  x1: "9",
+  y1: "6",
+  x2: "9",
+  y2: "6.01"
+}), /*#__PURE__*/React.createElement("line", {
+  x1: "15",
+  y1: "6",
+  x2: "15",
+  y2: "6.01"
+}), /*#__PURE__*/React.createElement("line", {
+  x1: "9",
+  y1: "10",
+  x2: "9",
+  y2: "10.01"
+}), /*#__PURE__*/React.createElement("line", {
+  x1: "15",
+  y1: "10",
+  x2: "15",
+  y2: "10.01"
+}), /*#__PURE__*/React.createElement("line", {
+  x1: "9",
+  y1: "14",
+  x2: "9",
+  y2: "14.01"
+}), /*#__PURE__*/React.createElement("line", {
+  x1: "15",
+  y1: "14",
+  x2: "15",
+  y2: "14.01"
+}));
+const IconActivity = p => /*#__PURE__*/React.createElement(Icon, p, /*#__PURE__*/React.createElement("polyline", {
+  points: "22 12 18 12 15 21 9 3 6 12 2 12"
+}));
+const IconWind = p => /*#__PURE__*/React.createElement(Icon, p, /*#__PURE__*/React.createElement("path", {
+  d: "M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M9.6 4.6A2 2 0 1 1 11 8H2"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M12.6 19.4A2 2 0 1 0 14 16H2"
+}));
+const IconZap = p => /*#__PURE__*/React.createElement(Icon, p, /*#__PURE__*/React.createElement("polygon", {
+  points: "13 2 3 14 12 14 11 22 21 10 12 10 13 2"
+}));
+const IconShield = p => /*#__PURE__*/React.createElement(Icon, p, /*#__PURE__*/React.createElement("path", {
+  d: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"
+}));
+const IconLayers = p => /*#__PURE__*/React.createElement(Icon, p, /*#__PURE__*/React.createElement("polygon", {
+  points: "12 2 2 7 12 12 22 7 12 2"
+}), /*#__PURE__*/React.createElement("polyline", {
+  points: "2 17 12 22 22 17"
+}), /*#__PURE__*/React.createElement("polyline", {
+  points: "2 12 12 17 22 12"
 }));
 
 /* ─── SUBJECT METADATA ─── */
@@ -708,9 +779,19 @@ function RequestUpdateModal({
    ============================================ */
 function App() {
   const [data, setData] = useState(typeof initialData !== 'undefined' ? initialData : []);
+  const [viewMode, setViewMode] = useState(() => {
+    try {
+      const param = new URLSearchParams(window.location.search).get('view');
+      if (param === 'systems' || param === 'departments') return param;
+      return localStorage.getItem('medvault-view-mode') || 'departments';
+    } catch (e) {
+      return 'departments';
+    }
+  });
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [activeSubject, setActiveSubject] = useState("All");
+  const [activeSystem, setActiveSystem] = useState("All");
   const [copiedId, setCopiedId] = useState(null);
   const [toast, setToast] = useState({
     visible: false,
@@ -825,15 +906,21 @@ function App() {
     };
   }, [activeSubject]);
 
-  // Refresh liquid glass filters on subject/search changes
+  // Refresh liquid glass filters on viewMode, subject, system, or search changes
   useEffect(() => {
-    if (isLiquidActive && window.LiquidGlassETA?.refresh) {
-      const raf = requestAnimationFrame(() => {
-        window.LiquidGlassETA.refresh();
-      });
-      return () => cancelAnimationFrame(raf);
+    const timer = setTimeout(() => {
+      if (typeof window !== 'undefined' && window.LiquidGlassTabs && window.LiquidGlassTabs.refresh) {
+        window.LiquidGlassTabs.refresh();
+      }
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [viewMode, activeSubject, activeSystem, debouncedSearch]);
+  const hydratedBlocks = useMemo(() => {
+    if (typeof window !== 'undefined' && window.getHydratedStudyBlocks && window.studyBlocks) {
+      return window.getHydratedStudyBlocks(data, window.studyBlocks);
     }
-  }, [isLiquidActive, activeSubject, debouncedSearch]);
+    return [];
+  }, [data]);
   const handleSaveLink = useCallback(() => {
     if (newUrlInput.trim()) {
       const d = [...data];
@@ -843,9 +930,28 @@ function App() {
         topicId,
         type
       } = linkModal;
-      const ti = d[subjectIdx].sections[sectionIdx].topics.findIndex(t => t.id === topicId);
-      if (ti > -1) {
-        d[subjectIdx].sections[sectionIdx].topics[ti][type] = newUrlInput;
+      let found = false;
+      if (subjectIdx !== undefined && sectionIdx !== undefined && subjectIdx > -1 && sectionIdx > -1 && d[subjectIdx]?.sections?.[sectionIdx]) {
+        const ti = d[subjectIdx].sections[sectionIdx].topics.findIndex(t => t.id === topicId);
+        if (ti > -1) {
+          d[subjectIdx].sections[sectionIdx].topics[ti][type] = newUrlInput;
+          found = true;
+        }
+      }
+      if (!found) {
+        for (let si = 0; si < d.length; si++) {
+          for (let seci = 0; seci < d[si].sections.length; seci++) {
+            const ti = d[si].sections[seci].topics.findIndex(t => t.id === topicId);
+            if (ti > -1) {
+              d[si].sections[seci].topics[ti][type] = newUrlInput;
+              found = true;
+              break;
+            }
+          }
+          if (found) break;
+        }
+      }
+      if (found) {
         setData(d);
         const label = type === 'gdoc' ? 'Google Docs' : type === 'slide' ? 'Google Slides' : 'NotebookLM';
         showToast(`Linked to ${label}!`);
@@ -873,33 +979,53 @@ function App() {
   }, []);
   const {
     filteredData,
+    filteredSystems,
     totalTopics
   } = useMemo(() => {
     const query = (debouncedSearch || '').toLowerCase();
     const fuzzyRe = debouncedSearch ? new RegExp(debouncedSearch.split('').map(c => c.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('.*'), 'i') : null;
-    let total = 0;
-    const filtered = data.filter(s => activeSubject === "All" || s.subject === activeSubject).map(s => {
-      const mappedSections = s.sections.map(sec => {
-        const filteredTopics = sec.topics.filter(t => {
-          if (!query) return true;
-          return t.title.toLowerCase().includes(query) || fuzzyRe && fuzzyRe.test(t.title);
-        });
+    const matchesTopic = t => {
+      if (!query) return true;
+      return t.title.toLowerCase().includes(query) || fuzzyRe && fuzzyRe.test(t.title);
+    };
+    if (viewMode === 'departments') {
+      let total = 0;
+      const filtered = data.filter(s => activeSubject === "All" || s.subject === activeSubject).map(s => {
+        const mappedSections = s.sections.map(sec => {
+          const filteredTopics = sec.topics.filter(matchesTopic);
+          total += filteredTopics.length;
+          return {
+            ...sec,
+            topics: filteredTopics
+          };
+        }).filter(sec => sec.topics.length > 0);
+        return {
+          ...s,
+          sections: mappedSections
+        };
+      }).filter(s => s.sections.length > 0);
+      return {
+        filteredData: filtered,
+        filteredSystems: [],
+        totalTopics: total
+      };
+    } else {
+      let total = 0;
+      const filtered = hydratedBlocks.filter(b => activeSystem === "All" || b.id === activeSystem).map(b => {
+        const filteredTopics = b.topics.filter(matchesTopic);
         total += filteredTopics.length;
         return {
-          ...sec,
+          ...b,
           topics: filteredTopics
         };
-      }).filter(sec => sec.topics.length > 0);
+      }).filter(b => b.topics.length > 0);
       return {
-        ...s,
-        sections: mappedSections
+        filteredData: [],
+        filteredSystems: filtered,
+        totalTopics: total
       };
-    }).filter(s => s.sections.length > 0);
-    return {
-      filteredData: filtered,
-      totalTopics: total
-    };
-  }, [data, debouncedSearch, activeSubject]);
+    }
+  }, [data, hydratedBlocks, viewMode, debouncedSearch, activeSubject, activeSystem]);
   return /*#__PURE__*/React.createElement("div", {
     className: "app-container"
   }, /*#__PURE__*/React.createElement("header", {
@@ -976,9 +1102,41 @@ function App() {
   }), /*#__PURE__*/React.createElement("span", {
     className: "search-shortcut",
     "aria-hidden": "true"
-  }, "\u2318K")))), /*#__PURE__*/React.createElement("nav", {
+  }, "\u2318K")))), /*#__PURE__*/React.createElement("div", {
+    className: "view-mode-bar"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "view-mode-toggle",
+    role: "tablist",
+    "aria-label": "Organization format"
+  }, /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    role: "tab",
+    "aria-selected": viewMode === 'departments',
+    className: `view-mode-btn ${viewMode === 'departments' ? 'active' : ''}`,
+    onClick: () => {
+      setViewMode('departments');
+      try {
+        localStorage.setItem('medvault-view-mode', 'departments');
+      } catch (e) {}
+    }
+  }, /*#__PURE__*/React.createElement(IconBuilding, {
+    size: 14
+  }), " By Department"), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    role: "tab",
+    "aria-selected": viewMode === 'systems',
+    className: `view-mode-btn ${viewMode === 'systems' ? 'active' : ''}`,
+    onClick: () => {
+      setViewMode('systems');
+      try {
+        localStorage.setItem('medvault-view-mode', 'systems');
+      } catch (e) {}
+    }
+  }, /*#__PURE__*/React.createElement(IconActivity, {
+    size: 14
+  }), " By Organ System"))), viewMode === 'departments' ? /*#__PURE__*/React.createElement("nav", {
     className: "filters",
-    "aria-label": "Filter by subject"
+    "aria-label": "Filter by department"
   }, /*#__PURE__*/React.createElement("button", {
     id: "filter-all",
     className: `filter-pill ${activeSubject === "All" ? "active active-all" : ""}`,
@@ -998,11 +1156,26 @@ function App() {
       },
       "aria-hidden": "true"
     }), subj.subject);
+  })) : /*#__PURE__*/React.createElement("nav", {
+    className: "filters",
+    "aria-label": "Filter by organ system"
+  }, /*#__PURE__*/React.createElement("button", {
+    id: "filter-all-systems",
+    className: `filter-pill ${activeSystem === "All" ? "active active-all" : ""}`,
+    onClick: () => setActiveSystem("All")
+  }, "All Systems"), (typeof window !== 'undefined' && window.studyBlocks ? window.studyBlocks : []).map(block => {
+    const on = activeSystem === block.id;
+    return /*#__PURE__*/React.createElement("button", {
+      key: block.id,
+      id: `filter-system-${block.id}`,
+      className: `filter-pill ${on ? "active active-system" : ""}`,
+      onClick: () => setActiveSystem(block.id)
+    }, block.shortName || block.name);
   }))), /*#__PURE__*/React.createElement("main", {
     className: "content-area"
   }, /*#__PURE__*/React.createElement(AnimatePresence, {
     mode: "popLayout"
-  }, filteredData.length === 0 ? /*#__PURE__*/React.createElement(motion.div, {
+  }, viewMode === 'departments' && filteredData.length === 0 || viewMode === 'systems' && filteredSystems.length === 0 ? /*#__PURE__*/React.createElement(motion.div, {
     key: "empty",
     initial: {
       opacity: 0,
@@ -1023,7 +1196,7 @@ function App() {
     className: "empty-state-icon"
   }, /*#__PURE__*/React.createElement(IconSearch, {
     size: 48
-  })), /*#__PURE__*/React.createElement("h3", null, "No topics found"), /*#__PURE__*/React.createElement("p", null, "Try adjusting your search or filters.")) : filteredData.map(subject => {
+  })), /*#__PURE__*/React.createElement("h3", null, "No topics found"), /*#__PURE__*/React.createElement("p", null, "Try adjusting your search or filters.")) : viewMode === 'departments' ? filteredData.map(subject => {
     const meta = getSubjectMeta(subject.subject);
     const SubjectIcon = meta.icon;
     return /*#__PURE__*/React.createElement(motion.section, {
@@ -1201,6 +1374,180 @@ function App() {
         }), " Add Notebook")));
       }))));
     }))));
+  }) : filteredSystems.map(system => {
+    return /*#__PURE__*/React.createElement(motion.section, {
+      key: system.id,
+      layout: true,
+      initial: {
+        opacity: 0,
+        y: 30
+      },
+      whileInView: {
+        opacity: 1,
+        y: 0
+      },
+      viewport: {
+        once: true,
+        margin: "-50px"
+      },
+      exit: {
+        opacity: 0,
+        scale: 0.97
+      },
+      transition: {
+        duration: 0.5,
+        ease: [0.16, 1, 0.3, 1]
+      },
+      className: "subject-section system-section"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "subject-header"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "subject-icon-wrap system-icon-wrap"
+    }, /*#__PURE__*/React.createElement(IconActivity, {
+      size: 22
+    })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h2", {
+      className: "subject-title"
+    }, system.name), system.description && /*#__PURE__*/React.createElement("p", {
+      className: "system-description"
+    }, system.description))), /*#__PURE__*/React.createElement("div", {
+      className: "cards-grid"
+    }, /*#__PURE__*/React.createElement(motion.div, _extends({
+      layout: true
+    }, ANIM_FULL_SEC, {
+      exit: ANIM_EXIT,
+      transition: {
+        duration: 0.5,
+        ease: [0.22, 1, 0.36, 1]
+      },
+      className: "instructor-card glass glass-glow"
+    }), /*#__PURE__*/React.createElement("div", {
+      className: "glass-bg",
+      "aria-hidden": "true"
+    }), /*#__PURE__*/React.createElement("div", {
+      className: "card-header"
+    }, /*#__PURE__*/React.createElement("h3", {
+      className: "card-instructor"
+    }, "Core Clinical Lectures"), /*#__PURE__*/React.createElement("span", {
+      className: "card-count"
+    }, system.topics.length)), /*#__PURE__*/React.createElement("div", {
+      className: "topic-list"
+    }, /*#__PURE__*/React.createElement(AnimatePresence, null, system.topics.map(topic => {
+      const hasG = !!(topic.gdoc && topic.gdoc.trim());
+      const hasN = !!(topic.nlm && topic.nlm.trim());
+      const hasS = !!(topic.slide && topic.slide.trim());
+      const dot = hasG && hasN && hasS ? 'full' : hasG || hasN || hasS ? 'partial' : 'none';
+      const dotTitle = hasG && hasN && hasS ? 'All resources' : hasG || hasN || hasS ? 'Partial resources' : 'No resources';
+      const meta = getSubjectMeta(topic.subject);
+      return /*#__PURE__*/React.createElement(motion.div, _extends({
+        key: topic.id,
+        layout: true
+      }, ANIM_TOPIC, {
+        className: "topic-item"
+      }), /*#__PURE__*/React.createElement("div", {
+        className: "topic-title"
+      }, /*#__PURE__*/React.createElement("span", {
+        className: `status-dot ${dot}`,
+        title: dotTitle,
+        "aria-hidden": "true"
+      }), /*#__PURE__*/React.createElement("div", {
+        className: "topic-title-content"
+      }, /*#__PURE__*/React.createElement("span", null, topic.title), /*#__PURE__*/React.createElement("div", {
+        className: "topic-meta-badges"
+      }, /*#__PURE__*/React.createElement("span", {
+        className: `subject-badge ${meta.key}`
+      }, topic.subject), topic.instructor && /*#__PURE__*/React.createElement("span", {
+        className: "instructor-badge"
+      }, topic.instructor)))), /*#__PURE__*/React.createElement("div", {
+        className: "resource-buttons"
+      }, hasG ? /*#__PURE__*/React.createElement("div", {
+        className: "resource-btn-group gdoc"
+      }, /*#__PURE__*/React.createElement("a", {
+        href: topic.gdoc,
+        target: "_blank",
+        rel: "noopener noreferrer",
+        className: "resource-link gdoc",
+        onClick: () => handleResourceClick('gdoc', topic.title, topic.id)
+      }, /*#__PURE__*/React.createElement(IconFileText, {
+        size: 13
+      }), " Docs ", /*#__PURE__*/React.createElement(IconExternalLink, {
+        size: 10
+      })), /*#__PURE__*/React.createElement("button", {
+        className: "copy-btn gdoc",
+        onClick: () => handleCopy(topic.gdoc, `${topic.id}-g`),
+        "aria-label": "Copy link"
+      }, copiedId === `${topic.id}-g` ? /*#__PURE__*/React.createElement(IconCheck, {
+        size: 13
+      }) : /*#__PURE__*/React.createElement(IconCopy, {
+        size: 13
+      }))) : /*#__PURE__*/React.createElement("button", {
+        className: "add-link-btn gdoc",
+        onClick: () => setLinkModal({
+          isOpen: true,
+          topicId: topic.id,
+          type: 'gdoc'
+        })
+      }, /*#__PURE__*/React.createElement(IconPlus, {
+        size: 13
+      }), " Add Docs"), hasS ? /*#__PURE__*/React.createElement("div", {
+        className: "resource-btn-group slide"
+      }, /*#__PURE__*/React.createElement("a", {
+        href: topic.slide,
+        target: "_blank",
+        rel: "noopener noreferrer",
+        className: "resource-link slide",
+        onClick: () => handleResourceClick('google_slides', topic.title, topic.id)
+      }, /*#__PURE__*/React.createElement(IconPresentation, {
+        size: 13
+      }), " Slides ", /*#__PURE__*/React.createElement(IconExternalLink, {
+        size: 10
+      })), /*#__PURE__*/React.createElement("button", {
+        className: "copy-btn slide",
+        onClick: () => handleCopy(topic.slide, `${topic.id}-s`),
+        "aria-label": "Copy link"
+      }, copiedId === `${topic.id}-s` ? /*#__PURE__*/React.createElement(IconCheck, {
+        size: 13
+      }) : /*#__PURE__*/React.createElement(IconCopy, {
+        size: 13
+      }))) : topic.slide !== undefined && /*#__PURE__*/React.createElement("button", {
+        className: "add-link-btn slide",
+        onClick: () => setLinkModal({
+          isOpen: true,
+          topicId: topic.id,
+          type: 'slide'
+        })
+      }, /*#__PURE__*/React.createElement(IconPlus, {
+        size: 13
+      }), " Add Slides"), hasN ? /*#__PURE__*/React.createElement("div", {
+        className: "resource-btn-group nlm"
+      }, /*#__PURE__*/React.createElement("a", {
+        href: topic.nlm,
+        target: "_blank",
+        rel: "noopener noreferrer",
+        className: "resource-link nlm",
+        onClick: () => handleResourceClick('notebook_lm', topic.title, topic.id)
+      }, /*#__PURE__*/React.createElement(IconBookOpen, {
+        size: 13
+      }), " NotebookLM ", /*#__PURE__*/React.createElement(IconExternalLink, {
+        size: 10
+      })), /*#__PURE__*/React.createElement("button", {
+        className: "copy-btn nlm",
+        onClick: () => handleCopy(topic.nlm, `${topic.id}-n`),
+        "aria-label": "Copy link"
+      }, copiedId === `${topic.id}-n` ? /*#__PURE__*/React.createElement(IconCheck, {
+        size: 13
+      }) : /*#__PURE__*/React.createElement(IconCopy, {
+        size: 13
+      }))) : topic.nlm !== undefined && /*#__PURE__*/React.createElement("button", {
+        className: "add-link-btn nlm",
+        onClick: () => setLinkModal({
+          isOpen: true,
+          topicId: topic.id,
+          type: 'nlm'
+        })
+      }, /*#__PURE__*/React.createElement(IconPlus, {
+        size: 13
+      }), " Add Notebook")));
+    }))))));
   }))), /*#__PURE__*/React.createElement(AnimatePresence, null, linkModal.isOpen && /*#__PURE__*/React.createElement(motion.div, {
     initial: {
       opacity: 0
